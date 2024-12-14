@@ -6,15 +6,21 @@
   <title>CarDo! Plan!</title>
   <link rel="stylesheet" href="<%= asset_path 'static_pages/home.css' %>">
 </head>
-<body>
-  <div class="header">
-    ほっ。<span>CarDo!</span> Plan！<br>
-    計画的に余裕をもって楽しい車旅を！
+<body class="top-page" style="background-image: url('<%= asset_path 'top_background.jpg' %>');">
+  <div class="overlay">
+    <header class="header">
+      <h1>ほっ。<span>CarDo!</span> Plan！</h1>
+      <p>計画的に余裕をもって楽しい車旅を！</p>
+    </header>
+
+    <div class="button-container">
+      <%= link_to 'ログイン', new_user_session_path, class: "button login" %>
+      <%= link_to '新規登録', new_user_registration_path, class: "button sign-up" %>
+    </div>
   </div>
 
-  <div class="button-container">
-    <a href="/signup">新規登録</a>
-    <a href="/login">ログイン</a>
-  </div>
+  <footer class="footer">
+    <p>© 2024 CarDo! Plan! All rights reserved.</p>
+  </footer>
 </body>
 </html>
