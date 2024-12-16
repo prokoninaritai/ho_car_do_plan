@@ -37,7 +37,7 @@ html, body {
 
 /* 地図エリア */
 #map {
-  height: 80px;
+  height: 60vh;
   width: 100%;
 }
 

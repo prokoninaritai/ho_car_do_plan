@@ -6,7 +6,7 @@ function initMap() {
   // 地図オプション（初期値）
   const mapOptions = {
     center: defaultLocation,
-    zoom: 15,
+    zoom: 10,
   };
 
   // 地図を表示する要素を取得
@@ -60,31 +60,7 @@ function initMap() {
       title: "苫小牧フェリー乗り場",
     });
   }
-  // RailsからAPI経由で道の駅データを取得
-  fetch("/maps/dashboard.json")
-  .then((response) => response.json())
-  .then((stations) => {
-    stations.forEach((station) => {
-      // マーカーの色分け（スタンプ状態に応じて変更）
-      const markerColor = "blue";
-      //const markerColor = station.stamp_completed ? "red" : "blue";
-      // マーカーを作成
-      new google.maps.Marker({
-        position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
-        map: map,
-        title: station.name,
-        icon: {
-          url: `http://maps.google.com/mapfiles/ms/icons/${markerColor}-dot.png`,
-        },
-      });
-    });
-  })
-      
-  .catch((error) => console.error("Error fetching station data:", error));
-  }
-
-  
-  
+}
 
 // 北海道の座標範囲で判定する関数
 function isWithinHokkaido(location) {
@@ -104,5 +80,3 @@ function isWithinHokkaido(location) {
 
 // グローバルスコープで初期化関数を公開
 window.initMap = initMap;
-
- 
