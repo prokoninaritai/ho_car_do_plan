@@ -25,21 +25,21 @@ body.top-page {
 }
 
 /* ヘッダー */
-.header {
+.title {
   margin-bottom: 20px;
 }
 
-.header h1 {
+.title h1 {
   font-size: 2rem;
   margin: 0;
   color: #ffffff;
 }
 
-.header h1 span {
+.title h1 span {
   color: #4CAF50; /* "CarDo!"部分を緑色に */
 }
 
-.header p {
+.title p {
   font-size: 1rem;
   margin-top: 10px;
   color: #ffffff;
