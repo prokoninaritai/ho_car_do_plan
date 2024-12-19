@@ -1,4 +1,7 @@
 class Station < ApplicationRecord
+  geocoded_by :address
+  after_validation :geocode
+
   # アソシエーション
   has_many :stamps, dependent: :destroy
   has_many :closed_days, dependent: :destroy

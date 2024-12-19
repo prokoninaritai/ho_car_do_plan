@@ -9,4 +9,7 @@ Rails.application.routes.draw do
     root 'static_pages#home'
   end
 
+  # Stations data endpoint for JSON
+  get 'maps/stations_data', to: 'maps#stations_data'
+
 end
