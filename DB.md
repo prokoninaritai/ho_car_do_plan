@@ -22,7 +22,7 @@
 - belongs_to :station
 
 ## itineraries
-|Column    |Type|Options|
+|Column    |Type      |Options|
 |----------|----------|------------------------------|
 |user      |references|null: false, foreign_key: true|
 |title	   |string	  |null: false                   |
@@ -64,12 +64,15 @@
 - belongs_to :destination
 
 ## stations
-|Column    |Type    |Options     |
-|----------|--------|------------|
-|name      |string  |null: false |
-|address   |string  |null: false |
-|latitude  |decimal |            | 
-|longitude |decimal |            | 
+|Column        |Type    |Options                 |
+|--------------|--------|------------------------|
+|region        |string  |null: false             |　
+|station_number|integer |null: false unique: true|  
+|name          |string  |null: false             |　
+|address       |string  |null: false             |　
+|phone         |string  |null: false             |  
+|latitude      |decimal |null: false             |  
+|longitude     |decimal |null: false             |  
 
 ## Association
 - has_many :stamps
@@ -80,12 +83,12 @@
 ## closed_days
 |Column              |Type      |Options                        |
 |--------------------|----------|-------------------------------|
-|station             |references|null: false, foreign_key: true |
-|start_date          |date      |null: false                    |
-|end_date            |date      |null: false                    |
-|closed_info         |string    |                               |
+|station             |references|null: false, foreign_key: true |　
+|start_date          |string    |null: false                    |
+|end_date            |string    |null: false                    |
+|closed_info         |string    |null: false                    |
 |remarks             |string    |                               |
-|holiday_season_break|string    |                               |
+
 
 ## Association
 - belongs_to :station
@@ -94,9 +97,12 @@
 |Column         |Type       |Options                        |
 |---------------|-----------|-------------------------------|
 |station        |references |null: false, foreign_key: true |
-|start_date     |date       |null: false                    |
-|end_date       |date       |null: false                    |
-|business_hours |string     |null: false                    |
+|start_date     |date       |                               |
+|end_date       |date       |                               |
+|opening_time   |time       |                               |
+|closing_time   |time       |                               |
+|start_day      |integer    |                               |
+|end_day        |integer    |                               |
 
 ## Association
 - belongs_to :station
