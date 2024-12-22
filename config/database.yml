@@ -53,3 +53,28 @@ production:
   database: ho_car_do_plan_production
   username: ho_car_do_plan
   password: <%= ENV["HO_CAR_DO_PLAN_DATABASE_PASSWORD"] %>
+
+default: &default
+  encoding: utf8
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  adapter: mysql2
+  username: root
+  password:
+  host: localhost
+  database: ho_car_do_plan_development
+
+test:
+  <<: *default
+  adapter: mysql2
+  username: root
+  password:
+  host: localhost
+  database: ho_car_do_plan_test
+
+production:
+  <<: *default
+  adapter: postgresql
+  url: <%= ENV['DATABASE_URL'] %>

@@ -71,6 +71,10 @@ group :test do
   gem "webdrivers"
 end
 
+group :production do
+  gem 'pg'
+end
+
 gem 'devise'
 gem 'dotenv-rails', groups: [:development, :test]
 gem "geocoder"

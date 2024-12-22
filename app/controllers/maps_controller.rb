@@ -1,4 +1,5 @@
 class MapsController < ApplicationController
+  
   before_action :authenticate_user!
   
   def dashboard
@@ -9,5 +10,7 @@ class MapsController < ApplicationController
     stations = Station.select(:id, :name, :latitude, :longitude, :address)
     render json: stations
   end
+
+  
 
 end
