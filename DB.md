@@ -111,7 +111,7 @@
 |Column         |Type      |Options                        |
 |---------------|----------|-------------------------------|
 |station        |references|null: false, foreign_key: true |
-|available_hours|string    |null: false                    |
+|available_hour |string    |null: false                    |
 |remarks        |string    |                               |
 
 ## Association

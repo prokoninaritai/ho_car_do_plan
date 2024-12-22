@@ -40,3 +40,13 @@ CSV.foreach(Rails.root.join('db/csv/business_hours.csv'), headers: true) do |row
   end
 end
 
+# stamp_available_hours データの登録
+CSV.foreach(Rails.root.join('db/csv/stamp_available_hours.csv'), headers: true) do |row|
+  StampAvailableHour.find_or_create_by!(
+    station_id: row['station_id'],     
+  ) do |stamp_available_hour|
+    stamp_available_hour.available_hour = row['available_hour']
+    stamp_available_hour.remarks = row['remarks']
+  end
+end
+
