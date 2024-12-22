@@ -10,7 +10,20 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_22_090446) do
+ActiveRecord::Schema[7.0].define(version: 2024_12_22_201346) do
+  create_table "business_hours", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+    t.bigint "station_id", null: false
+    t.string "start_date"
+    t.string "end_date"
+    t.time "opening_time", null: false
+    t.time "closing_time", null: false
+    t.integer "start_day"
+    t.integer "end_day"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["station_id"], name: "index_business_hours_on_station_id"
+  end
+
   create_table "closed_days", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date", null: false
@@ -47,5 +60,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_22_090446) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "business_hours", "stations"
   add_foreign_key "closed_days", "stations"
 end
