@@ -91,11 +91,11 @@ body.top-page {
 }
 
 @media (max-width: 768px) {
-  .header h1 {
+  .title h1 {
     font-size: 1.5rem;
   }
 
-  .header p {
+  .title p {
     font-size: 0.9rem;
   }
 
@@ -106,11 +106,11 @@ body.top-page {
 }
 
 @media (max-width: 480px) {
-  .header h1 {
+  .title h1 {
     font-size: 1.2rem;
   }
 
-  .header p {
+  .title p {
     font-size: 0.8rem;
   }
 

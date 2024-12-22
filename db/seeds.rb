@@ -1,7 +1,28 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
-#   Character.create(name: "Luke", movie: movies.first)
+require 'csv'
+
+# Stationデータの登録
+CSV.foreach(Rails.root.join('db/csv/stations.csv'), headers: true) do |row|
+  Station.find_or_create_by!(
+    station_number: row['station_number'] # 一意性を確認
+  ) do |station|
+    station.region = row['region']
+    station.name = row['name']
+    station.address = row['address']
+    station.phone = row['phone']
+    station.latitude = row['latitude']
+    station.longitude = row['longitude']
+  end
+end
+
+# ClosedDays データの登録
+CSV.foreach(Rails.root.join('db/csv/closed_days.csv'), headers: true) do |row|
+  ClosedDay.find_or_create_by!(
+    station_id: row['station_id'],
+    start_date: row['start_date'], 
+    end_date: row['end_date']      
+  ) do |closed_day|
+    closed_day.closed_info = row['closed_info']
+    closed_day.remarks = row['remarks']
+  end
+end
+

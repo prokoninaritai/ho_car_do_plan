@@ -1,0 +1,35 @@
+<head>
+  <title>ようこそ</title>
+  <%= stylesheet_link_tag 'maps/dashboard.css', media: 'all', 'data-turbo-track': 'reload' %>
+  <!-- Google Maps API -->
+  <%= javascript_include_tag 'maps/dashboard.js', 'data-turbo-track': 'reload' %>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" async defer></script>
+</head>
+
+<body class="dashboard-page">
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
+    <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+  </header>
+
+  <main>
+  <!-- インストラクション -->
+  <div class="instructions">
+    ピンを押して詳細を確認しましょう。<br>
+    スタンプ押印済みを登録しましょう。
+  </div>
+
+  <!-- 地図の表示領域 -->
+    <div id="map" style="width: 100%; height: 600px;"></div>
+  </main>
+
+  <!-- フッター -->
+  <footer class="footer">
+    <%= link_to '日程を作成する', "#", class: 'footer-link' %>
+    <%= link_to '日程を確認する', "#", class: 'footer-link' %>
+    <%= link_to 'マイページ', "#", class: 'footer-link' %>
+  </footer>
+
+</body>
+</html>
