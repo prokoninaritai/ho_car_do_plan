@@ -1,8 +1,8 @@
 function initMap() {
   // 地図のオプション
   const mapOptions = {
-    center: {lat: 43.24662, lng: 141.80439 }, // 三笠
-    zoom: 10
+    center: {lat: 41.92591, lng: 140.65724 }, // なないろ・ななえ
+    zoom: 9
   };
 
   // 地図のインスタンスを生成
