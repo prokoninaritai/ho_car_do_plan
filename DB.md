@@ -97,8 +97,8 @@
 |Column         |Type       |Options                        |
 |---------------|-----------|-------------------------------|
 |station        |references |null: false, foreign_key: true |
-|start_date     |date       |                               |
-|end_date       |date       |                               |
+|start_date     |string     |                               |
+|end_date       |string     |                               |
 |opening_time   |time       |                               |
 |closing_time   |time       |                               |
 |start_day      |integer    |                               |
@@ -111,7 +111,7 @@
 |Column         |Type      |Options                        |
 |---------------|----------|-------------------------------|
 |station        |references|null: false, foreign_key: true |
-|available_hours|string    |null: false                    |
+|available_hour |string    |null: false                    |
 |remarks        |string    |                               |
 
 ## Association
