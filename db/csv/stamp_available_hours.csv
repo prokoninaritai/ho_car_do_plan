@@ -1,4 +1,4 @@
-﻿station_id,available_hours,remarks
+﻿station_id,available_hour,remarks
 1,開館時間に同じ,休館日は押印不可
 2,開館時間に同じ,休館日は押印不可
 3,開館時間に同じ,休館日は押印不可

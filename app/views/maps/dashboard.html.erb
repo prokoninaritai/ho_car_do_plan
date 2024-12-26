@@ -24,6 +24,22 @@
     <div id="map" style="width: 100%; height: 600px;"></div>
   </main>
 
+  <!-- 道の駅の詳細 モーダル-->
+ <div id="stationModal" class="modal" style="display: none;">
+  <div class="modal-content">
+    <span class="close-button" id="closeModal">&times;</span>
+    <h2 id="stationName">道の駅: ○○</h2>
+    <div>
+      <p><strong>休館日:</strong> <span id="closedDays"></span></p>
+      <p><strong>開館時間:</strong></p>
+      <ul id="businessHours"></ul>
+      <p><strong>スタンプ押印時間:</strong></p>
+      <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+    </div>
+  </div>
+</div>
+
+
   <!-- フッター -->
   <footer class="footer">
     <%= link_to '日程を作成する', "#", class: 'footer-link' %>
