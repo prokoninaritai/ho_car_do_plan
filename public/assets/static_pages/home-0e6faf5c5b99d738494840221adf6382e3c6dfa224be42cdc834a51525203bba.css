@@ -1,0 +1,121 @@
+/* 背景画像 */
+body.top-page {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-size: cover; /* 画面全体を覆う */
+  background-position: center; /* 中央に配置 */
+  background-repeat: no-repeat;
+  height: 100vh; /* 画面全体を覆う */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* コンテンツのオーバーレイ */
+.overlay {
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景を追加 */
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ヘッダー */
+.title {
+  margin-bottom: 20px;
+}
+
+.title h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.title h1 span {
+  color: #4CAF50; /* "CarDo!"部分を緑色に */
+}
+
+.title p {
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+/* ボタン */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4CAF50; /* 緑色 */
+  padding: 15px 30px;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
+}
+
+.button.login {
+  background-color: #2196F3; /* 青色ボタン */
+}
+
+.button.login:hover {
+  background-color: #1e87e5;
+}
+
+.button.sign-up {
+  background-color: #4CAF50; /* 緑色ボタン */
+}
+
+.button.sign-up:hover {
+  background-color: #45a049;
+}
+
+/* フッター */
+.footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: rgba(0, 0, 0, 0.8); /* 半透明の黒 */
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .title h1 {
+    font-size: 1.5rem;
+  }
+
+  .title p {
+    font-size: 0.9rem;
+  }
+
+  .button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title h1 {
+    font-size: 1.2rem;
+  }
+
+  .title p {
+    font-size: 0.8rem;
+  }
+
+  .button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}

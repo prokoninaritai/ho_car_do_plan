@@ -1,0 +1,341 @@
+/* 全体のリセット */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* 上部と下部の緑色バナー */
+.top-banner {
+  background-color: #4CAF50; /* 緑色 */
+  height: 10%;
+  width: 100%;
+}
+
+.bottom-banner {
+  background-color: #4CAF50; /* 緑色 */
+  height: 15%;
+  width: 100%;
+  margin-top: 100px;
+}
+
+/* フォームコンテナ */
+.form-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto; /* 中央に配置 */
+  position: relative;
+  top: 20; 
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.form-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 入力フィールド */
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* 登録ボタン */
+.submit-button {
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-bottom: 20%;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #45a049;
+}
+/* 全体のリセット */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* ヘッダー */
+.header {
+  background-color: #4CAF50; /* 緑色 */
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logout-button {
+  background-color: #f44336; /* 赤色 */
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* インストラクション */
+.instructions {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* 地図エリア */
+#map {
+  height: 60vh;
+  width: 100%;
+}
+
+/* フッター */
+.footer {
+  background-color: #4CAF50; /* 緑色 */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  position: relative;
+  bottom: 0;
+}
+
+.footer-link {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px;
+  border: 1px solid #fff;
+  border-radius: 50%;
+  text-align: center;
+  width: 80px;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #fff;
+  color: #4CAF50;
+  font-weight: bold;
+}
+
+.footer-link:hover {
+  background-color: #4CAF50;
+  color: #fff;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 400px;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-content {
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 18px;
+  color: #888;
+}
+
+.close-button:hover {
+  color: #000;
+}
+
+h2 {
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  margin-bottom: 5px;
+}
+/* 背景画像 */
+body.top-page {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-size: cover; /* 画面全体を覆う */
+  background-position: center; /* 中央に配置 */
+  background-repeat: no-repeat;
+  height: 100vh; /* 画面全体を覆う */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* コンテンツのオーバーレイ */
+.overlay {
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明の黒背景を追加 */
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ヘッダー */
+.title {
+  margin-bottom: 20px;
+}
+
+.title h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+.title h1 span {
+  color: #4CAF50; /* "CarDo!"部分を緑色に */
+}
+
+.title p {
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+/* ボタン */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  align-items: center;
+}
+
+.button {
+  display: inline-block;
+  text-decoration: none;
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #ffffff;
+  background-color: #4CAF50; /* 緑色 */
+  padding: 15px 30px;
+  border-radius: 50px;
+  transition: background-color 0.3s ease;
+}
+
+.button.login {
+  background-color: #2196F3; /* 青色ボタン */
+}
+
+.button.login:hover {
+  background-color: #1e87e5;
+}
+
+.button.sign-up {
+  background-color: #4CAF50; /* 緑色ボタン */
+}
+
+.button.sign-up:hover {
+  background-color: #45a049;
+}
+
+/* フッター */
+.footer {
+  text-align: center;
+  padding: 10px 0;
+  background-color: rgba(0, 0, 0, 0.8); /* 半透明の黒 */
+  color: #ffffff;
+  font-size: 0.8rem;
+}
+
+@media (max-width: 768px) {
+  .title h1 {
+    font-size: 1.5rem;
+  }
+
+  .title p {
+    font-size: 0.9rem;
+  }
+
+  .button {
+    font-size: 1rem;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title h1 {
+    font-size: 1.2rem;
+  }
+
+  .title p {
+    font-size: 0.8rem;
+  }
+
+  .button {
+    font-size: 0.9rem;
+    padding: 8px 16px;
+  }
+}
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS (and SCSS, if configured) file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+
+
+ */
