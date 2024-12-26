@@ -31,12 +31,12 @@ CSV.foreach(Rails.root.join('db/csv/business_hours.csv'), headers: true) do |row
   BusinessHour.find_or_create_by!(
     station_id: row['station_id'],
     start_date: row['start_date'], 
-    end_date: row['end_date']      
+    end_date: row['end_date'],      
+    start_day: row['start_day'].presence, # 空欄を nil に変換
+    end_day: row['end_day'].presence      # 空欄を nil に変換
   ) do |business_hour|
     business_hour.opening_time = row['opening_time']
     business_hour.closing_time = row['closing_time']
-    business_hour.start_day = row['start_day']
-    business_hour.end_day = row['end_day']
   end
 end
 
