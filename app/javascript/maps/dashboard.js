@@ -83,6 +83,30 @@ function initMap() {
             businessHoursList.appendChild(listItem);
           });
 
+          // スタンプ押印時間を表示
+          const stampHoursElement = document.getElementById("stampHours");
+          stampHoursElement.innerHTML = ""; // 初期化
+
+          // `stamp_available_hours` の存在確認
+          if (station.stamp_available_hours && station.stamp_available_hours.length > 0) {
+            station.stamp_available_hours.forEach((stamp_available_hour) => {
+              // available_hour と remarks を取得
+              const availableHour = stamp_available_hour.available_hour || "情報がありません";
+              const remarks = stamp_available_hour.remarks || "";
+
+              // 表示内容を作成
+              stampHoursElement.innerHTML += `
+                <div>
+                  <span class="stamp-availability">${availableHour}</span>
+                  ${remarks ? `<span class="stamp-notice">※${remarks}</span>` : ""}
+                </div>
+              `;
+            });
+          } else {
+            // スタンプ情報がない場合
+            stampHoursElement.innerHTML = "情報がありません";
+          }
+          
           modal.style.display = "flex";
         });
       });
@@ -110,3 +134,5 @@ function formatTimeString(isoTime) {
 
   return `${hours}:${minutes}`; // フォーマットされた時間を返す
 }
+
+
