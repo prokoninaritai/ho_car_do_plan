@@ -1,6 +1,6 @@
 class MapsController < ApplicationController
   before_action :authenticate_user!
-  
+
   def dashboard
     @stations = Station.select(:id, :name, :latitude, :longitude, :address)
   end
