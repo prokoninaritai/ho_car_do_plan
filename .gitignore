@@ -31,3 +31,9 @@
 /config/master.key
 /.Ds_Store
 /.env
+app/assets/stylesheets/itineraries/new.scss
+app/javascript/maps/dashboard.js
+vendor/javascript/@popperjs--core.js
+vendor/javascript/bootstrap.js
+app/assets/stylesheets/maps/dashboard.scss
+app/assets/stylesheets/devise/registrations.scss
