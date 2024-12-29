@@ -1,0 +1,17 @@
+class ItinerariesController < ApplicationController
+  def new
+    @itinerary = Itinerary.new
+  end
+
+  def create
+    @itinerary = Itinerary.new(itinerary_params)
+    @itinerary.save
+  end
+
+  private
+
+  def itinerary_params
+    params.require(:itinerary).permit(:title, :start_date, :end_date).merge(user_id: current_user.id)
+  end
+
+end
