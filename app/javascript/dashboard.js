@@ -1,4 +1,13 @@
-function initMap() {
+document.addEventListener("turbo:load", () => {
+  if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
+    if (typeof window.initMap === "function") {
+      window.initMap();
+    }
+  }
+});
+
+console.log("Initializing map...");
+window.initMap = function initMap() {
   const mapOptions = {
     center: { lat: 41.92591, lng: 140.65724 },
     zoom: 9,
@@ -7,14 +16,15 @@ function initMap() {
   const map = new google.maps.Map(document.getElementById("map"), mapOptions);
 
   fetch("/maps/stations_data")
-    .then((response) => response.json())
-    .then((stations) => {
-      stations.forEach((station) => {
-        const marker = new google.maps.Marker({
-          position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
-          map: map,
-          title: station.name,
-        });
+  .then((response) => response.json())
+  .then((stations) => {
+    stations.forEach((station) => {
+      // マーカー要素を作成
+      const marker = new google.maps.Marker({
+        position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
+        title: station.name, // ツールチップ用タイトル
+        map: map,
+      });
 
         // マーカークリック時にモーダルを表示
         marker.addListener("click", () => {
@@ -134,5 +144,3 @@ function formatTimeString(isoTime) {
 
   return `${hours}:${minutes}`; // フォーマットされた時間を返す
 }
-
-;
