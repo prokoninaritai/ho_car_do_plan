@@ -6,13 +6,13 @@
 北海道の道の駅スタンプを効率的に集めるためのドライブ計画（旅のしおり）を作成するマップアプリ
 
 # URL
-(https://ho-car-do-plan.onrender.com)
+https://ho-car-do-plan.onrender.com  
 
 # テスト用アカウント
-ログインID  test@gmail
-パスワード  111111
+ログインID  test@gmail  
+パスワード  111111  
 Basic認証  
-ID    oriapp
+ID    oriapp  
 Pass  41494
 
 # 利用方法
