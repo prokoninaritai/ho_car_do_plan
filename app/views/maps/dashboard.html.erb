@@ -17,20 +17,27 @@
   </main>
 
   <!-- 道の駅の詳細 モーダル-->
- <div id="stationModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close-button" id="closeModal">&times;</span>
-    <h2 id="stationName">道の駅: ○○</h2>
-    <div>
-      <p><strong>休館日:</strong> <span id="closedDays"></span></p>
-      <p><strong>開館時間:</strong></p>
-      <ul id="businessHours"></ul>
-      <p><strong>スタンプ押印時間:</strong></p>
-      <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+<div id="stationModal" class="modal fade" tabindex="-1" aria-labelledby="stationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="stationModalLabel">道の駅: <span id="stationName">○○</span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- モーダルの内容 -->
+      <div class="modal-body">       
+        <p><strong>休館日:</strong> <span id="closedDays"></span></p>
+        <p><strong>開館時間:</strong></p>
+        <ul id="businessHours"></ul>
+        <p><strong>スタンプ押印時間:</strong></p>
+        <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+      </div>
+
+      
     </div>
   </div>
 </div>
-
 
   <!-- フッター -->
   <footer class="footer">

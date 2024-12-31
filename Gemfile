@@ -80,3 +80,6 @@ gem 'devise'
 gem 'dotenv-rails', groups: [:development, :test]
 gem "geocoder"
 gem 'importmap-rails', '~> 2.0'
+gem 'bootstrap', '~> 5.3.0'
+gem 'sassc-rails', '~> 2.1'
+gem 'jquery-rails'

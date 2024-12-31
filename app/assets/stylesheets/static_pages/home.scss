@@ -1,0 +1,95 @@
+/* 背景画像 */
+
+body.top-page {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-size: cover;
+  background-image: url('top_background.jpg');
+
+  /* 画面全体を覆う */
+  background-position: center;
+
+  /* 中央に配置 */
+  background-repeat: no-repeat;
+  height: 100vh;
+
+  /* 画面全体を覆う */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* コンテンツのオーバーレイ */
+
+.overlay {
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.5);
+
+  /* 半透明の黒背景を追加 */
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ヘッダー */
+
+.title {
+  margin-bottom: 20px;
+
+  h1 {
+    font-size: 2rem;
+    margin: 0;
+    color: #ffffff;
+
+    span {
+      color: #4CAF50;
+
+      /* "CarDo!"部分を緑色に */
+    }
+  }
+
+  p {
+    font-size: 1rem;
+    margin-top: 10px;
+    color: #ffffff;
+  }
+}
+
+/* ボタン */
+
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px; /* ボタン間の間隔 */
+  margin-top: 20px;
+}
+
+.button-container .button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #4CAF50; /* ボタンの背景色 */
+  border-radius: 5px; /* 角丸 */
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #45a049; /* ホバー時の色 */
+  }
+}
+
+.button-container .button.sign-up {
+  background-color: #2196F3; /* 新規登録ボタンの色 */
+}
+
+.button-container .button.sign-up:hover {
+  background-color: #1e88e5; /* ホバー時の色 */
+}
