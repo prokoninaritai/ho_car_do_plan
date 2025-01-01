@@ -1,41 +1,50 @@
 document.addEventListener("turbo:load", () => {
-  // 日程作成モーダルを開くボタンをクリックした際の処理
-  const openModalButton = document.querySelector(".open-itinerary-modal");
-  const modalElement = document.getElementById("itineraryModal");
+  const modal = document.getElementById("itinerary-modal");
+  const openModalButton = document.getElementById("open-itinerary-modal");
+  const closeModalButton = document.getElementById("close-itinerary-modal");
+  const form = document.getElementById("itinerary-form");
 
-  if (openModalButton && modalElement) {
-    const modal = new bootstrap.Modal(modalElement);
-    openModalButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      modal.show();
-    });
-  } else {
-    console.error("モーダルまたはボタンが見つかりません");
-  }
+  // モーダルを開く
+  openModalButton.addEventListener("click", () => {
+    modal.style.display = "block";
+  });
 
-  // フォーム送信処理
-  const formElement = document.querySelector("#itinerary-form");
-  if (formElement) {
-    formElement.addEventListener("submit", (e) => {
-      e.preventDefault();
+  // モーダルを閉じる
+  closeModalButton.addEventListener("click", () => {
+    modal.style.display = "none";
+  });
 
-      fetch("/itineraries", {
-        method: "POST",
-        body: new FormData(e.target),
+  // モーダルの外側をクリックした場合に閉じる
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+
+  // フォーム送信時の処理
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+
+    fetch("/itineraries", {
+      method: "POST",
+      headers: {
+        "X-CSRF-Token": document.querySelector("meta[name='csrf-token']").content,
+      },
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.success) {
+          alert("日程が登録されました！");
+          modal.style.display = "none";
+        } else {
+          alert(data.errors.join(", "));
+        }
       })
-        .then((response) => {
-          if (response.ok) {
-            alert("旅程が登録されました！");
-            bootstrap.Modal.getInstance(modalElement).hide();
-          } else {
-            response.json().then((data) => {
-              alert("エラー: " + data.errors.join(", "));
-            });
-          }
-        })
-        .catch((error) => console.error("Error:", error));
-    });
-  } else {
-    console.error("フォームが見つかりません");
-  }
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  });
 });
