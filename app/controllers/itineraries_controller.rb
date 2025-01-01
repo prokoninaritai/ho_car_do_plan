@@ -1,16 +1,13 @@
 class ItinerariesController < ApplicationController
-  def new
-    @itinerary = Itinerary.new
-  end
-
   def create
     @itinerary = Itinerary.new(itinerary_params)
     if @itinerary.save
-      render json: { message: "旅程が登録されました！" }, status: :created
+      redirect_to root_path, notice: "旅程が登録されました！"
     else
-      render json: { errors: @itinerary.errors.full_messages }, status: :unprocessable_entity
+      render :new, status: :unprocessable_entity
     end
   end
+
 
   private
 

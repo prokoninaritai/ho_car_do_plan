@@ -43,7 +43,7 @@
     <!-- 日程を作成するボタン -->
     <a href="#" class="footer-link open-itinerary-modal">日程を<br>作成する</a>
     <!-- モーダルをレンダリング -->
-    <%= render "itineraries/new" %>
+    <%= render "itineraries/new", itinerary: @itinerary %>
     <%= link_to '日程を確認する', "#", class: 'footer-link' %>
     <%= link_to 'マイページ', "#", class: 'footer-link' %>
   </footer>

@@ -13,11 +13,11 @@
           </div>
           <div class="mb-3">
             <%= form.label :start_date, "開始日" %>
-            <%= form.text_field :start_date, id: "start_date", class: "form-control" %>
+            <%= form.date_field :start_date, id: "start_date", class: "form-control" %>
           </div>
           <div class="mb-3">
             <%= form.label :end_date, "終了日" %>
-            <%= form.text_field :end_date, id: "end_date", class: "form-control" %>
+            <%= form.date_field :end_date, id: "end_date", class: "form-control" %>
           </div>
           <div class="d-grid">
             <%= form.submit "登録する", class: "btn btn-primary" %>

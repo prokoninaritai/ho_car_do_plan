@@ -3,6 +3,7 @@ class MapsController < ApplicationController
 
   def dashboard
     @stations = Station.select(:id, :name, :latitude, :longitude, :address)
+    @itinerary = Itinerary.new
   end
 
   def stations_data

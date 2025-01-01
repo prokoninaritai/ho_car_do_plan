@@ -39,8 +39,10 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.string "title", null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_itineraries_on_user_id"
   end
 
   create_table "stamp_available_hours", charset: "utf8mb3", force: :cascade do |t|
@@ -79,5 +81,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
 
   add_foreign_key "business_hours", "stations"
   add_foreign_key "closed_days", "stations"
+  add_foreign_key "itineraries", "users"
   add_foreign_key "stamp_available_hours", "stations"
 end

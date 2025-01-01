@@ -11,3 +11,24 @@ document.addEventListener("turbo:load", () => {
     });
   }
 });
+
+document.querySelector("#itinerary-form").addEventListener("submit", (e) => {
+  e.preventDefault(); // デフォルト動作をキャンセル
+
+  fetch("/itineraries", {
+    method: "POST",
+    body: new FormData(e.target),
+  })
+    .then((response) => {
+      if (response.ok) {
+        alert("旅程が登録されました！");
+        // モーダルを閉じる処理
+        bootstrap.Modal.getInstance(document.getElementById("itineraryModal")).hide();
+      } else {
+        response.json().then((data) => {
+          alert("エラー: " + data.errors.join(", "));
+        });
+      }
+    })
+    .catch((error) => console.error("Error:", error));
+});
