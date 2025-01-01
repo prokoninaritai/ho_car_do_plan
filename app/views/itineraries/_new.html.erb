@@ -6,7 +6,18 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <%= form_with(model: @itinerary, url: itineraries_path, local: true) do |form| %>
+
+        <% if itinerary.errors.any? %>
+          <div class="alert alert-danger">
+            <ul>
+              <% itinerary.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <%= form_with(model: itinerary, url: itineraries_path, local: true) do |form| %>
           <div class="mb-3">
             <%= form.label :title, "タイトル" %>
             <%= form.text_field :title, placeholder: "例: 夏の旅行", class: "form-control" %>
