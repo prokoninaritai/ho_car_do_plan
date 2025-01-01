@@ -1,0 +1,239 @@
+[33mcommit 6dbbeb7448be86bdb658a643a14f407d77232817[m[33m ([m[1;36mHEAD -> [m[1;32m旅程登録機能実装[m[33m)[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 31 21:03:44 2024 +0900
+
+    Nodemodulインストール前
+
+[33mcommit 568a44b2cb0ada53ccd773c99b07ec9900c0550b[m[33m ([m[1;31morigin/旅程登録機能実装[m[33m, [m[1;32m修正[m[33m)[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 31 19:00:32 2024 +0900
+
+    Bootstrapの導入
+
+[33mcommit c085292566ca1cafcdebecaaae4cf9642ee5d109[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 29 21:49:26 2024 +0900
+
+    Update .gitignore
+
+[33mcommit 7445c80902f6b2cd65e0e10d1863b8a7b5e742df[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 29 21:26:42 2024 +0900
+
+    Update reset.css
+
+[33mcommit aedd0ad7a622633a8cd3c9e27e7c7e0b86332f90[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 29 21:20:13 2024 +0900
+
+    コンパイル不要に変更
+
+[33mcommit ee3cbfb942c9c58e85147a4fbd7751c7d3a2f837[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 29 10:27:27 2024 +0900
+
+    日程を作成する画面を表示
+
+[33mcommit f563d9e00596312508ddf05ae034247fce56fb8a[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 28 17:33:40 2024 +0900
+
+    Rubocop修正
+
+[33mcommit 9f46768440b1d0d69af5eecc88ea6523816098e6[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 28 05:46:08 2024 +0900
+
+    アセットファイルの更新
+
+[33mcommit 51e3c56d55cc9977a90014799a4a5a51d429fdca[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 28 05:42:53 2024 +0900
+
+    アセットファイル
+
+[33mcommit c0865188c7568d156ba26cbc3da22e7336ba6648[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 28 05:35:42 2024 +0900
+
+    スタンプ押印可能時間の表示を変更
+
+[33mcommit 302aeee25ba97259459ac4b5d47e5e8c5e1b2e3e[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 19:41:07 2024 +0900
+
+    アセットファイルの再作成
+
+[33mcommit a3ca61dd5869beee45d20cb91b894da7d3763e0e[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 19:40:28 2024 +0900
+
+    Update gitignore and include assets
+
+[33mcommit eb000d3f84261169247be88a5d340b18c329fcf0[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 19:06:16 2024 +0900
+
+    アセットファイル再作成
+
+[33mcommit a724b19e7e50c8cea743a70521271681fe7a8ece[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 19:05:32 2024 +0900
+
+    Fix assets
+
+[33mcommit 5f9224c18ecf6673179c4c98e25b06aa7091d54e[m
+Merge: e7659a1 d0e4fcd
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 18:53:41 2024 +0900
+
+    Merge pull request #2 from prokoninaritai/道の駅の詳細表示機能
+    
+    道の駅の詳細表示機能
+
+[33mcommit d0e4fcd5526a851d241e15472c5e3b083de6268c[m[33m ([m[1;32m道の駅の詳細表示機能[m[33m)[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 26 18:52:41 2024 +0900
+
+    モーダルウィンドウ実装
+    
+    マーカーをタップすると道の駅の情報が表示される
+
+[33mcommit 0122e6e9d08f1942918d195fc0d58ea62b20dba3[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Mon Dec 23 06:22:22 2024 +0900
+
+    スタンプ押印可能日をDBに反映
+
+[33mcommit 52e98f7b4001521fe3378b1978ce8647da1684d5[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Mon Dec 23 05:55:42 2024 +0900
+
+    営業時間をDBに反映
+
+[33mcommit a8afbe4cdb6125ae0b1d702a6c92d5d78ca68596[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Mon Dec 23 05:17:09 2024 +0900
+
+    DB設計の変更
+
+[33mcommit e7659a183b23e8fce50c6bd75ea10697ed62569e[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 19:32:51 2024 +0900
+
+    Update db_seed.rake
+
+[33mcommit 30a0547a0fc6e92463b173d861eebf2458b9e71e[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 19:07:58 2024 +0900
+
+    本番環境にseed反映
+
+[33mcommit fbe68325989715d65ac3e42b38e6a2cca10e8027[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 18:12:34 2024 +0900
+
+    マイグレーションファイルの変更
+
+[33mcommit afd60eb283af88ba11951258381f9b945f9bc4cb[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 16:10:49 2024 +0900
+
+    デプロイ準備
+
+[33mcommit 554891def8ad83e089e9ef5106ac96a45faa8e8f[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 12:17:59 2024 +0900
+
+    マップ表示初期地点の変更
+
+[33mcommit 139de6ae28c143a4b3fabbe55adde6f4734c3f62[m
+Merge: 70bdb4e 814f6b2
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 12:11:13 2024 +0900
+
+    Merge pull request #1 from prokoninaritai/マップ表示機能実装
+    
+    地図表示機能
+
+[33mcommit 814f6b276046ddffef1a514c32b8e4ecbe5b33d6[m[33m ([m[1;32mマップ表示機能実装[m[33m)[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 12:08:36 2024 +0900
+
+    バリデーションの追加
+
+[33mcommit c9d0374ecdc51b6494e7ff477331ca2d03d8357c[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 22 01:31:07 2024 +0900
+
+    道の駅の情報をDBに保存
+
+[33mcommit 74d832baf355692a4d64052a7440cf2aaf3b31c9[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Thu Dec 19 21:15:19 2024 +0900
+
+    マーカーを実装
+    
+    道の駅のデータベースから情報を取り出し、マーカーを表示させる
+
+[33mcommit 6076241be2232c422ee0794911fdc379f3d6f212[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 17 07:41:25 2024 +0900
+
+    ビューの変更
+    
+    This reverts commit 8c119d95614d8fa5aafb6a8ae9a3c18349ca42d1.
+
+[33mcommit 1e73ac63dd8bf05aec0e153646cb298b66779deb[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 17 06:00:56 2024 +0900
+
+    マーカー機能
+
+[33mcommit 70bdb4e85f0adab9a65f098ab26d373a5e150869[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 17 05:58:06 2024 +0900
+
+    homeのclass名変更
+
+[33mcommit 29415b28fb44f4d6a1030a2ec2264f2650922150[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 17 05:52:23 2024 +0900
+
+    ビューの記述変更
+
+[33mcommit 8c119d95614d8fa5aafb6a8ae9a3c18349ca42d1[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Tue Dec 17 05:50:02 2024 +0900
+
+    マップを表示する機能
+
+[33mcommit 7b0c7a82843149122566fde11b18d26faac30728[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 15 17:13:21 2024 +0900
+
+    地図表示機能
+
+[33mcommit d72b064ce7e2d467ceaef100355e7ea787a0be0a[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sun Dec 15 11:50:35 2024 +0900
+
+    ログイン画面など微調整
+
+[33mcommit cf98477e4e92a46982f20423a83262057dc984c1[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 14 23:04:29 2024 +0900
+
+    ユーザー管理機能追加
+
+[33mcommit 0e4b2ed6cf5927000d66502ea9718e2787fd802e[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 14 21:28:04 2024 +0900
+
+    mdファイル分けた
+
+[33mcommit cd19518794b4d50dd8d60bb924178f8e0bcfcff1[m
+Author: prokoninaritai <s0a7c5h1i@gmail.com>
+Date:   Sat Dec 14 21:12:52 2024 +0900
+
+    first commit

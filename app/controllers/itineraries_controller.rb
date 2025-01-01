@@ -5,7 +5,11 @@ class ItinerariesController < ApplicationController
 
   def create
     @itinerary = Itinerary.new(itinerary_params)
-    @itinerary.save
+    if @itinerary.save
+      render json: { message: "旅程が登録されました！" }, status: :created
+    else
+      render json: { errors: @itinerary.errors.full_messages }, status: :unprocessable_entity
+    end
   end
 
   private

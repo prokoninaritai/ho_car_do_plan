@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
-  create_table "business_hours", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date"
     t.string "end_date"
@@ -24,7 +24,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.index ["station_id"], name: "index_business_hours_on_station_id"
   end
 
-  create_table "closed_days", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "closed_days", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date", null: false
     t.string "end_date", null: false
@@ -35,7 +35,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.index ["station_id"], name: "index_closed_days_on_station_id"
   end
 
-  create_table "itineraries", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "itineraries", charset: "utf8mb3", force: :cascade do |t|
     t.string "title", null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
@@ -43,7 +43,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "stamp_available_hours", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "stamp_available_hours", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "available_hour", null: false
     t.string "remarks"
@@ -52,7 +52,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.index ["station_id"], name: "index_stamp_available_hours_on_station_id"
   end
 
-  create_table "stations", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "stations", charset: "utf8mb3", force: :cascade do |t|
     t.string "region", null: false
     t.integer "station_number", null: false
     t.string "name", null: false
@@ -64,7 +64,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
+  create_table "users", charset: "utf8mb3", force: :cascade do |t|
     t.string "nickname", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false

@@ -10,6 +10,11 @@ module HoCarDoPlan
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
+    # Enable the asset pipeline
+    config.assets.enabled = true
+
+    # Assets version (change this to expire all assets)
+    config.assets.version = '1.0'
 
     # Configuration for the application, engines, and railties goes here.
     #

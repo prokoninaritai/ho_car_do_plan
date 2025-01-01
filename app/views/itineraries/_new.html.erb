@@ -1,0 +1,29 @@
+<div id="itineraryModal" class="modal fade" tabindex="-1" aria-labelledby="itineraryModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="itineraryModalLabel">日程を登録しましょう</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with(model: @itinerary, url: itineraries_path, local: true) do |form| %>
+          <div class="mb-3">
+            <%= form.label :title, "タイトル" %>
+            <%= form.text_field :title, placeholder: "例: 夏の旅行", class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :start_date, "開始日" %>
+            <%= form.text_field :start_date, id: "start_date", class: "form-control" %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :end_date, "終了日" %>
+            <%= form.text_field :end_date, id: "end_date", class: "form-control" %>
+          </div>
+          <div class="d-grid">
+            <%= form.submit "登録する", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
