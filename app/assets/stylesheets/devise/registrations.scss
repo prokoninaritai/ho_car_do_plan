@@ -1,0 +1,95 @@
+/* 全体のリセット */
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* 上部と下部の緑色バナー */
+
+.top-banner {
+  background-color: #4CAF50;
+
+  /* 緑色 */
+  height: 10%;
+  width: 100%;
+}
+
+.bottom-banner {
+  background-color: #4CAF50;
+
+  /* 緑色 */
+  height: 15%;
+  width: 100%;
+  margin-top: 100px;
+}
+
+/* フォームコンテナ */
+
+.form-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+
+  /* 中央に配置 */
+  position: relative;
+  top: 20;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 50px;
+
+  h1 {
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+}
+
+/* 入力フィールド */
+
+.form-group {
+  margin-bottom: 20px;
+  text-align: left;
+
+  label {
+    display: block;
+    font-size: 0.9rem;
+    color: #333;
+    margin-bottom: 5px;
+  }
+
+  input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+}
+
+/* 登録ボタン */
+
+.submit-button {
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin-bottom: 20%;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #45a049;
+  }
+}

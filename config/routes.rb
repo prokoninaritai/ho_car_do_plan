@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   devise_for :users
+  resources :itineraries, only: [:new, :create]
   
   authenticated :user do
     root 'maps#dashboard', as: :authenticated_root

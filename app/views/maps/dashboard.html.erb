@@ -1,11 +1,3 @@
-<head>
-  <title>ようこそ</title>
-  <%= stylesheet_link_tag 'maps/dashboard.css', media: 'all', 'data-turbo-track': 'reload' %>
-  <!-- Google Maps API -->
-  <%= javascript_include_tag 'maps/dashboard.js', 'data-turbo-track': 'reload' %>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" async defer></script>
-</head>
-
 <body class="dashboard-page">
   <!-- ヘッダー -->
   <header class="header">
@@ -25,24 +17,33 @@
   </main>
 
   <!-- 道の駅の詳細 モーダル-->
- <div id="stationModal" class="modal" style="display: none;">
-  <div class="modal-content">
-    <span class="close-button" id="closeModal">&times;</span>
-    <h2 id="stationName">道の駅: ○○</h2>
-    <div>
-      <p><strong>休館日:</strong> <span id="closedDays"></span></p>
-      <p><strong>開館時間:</strong></p>
-      <ul id="businessHours"></ul>
-      <p><strong>スタンプ押印時間:</strong></p>
-      <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+  <div id="stationModal" class="modal fade" tabindex="-1" aria-labelledby="stationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stationModalLabel">道の駅: <span id="stationName">○○</span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- モーダルの内容 -->
+        <div class="modal-body">       
+          <p><strong>休館日:</strong> <span id="closedDays"></span></p>
+          <p><strong>開館時間:</strong></p>
+          <ul id="businessHours"></ul>
+          <p><strong>スタンプ押印時間:</strong></p>
+          <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+        </div>
+      
+      </div>
     </div>
   </div>
-</div>
-
 
   <!-- フッター -->
   <footer class="footer">
-    <%= link_to '日程を作成する', "#", class: 'footer-link' %>
+    <!-- 日程を作成するボタン -->
+    <a href="#" class="footer-link open-itinerary-modal">日程を<br>作成する</a>
+    <!-- モーダルをレンダリング -->
+    <%= render "itineraries/new", itinerary: @itinerary  %>
     <%= link_to '日程を確認する', "#", class: 'footer-link' %>
     <%= link_to 'マイページ', "#", class: 'footer-link' %>
   </footer>
