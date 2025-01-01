@@ -4,7 +4,10 @@ class ItinerariesController < ApplicationController
     if @itinerary.save
       redirect_to root_path, notice: "旅程が登録されました！"
     else
-      render :new, status: :unprocessable_entity
+      respond_to do |format|
+        format.turbo_stream
+        format.html { render :new, status: :unprocessable_entity }
+      end
     end
   end
 
