@@ -1,0 +1,52 @@
+<!-- ヘッダー -->
+  <header class="header">
+    <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
+    <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+  </header>
+
+<main>
+  <!-- インストラクション -->
+  <div class="instructions">
+    タイトル：十勝旅<br>
+    〇〇年〇〇月〇〇日の日程（１日目）
+  </div>
+
+  <!-- 出発地を選ぶ -->
+  <div class="form-overlay">
+    <%= form_with model: @destination, url: itinerary_destinations_path(@itinerary), local: true do |form| %>
+      <div class="form-group">
+        <label for="departure-method">出発地点を選択する方法</label>
+        <select id="departure-method" class="form-control">
+          <option value="marker">マーカーから選ぶ</option>
+          <option value="current">現在地を設定</option>
+          <option value="manual">住所を直接入力</option>
+        </select>
+      </div>
+
+      <div id="marker-selection" class="form-group">
+        <%= form.label :departure, "出発地点 (マーカーをクリックして選択)" %>
+        <%= form.text_field :departure, id: "departure", class: "form-control", readonly: true %>
+      </div>
+
+      <div id="current-location" class="form-group" style="display: none;">
+        <button type="button" id="set-current-location" class="btn btn-secondary">現在地を設定</button>
+      </div>
+
+       <div id="manual-address" class="form-group" style="display: none;">
+        <label for="manual_address">住所を直接入力</label>
+        <input type="text" id="manual_address" class="form-control">
+      </div>
+
+      <div class="form-group">
+        <%= form.submit "登録する", class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+    
+
+  <!-- 地図の表示領域 -->
+  <div class="map-container">
+    <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
+    <div id="map" ></div>
+  </div>
+</main>

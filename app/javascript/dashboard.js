@@ -6,7 +6,7 @@ document.addEventListener("turbo:load", () => {
       zoom: 9,
     };
 
-    const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+    const map = new google.maps.Map(document.getElementById("map1"), mapOptions);
 
     fetch("/maps/stations_data")
       .then((response) => response.json())

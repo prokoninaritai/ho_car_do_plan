@@ -1,15 +1,17 @@
-<%= form_with(model: itinerary, url: itineraries_path, local: true, id: "itinerary-form") do |form| %>
+<div id="error-messages" class="error-container"></div>
+
+<%= form_with model: itinerary, local: true do |form| %>
   <div>
     <%= form.label :title, "タイトル" %>
-    <%= form.text_field :title, placeholder: "例: 夏の旅行", class: "form-control" %>
+    <%= form.text_field :title, class: "form-control" %>
   </div>
   <div>
     <%= form.label :start_date, "開始日" %>
-    <%= form.date_field :start_date, id: "start_date", class: "form-control" %>
+    <%= form.date_field :start_date, class: "form-control" %>
   </div>
   <div>
     <%= form.label :end_date, "終了日" %>
-    <%= form.date_field :end_date, id: "end_date", class: "form-control" %>
+    <%= form.date_field :end_date, class: "form-control" %>
   </div>
   <div>
     <%= form.submit "登録する", class: "btn btn-primary" %>

@@ -1,10 +1,13 @@
 class ItinerariesController < ApplicationController
   def create
     @itinerary = Itinerary.new(itinerary_params)
+
     if @itinerary.save
-      render json: { success: true }
+      # 登録成功時にdestinations#newへリダイレクト
+      redirect_to new_itinerary_destination_path(@itinerary), notice: "日程が登録されました！"
     else
-      render json: { success: false, errors: @itinerary.errors.full_messages }, status: :unprocessable_entity
+      # 登録失敗時にエラーメッセージ付きでフォームを再表示
+      render :_new, status: :unprocessable_entity
     end
   end
 
