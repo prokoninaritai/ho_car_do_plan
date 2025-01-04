@@ -1,31 +1,22 @@
-h1 {
-  background-color: #f2f2f2; /* 見出し背景色 */
-  text-align: center; /* 中央寄せ */
-  padding: 10px 0; /* 上下の余白 */
-  font-size: 20px; /* フォントサイズ */
-  margin-bottom: 20px; /* 下部の余白 */
-}
+
 
 .map-container {
   position: relative; /* 子要素を地図上に配置可能にする */;
 }
 
 #map {
-  height: 60vh;
+  height: 75vh;
   width: 100%;
   z-index: 1; /* 地図を背景にする */
 }
 
 .form-overlay {
   position: absolute;
-  top: 10px; /* 地図上部からの距離 */
-  left: 10px; /* 地図左端からの距離 */
+  top: 190px; /* 地図上部からの距離 */
+  left: -82px; /* 地図左端からの距離 */
   z-index: 10; /* 地図の上に表示 */
-  background-color: rgba(255, 255, 255, 0.9); /* 白背景 + 半透明 */
   padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* 影をつける */
-  width: 300px; /* フォームの幅 */
+  width: 600px; /* フォームの幅 */
 }
 
 .form-overlay label {

@@ -1,0 +1,10 @@
+/* line 1, app/assets/stylesheets/itineraries.scss */
+.error-container {
+  color: red;
+  margin-bottom: 10px;
+}
+
+/* line 6, app/assets/stylesheets/itineraries.scss */
+.error-message {
+  margin: 5px 0;
+}

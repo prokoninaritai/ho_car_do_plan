@@ -22,7 +22,7 @@ body.top-page {
 
 /* コンテンツのオーバーレイ */
 
-.overlay {
+.home_overlay {
   text-align: center;
   color: #ffffff;
   background-color: rgba(0, 0, 0, 0.5);
@@ -37,7 +37,7 @@ body.top-page {
 
 /* ヘッダー */
 
-.title {
+.home_title {
   margin-bottom: 20px;
 
   h1 {
@@ -92,4 +92,8 @@ body.top-page {
 
 .button-container .button.sign-up:hover {
   background-color: #1e88e5; /* ホバー時の色 */
+}
+
+.footer_home {
+  text-align: center;
 }

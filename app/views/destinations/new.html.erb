@@ -7,8 +7,8 @@
 <main>
   <!-- インストラクション -->
   <div class="instructions">
-    タイトル：十勝旅<br>
-    〇〇年〇〇月〇〇日の日程（１日目）
+    タイトル：<%= @itinerary.title %><br>
+    <%= @display_date %>（<%= @day_label %>)
   </div>
 
   <!-- 出発地を選ぶ -->
@@ -50,3 +50,13 @@
     <div id="map" ></div>
   </div>
 </main>
+
+<!-- フッター -->
+  <footer class="footer">
+  <div class="footer-container">
+    <!-- モーダルを開くボタン -->
+    <button id="open-itinerary-modal" class="footer-link">日程を<br>作成する</button>
+    <button href="#" class="footer-link">日程を<br>確認する</button>
+    <button href="#" class="footer-link">マイページ</button>
+  </div>
+  </footer>
