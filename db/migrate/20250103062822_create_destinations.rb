@@ -6,10 +6,12 @@ class CreateDestinations < ActiveRecord::Migration[7.0]
       t.integer :arrival_order, null: false
       t.string :departure, null: false
       t.string :destination, null: false
-      t.integer :api_travel_time
+      t.string :api_travel_time
       t.decimal :distance, precision: 10, scale: 2
-      t.decimal :latitude, precision: 10, scale: 6
-      t.decimal :longitude, precision: 10, scale: 6
+      t.decimal :departure_latitude, precision: 10, scale: 6
+      t.decimal :departure_longitude, precision: 10, scale: 6
+      t.decimal :destination_latitude, precision: 10, scale: 6
+      t.decimal :destination_longitude, precision: 10, scale: 6
       t.timestamps
     end
   end

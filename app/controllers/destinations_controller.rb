@@ -4,7 +4,6 @@ class DestinationsController < ApplicationController
   def new
     @destination = Destination.new
     @stations = Station.all
-    @itinerary = Itinerary.find(params[:itinerary_id])
 
     # 現在の「何日目」を取得（デフォルトは1日目）
     current_day = params[:current_day].present? ? params[:current_day].to_i : 1
@@ -16,6 +15,11 @@ class DestinationsController < ApplicationController
   end
 
   def create
+    @itinerary = Itinerary.find(params[:itinerary_id])
+    current_day = params[:current_day].present? ? params[:current_day].to_i : 1
+    current_date = @itinerary.start_date + (current_day - 1).days
+    @day_number = (current_date - @itinerary.start_date).to_i + 1
+  
     @destination = @itinerary.destinations.build(destination_params)
     if @destination.save
       next_day = params[:current_day].to_i + 1

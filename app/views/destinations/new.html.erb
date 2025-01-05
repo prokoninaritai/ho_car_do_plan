@@ -11,39 +11,6 @@
     <%= @display_date %>（<%= @day_label %>)
   </div>
 
-  <!-- 出発地を選ぶ -->
-  <div class="form-overlay">
-    <%= form_with model: @destination, url: itinerary_destinations_path(@itinerary), local: true do |form| %>
-      <div class="form-group">
-        <label for="departure-method">出発地点を選択する方法</label>
-        <select id="departure-method" class="form-control">
-          <option value="marker">マーカーから選ぶ</option>
-          <option value="current">現在地を設定</option>
-          <option value="manual">住所を直接入力</option>
-        </select>
-      </div>
-
-      <div id="marker-selection" class="form-group">
-        <%= form.label :departure, "出発地点 (マーカーをクリックして選択)" %>
-        <%= form.text_field :departure, id: "departure", class: "form-control", readonly: true %>
-      </div>
-
-      <div id="current-location" class="form-group" style="display: none;">
-        <button type="button" id="set-current-location" class="btn btn-secondary">現在地を設定</button>
-      </div>
-
-       <div id="manual-address" class="form-group" style="display: none;">
-        <label for="manual_address">住所を直接入力</label>
-        <input type="text" id="manual_address" class="form-control">
-      </div>
-
-      <div class="form-group">
-        <%= form.submit "登録する", class: "btn btn-primary" %>
-      </div>
-    <% end %>
-  </div>
-    
-
   <!-- 地図の表示領域 -->
   <div class="map-container">
     <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
@@ -52,11 +19,19 @@
 </main>
 
 <!-- フッター -->
-  <footer class="footer">
+<footer class="footer">
   <div class="footer-container">
     <!-- モーダルを開くボタン -->
     <button id="open-itinerary-modal" class="footer-link">日程を<br>作成する</button>
-    <button href="#" class="footer-link">日程を<br>確認する</button>
-    <button href="#" class="footer-link">マイページ</button>
+
+    <!-- 前の日へ（1日目では非表示） -->
+    <% if @day_number > 1 %>
+      <%= link_to "前の日へ", new_itinerary_destination_path(@itinerary, current_day: @day_number - 1), class: "footer-link" %>
+    <% end %>
+
+    <!-- 次の日へ（end_date を超える場合は非表示） -->
+    <% if (@itinerary.start_date + @day_number.days - 1) < @itinerary.end_date %>
+      <%= link_to "次の日へ", new_itinerary_destination_path(@itinerary, current_day: @day_number + 1), class: "footer-link" %>
+    <% end %>
   </div>
-  </footer>
+</footer>
