@@ -1,5 +1,4 @@
 document.addEventListener("turbo:load", () => {
-  console.log("Initializing map...");
   function initMap() {
     const mapOptions = {
       center: { lat: 41.92591, lng: 140.65724 },
