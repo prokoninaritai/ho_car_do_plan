@@ -1,4 +1,7 @@
 class Itinerary < ApplicationRecord
+  belongs_to :user
+  has_many :destinations, dependent: :destroy
+
   # バリデーション
   validates :title, presence: true
   validates :start_date, presence: true

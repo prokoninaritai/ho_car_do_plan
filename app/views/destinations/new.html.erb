@@ -1,0 +1,27 @@
+<!-- ヘッダー -->
+  <header class="header">
+    <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
+    <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+  </header>
+
+<main>
+  <!-- インストラクション -->
+  <div class="instructions">
+    タイトル：<%= @itinerary.title %><br>
+    <%= @display_date %>（<%= @day_label %>)
+  </div>
+
+  <!-- 地図の表示領域 -->
+  <div class="map-container">
+    <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
+    <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
+    <div id="map" ></div>
+  </div>
+</main>
+
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-container">
+    <button id="save-route-btn" class="footer-link">しおりを作成する</button>
+  </div>
+</footer>

@@ -1,8 +1,9 @@
 class ItinerariesController < ApplicationController
   def create
     @itinerary = Itinerary.new(itinerary_params)
+
     if @itinerary.save
-      render json: { success: true }
+      render json: { success: true, itinerary_id: @itinerary.id }
     else
       render json: { success: false, errors: @itinerary.errors.full_messages }, status: :unprocessable_entity
     end

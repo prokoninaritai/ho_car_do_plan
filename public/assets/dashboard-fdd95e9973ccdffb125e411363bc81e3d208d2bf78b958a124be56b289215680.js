@@ -1,8 +1,9 @@
 document.addEventListener("turbo:load", () => {
+  console.log("Initializing map...");
   function initMap() {
     const mapOptions = {
       center: { lat: 41.92591, lng: 140.65724 },
-      zoom: 10,
+      zoom: 9,
     };
 
     const map = new google.maps.Map(document.getElementById("map1"), mapOptions);
@@ -28,34 +29,9 @@ document.addEventListener("turbo:load", () => {
         stations.forEach((station) => {
           const marker = new google.maps.Marker({
             position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
+            title: station.name,
             map: map,
-            
           });
-        
-          const labelDiv = document.createElement("div");
-          labelDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // 背景を白く半透明に設定
-          labelDiv.style.border = "1px solid #ccc"; // 枠線を追加
-          labelDiv.style.borderRadius = "4px"; // 角を丸める
-          labelDiv.style.padding = "5px"; // 内側の余白
-          labelDiv.style.fontSize = "12px"; // 文字サイズ
-          labelDiv.style.textAlign = "center"; // 中央揃え
-          labelDiv.innerText = station.name;
-        
-          const overlay = new google.maps.OverlayView();
-          overlay.onAdd = function () {
-            const panes = this.getPanes();
-            panes.overlayLayer.appendChild(labelDiv);
-          };
-        
-          overlay.draw = function () {
-            const projection = this.getProjection();
-            const position = projection.fromLatLngToDivPixel(marker.getPosition());
-            labelDiv.style.position = "absolute";
-            labelDiv.style.left = position.x - labelDiv.offsetWidth / 2 + "px";
-            labelDiv.style.top = position.y + 10 + "px"; // マーカーの下に配置
-          };
-        
-          overlay.setMap(map);
 
           marker.addListener("click", () => {
             document.getElementById("stationName").innerText = station.name;

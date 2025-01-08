@@ -1,0 +1,76 @@
+@charset "UTF-8";
+/* line 1, app/assets/stylesheets/destinations.scss */
+h1 {
+  background-color: #f2f2f2;
+  /* 見出し背景色 */
+  text-align: center;
+  /* 中央寄せ */
+  padding: 10px 0;
+  /* 上下の余白 */
+  font-size: 30px;
+  /* フォントサイズ */
+  margin-bottom: 20px;
+  /* 下部の余白 */
+}
+
+/* line 9, app/assets/stylesheets/destinations.scss */
+.map-container {
+  position: relative;
+  /* 子要素を地図上に配置可能にする */
+}
+
+/* line 13, app/assets/stylesheets/destinations.scss */
+#map {
+  height: 60vh;
+  width: 100%;
+  z-index: 1;
+  /* 地図を背景にする */
+}
+
+/* line 19, app/assets/stylesheets/destinations.scss */
+.form-overlay {
+  position: absolute;
+  top: 10px;
+  /* 地図上部からの距離 */
+  left: 10px;
+  /* 地図左端からの距離 */
+  z-index: 10;
+  /* 地図の上に表示 */
+  background-color: rgba(255, 255, 255, 0.9);
+  /* 白背景 + 半透明 */
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* 影をつける */
+  width: 300px;
+  /* フォームの幅 */
+}
+
+/* line 31, app/assets/stylesheets/destinations.scss */
+.form-overlay label {
+  font-weight: bold;
+}
+
+/* line 35, app/assets/stylesheets/destinations.scss */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* line 39, app/assets/stylesheets/destinations.scss */
+.form-overlay select,
+.form-overlay input {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* line 45, app/assets/stylesheets/destinations.scss */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* line 50, app/assets/stylesheets/destinations.scss */
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}

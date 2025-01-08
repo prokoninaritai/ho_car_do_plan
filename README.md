@@ -47,7 +47,7 @@ Pass  41494
 ◎設定機能  
 
 # データベース設計
-[![Image from Gyazo](https://i.gyazo.com/d28732fc48b22a564c03fdf4e6f3e7e8.png)](https://gyazo.com/d28732fc48b22a564c03fdf4e6f3e7e8)
+[![Image from Gyazo](https://gyazo.com/1dbf22edc28b847d9bef91177f773526)]
 
 # 画面遷移図
 [![Image from Gyazo](https://i.gyazo.com/88efafa7ed33f368aa1283514b57d41f.png)](https://gyazo.com/88efafa7ed33f368aa1283514b57d41f)

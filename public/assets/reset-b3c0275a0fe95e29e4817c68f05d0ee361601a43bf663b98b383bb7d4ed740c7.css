@@ -1,0 +1,111 @@
+/*!
+ * YUI 3.5.0 - reset.css (http://developer.yahoo.com/yui/3/cssreset/)
+ * http://cssreset.com
+ * Copyright 2012 Yahoo! Inc. All rights reserved.
+ * http://yuilibrary.com/license/
+ */
+/*
+    TODO will need to remove settings on HTML since we can't namespace it.
+    TODO with the prefix, should I group by selector or property for weight savings?
+*/
+/* line 12, app/assets/stylesheets/reset.scss */
+html {
+  color: #000;
+  background: #FFF;
+}
+
+/*
+  TODO remove settings on BODY since we can't namespace it.
+*/
+/*
+  TODO test putting a class on HEAD.
+      - Fails on FF.
+*/
+/* line 25, app/assets/stylesheets/reset.scss */
+body, div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, code, form, fieldset, legend, input, textarea, p, blockquote, th, td {
+  margin: 0;
+  padding: 0;
+}
+
+/* line 30, app/assets/stylesheets/reset.scss */
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 35, app/assets/stylesheets/reset.scss */
+fieldset, img {
+  border: 0;
+}
+
+/*
+  TODO think about hanlding inheritence differently, maybe letting IE6 fail a bit...
+*/
+/* line 43, app/assets/stylesheets/reset.scss */
+address, caption, cite, code, dfn, em, strong, th, var {
+  font-style: normal;
+  font-weight: normal;
+}
+
+/* line 48, app/assets/stylesheets/reset.scss */
+ol, ul {
+  list-style: none;
+}
+
+/* line 52, app/assets/stylesheets/reset.scss */
+caption, th {
+  text-align: left;
+}
+
+/* line 56, app/assets/stylesheets/reset.scss */
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-weight: normal;
+}
+
+/* line 62, app/assets/stylesheets/reset.scss */
+q:before, q:after {
+  content: '';
+}
+
+/* line 67, app/assets/stylesheets/reset.scss */
+abbr, acronym {
+  border: 0;
+  font-variant: normal;
+}
+
+/* to preserve line-height and selector appearance */
+/* line 74, app/assets/stylesheets/reset.scss */
+sup {
+  vertical-align: text-top;
+}
+
+/* line 78, app/assets/stylesheets/reset.scss */
+sub {
+  vertical-align: text-bottom;
+}
+
+/* line 82, app/assets/stylesheets/reset.scss */
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+/*to enable resizing for IE*/
+/* line 90, app/assets/stylesheets/reset.scss */
+input, textarea, select {
+  font-size: 100%;
+}
+
+/*because legend doesn't inherit in IE */
+/* line 96, app/assets/stylesheets/reset.scss */
+legend {
+  color: #000;
+}
+
+/* YUI CSS Detection Stamp */
+/* line 102, app/assets/stylesheets/reset.scss */
+#yui3-css-stamp.cssreset {
+  display: none;
+}

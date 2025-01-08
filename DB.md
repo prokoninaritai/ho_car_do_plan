@@ -35,17 +35,19 @@
 - has_many :time_managements, through: :destinations
 
 ## destinations
-|Column         |Type      |Options                        |
-|---------------|----------|-------------------------------|
-|itinerary      |references|null: false, foreign_key: true |
-|visit_date     |date      |null: false                    |
-|arrival_order  |integer   |null: false                    |
-|departure      |string    |null: false                    |
-|destination    |string    |null: false                    |
-|api_travel_time|integer   |                               |
-|distance       |decimal   |                               |
-|latitude       |decimal   |                               |
-|longitude      |decimal   |                               |
+|Column                |Type      |Options                        |
+|----------------------|----------|-------------------------------|
+|itinerary             |references|null: false, foreign_key: true |
+|visit_date            |date      |null: false                    |
+|arrival_order         |integer   |null: false                    |
+|departure             |string    |null: false                    |
+|destination           |string    |null: false                    |
+|api_travel_time       |integer   |                               |
+|distance              |decimal   |                               |
+|departure_latitude    |decimal   |                               |
+|departure_longitude   |decimal   |                               |
+|destination_latitude  |decimal   |                               |
+|destination_longitude |decimal   |                               |
 
 ### Association
 - belongs_to :itinerary

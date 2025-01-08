@@ -1,7 +1,7 @@
 <%= form_with(model: itinerary, url: itineraries_path, local: true, id: "itinerary-form") do |form| %>
   <div>
     <%= form.label :title, "タイトル" %>
-    <%= form.text_field :title, placeholder: "例: 夏の旅行", class: "form-control" %>
+    <%= form.text_field :title, placeholder: "例: 道南スタンプラリー", class: "form-control" %>
   </div>
   <div>
     <%= form.label :start_date, "開始日" %>

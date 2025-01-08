@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_03_062822) do
   create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date"
@@ -33,6 +33,23 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["station_id"], name: "index_closed_days_on_station_id"
+  end
+
+  create_table "destinations", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "itinerary_id", null: false
+    t.date "visit_date", null: false
+    t.integer "arrival_order", null: false
+    t.string "departure", null: false
+    t.string "destination", null: false
+    t.string "api_travel_time"
+    t.decimal "distance", precision: 10, scale: 2
+    t.decimal "departure_latitude", precision: 10, scale: 6
+    t.decimal "departure_longitude", precision: 10, scale: 6
+    t.decimal "destination_latitude", precision: 10, scale: 6
+    t.decimal "destination_longitude", precision: 10, scale: 6
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["itinerary_id"], name: "index_destinations_on_itinerary_id"
   end
 
   create_table "itineraries", charset: "utf8mb3", force: :cascade do |t|
@@ -81,6 +98,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_12_28_095418) do
 
   add_foreign_key "business_hours", "stations"
   add_foreign_key "closed_days", "stations"
+  add_foreign_key "destinations", "itineraries"
   add_foreign_key "itineraries", "users"
   add_foreign_key "stamp_available_hours", "stations"
 end

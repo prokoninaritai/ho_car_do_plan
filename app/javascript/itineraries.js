@@ -9,6 +9,7 @@ document.addEventListener("turbo:load", () => {
     modal.style.display = "block";
   });
 
+
   // モーダルを閉じる
   closeModalButton.addEventListener("click", () => {
     modal.style.display = "none";
@@ -24,9 +25,10 @@ document.addEventListener("turbo:load", () => {
   // フォーム送信時の処理
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-
+  
     const formData = new FormData(form);
 
+    // フォーム送信
     fetch("/itineraries", {
       method: "POST",
       headers: {
@@ -34,17 +36,17 @@ document.addEventListener("turbo:load", () => {
       },
       body: formData,
     })
-      .then((response) => response.json())
+      .then((response) => response.json()) // レスポンスをJSONとしてパース
       .then((data) => {
+        console.log(data); // レスポンスデータを確認
         if (data.success) {
-          alert("日程が登録されました！");
-          modal.style.display = "none";
+          window.location.href = `/itineraries/${data.itinerary_id}/destinations/new?current_day=1`;
         } else {
           alert(data.errors.join(", "));
         }
       })
       .catch((error) => {
-        console.error("Error:", error);
-      });
+        console.error("Error:", error); // エラー内容を確認
+    });
   });
 });

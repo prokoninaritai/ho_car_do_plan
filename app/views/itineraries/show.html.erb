@@ -1,0 +1,14 @@
+<h1><%= @itinerary.title %></h1>
+
+<h2>全体の旅程</h2>
+<% @destinations_by_date.each do |date, destinations| %>
+  <h3><%= date %> の経路</h3>
+  <ul>
+    <% destinations.each do |destination| %>
+      <li>
+        <%= destination.departure %> → <%= destination.destination %>
+        （距離: <%= destination.distance %> km, 移動時間: <%= destination.api_travel_time %> 分）
+      </li>
+    <% end %>
+  </ul>
+<% end %>
