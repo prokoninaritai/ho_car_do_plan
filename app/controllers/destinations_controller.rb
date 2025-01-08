@@ -10,7 +10,7 @@ class DestinationsController < ApplicationController
     current_date = @itinerary.start_date + (current_day - 1).days
 
     @day_number = (current_date - @itinerary.start_date).to_i + 1 # 開始日が1日目
-    @display_date = current_date.strftime("%Y年%-m月%-d日")
+    @display_date = current_date.strftime('%Y年%-m月%-d日')
     @day_label = "#{@day_number}日目"
   end
 
@@ -19,24 +19,25 @@ class DestinationsController < ApplicationController
 
     ActiveRecord::Base.transaction do
       params[:destinations].each do |destination_data|
-        next if destination_data[:destination].nil? # destination が nil の場合はスキップ  
+        next if destination_data[:destination].nil? # destination が nil の場合はスキップ
+
         @itinerary.destinations.create!(destination_data.permit(
-          :visit_date,
-          :arrival_order, 
-          :departure, 
-          :departure_latitude, 
-          :departure_longitude, 
-          :destination, 
-          :destination_latitude, 
-          :destination_longitude, 
-          :distance, 
-          :api_travel_time
-        ))
+                                          :visit_date,
+                                          :arrival_order,
+                                          :departure,
+                                          :departure_latitude,
+                                          :departure_longitude,
+                                          :destination,
+                                          :destination_latitude,
+                                          :destination_longitude,
+                                          :distance,
+                                          :api_travel_time
+                                        ))
       end
     end
 
     render json: { message: '保存成功' }, status: :ok
-  rescue => e
+  rescue StandardError => e
     Rails.logger.error "保存エラー: #{e.message}"
     render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
   end
