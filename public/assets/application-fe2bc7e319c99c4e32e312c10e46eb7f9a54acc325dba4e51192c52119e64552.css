@@ -1,0 +1,484 @@
+@charset "UTF-8";
+/* 背景画像 */
+/* line 3, app/assets/stylesheets/static_pages/home.scss */
+body.top-page {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-size: cover;
+  background-image: url(/assets/top_background-db6b913ca5ab7b2b1f7b34a94c33f25ae7d8803fd4faf8dd1371d5eb1c7c8fe0.jpg);
+  /* 画面全体を覆う */
+  background-position: center;
+  /* 中央に配置 */
+  background-repeat: no-repeat;
+  height: 100vh;
+  /* 画面全体を覆う */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* コンテンツのオーバーレイ */
+/* line 25, app/assets/stylesheets/static_pages/home.scss */
+.home_overlay {
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 半透明の黒背景を追加 */
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ヘッダー */
+/* line 40, app/assets/stylesheets/static_pages/home.scss */
+.home_title {
+  margin-bottom: 20px;
+}
+
+/* line 43, app/assets/stylesheets/static_pages/home.scss */
+.home_title h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* line 48, app/assets/stylesheets/static_pages/home.scss */
+.home_title h1 span {
+  color: #4CAF50;
+  /* "CarDo!"部分を緑色に */
+}
+
+/* line 55, app/assets/stylesheets/static_pages/home.scss */
+.home_title p {
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+/* ボタン */
+/* line 64, app/assets/stylesheets/static_pages/home.scss */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  /* ボタン間の間隔 */
+  margin-top: 20px;
+}
+
+/* line 72, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #4CAF50;
+  /* ボタンの背景色 */
+  border-radius: 5px;
+  /* 角丸 */
+  transition: background-color 0.3s ease;
+}
+
+/* line 84, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button:hover {
+  background-color: #45a049;
+  /* ホバー時の色 */
+}
+
+/* line 89, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button.sign-up {
+  background-color: #2196F3;
+  /* 新規登録ボタンの色 */
+}
+
+/* line 93, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button.sign-up:hover {
+  background-color: #1e88e5;
+  /* ホバー時の色 */
+}
+
+/* line 97, app/assets/stylesheets/static_pages/home.scss */
+.footer_home {
+  text-align: center;
+}
+
+/* 全体のリセット */
+/* line 3, app/assets/stylesheets/devise/registrations.scss */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 75vh;
+  font-family: Arial, sans-serif;
+}
+
+/* 上部と下部の緑色バナー */
+/* line 12, app/assets/stylesheets/devise/registrations.scss */
+.top-banner {
+  background-color: #4CAF50;
+  /* 緑色 */
+  height: 10vh;
+  width: 100%;
+}
+
+/* line 20, app/assets/stylesheets/devise/registrations.scss */
+.bottom-banner {
+  background-color: #4CAF50;
+  /* 緑色 */
+  height: 15vh;
+  width: 100%;
+  margin-top: 100px;
+}
+
+/* フォームコンテナ */
+/* line 31, app/assets/stylesheets/devise/registrations.scss */
+.form-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  /* 中央に配置 */
+  position: relative;
+  top: 20;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+/* line 46, app/assets/stylesheets/devise/registrations.scss */
+.form-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 入力フィールド */
+/* line 55, app/assets/stylesheets/devise/registrations.scss */
+.form-group {
+  text-align: left;
+  margin: 5% 0;
+}
+
+/* line 59, app/assets/stylesheets/devise/registrations.scss */
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* line 66, app/assets/stylesheets/devise/registrations.scss */
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* 登録ボタン */
+/* line 78, app/assets/stylesheets/devise/registrations.scss */
+.submit-button {
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 5% 0;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+/* line 92, app/assets/stylesheets/devise/registrations.scss */
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+/* 全体のリセット */
+/* line 3, app/assets/stylesheets/maps/dashboard.scss */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* ヘッダー */
+/* line 12, app/assets/stylesheets/maps/dashboard.scss */
+.header {
+  background-color: #4CAF50;
+  /* 緑色 */
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* line 21, app/assets/stylesheets/maps/dashboard.scss */
+.logout-button {
+  background-color: #f44336;
+  /* 赤色 */
+  color: #fff;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* インストラクション */
+/* line 33, app/assets/stylesheets/maps/dashboard.scss */
+.instructions {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  margin: 10px;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.5;
+  height: 50px;
+}
+
+/* 地図エリア */
+/* line 46, app/assets/stylesheets/maps/dashboard.scss */
+#map1 {
+  height: 75vh;
+  width: 100%;
+}
+
+/* フッター */
+/* line 53, app/assets/stylesheets/maps/dashboard.scss */
+.footer-container {
+  background-color: #4CAF50;
+  /* フッターの背景色 */
+  height: 60px;
+  display: flex;
+  justify-content: space-around;
+  /* ボタンを均等に配置 */
+  position: relative;
+  /* relativeを設定 */
+  overflow: visible;
+  /* 円がはみ出しても表示されるように */
+  padding: 10px 0;
+  /* 上下の余白調整 */
+}
+
+/* line 63, app/assets/stylesheets/maps/dashboard.scss */
+.footer-link {
+  width: 100px;
+  /* 円の幅 */
+  height: 100px;
+  /* 円の高さ */
+  background-color: white;
+  /* ボタンの背景色 */
+  border-radius: 50%;
+  /* 円形にする */
+  border: 2px solid #4CAF50;
+  /* 緑の淵 */
+  transform: translateY(-50%);
+  /* 上に半分はみ出させる */
+  z-index: 10;
+  /* 地図の上に表示 */
+  display: flex;
+  /* 文字中央揃え用 */
+  align-items: center;
+  /* 文字縦方向中央揃え */
+  justify-content: center;
+  /* 文字横方向中央揃え */
+  color: #28a745;
+  /* ボタンの文字色 */
+  text-decoration: none;
+  /* リンクの下線を消す */
+  font-size: 16px;
+  /* 文字サイズ */
+  font-weight: bold;
+  /* 文字を太字に */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* ボタンの影 */
+  transition: transform 0.3s;
+  /* ホバー時のアニメーション */
+  transform: translateY(-50%);
+  /* 初期位置を設定 */
+  transform-origin: center center;
+  /* 拡大の基準をボタンの下側中央に設定 */
+  padding: 5px;
+  /* 文字の周りに余白を追加 */
+}
+
+/* line 85, app/assets/stylesheets/maps/dashboard.scss */
+.footer-link:hover {
+  transform: translateY(-50%) scale(1.1);
+  /* ホバー時もtranslateYを維持しつつ拡大 */
+}
+
+/* モーダルの背景 */
+/* line 90, app/assets/stylesheets/maps/dashboard.scss */
+.custom-modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+/* モーダルの内容 */
+/* line 102, app/assets/stylesheets/maps/dashboard.scss */
+.custom-modal-content {
+  position: relative;
+  margin: 10% auto;
+  padding: 20px;
+  background: white;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 5px;
+}
+
+/* 閉じるボタン */
+/* line 113, app/assets/stylesheets/maps/dashboard.scss */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* line 3, app/assets/stylesheets/destinations/new.scss */
+.map-container {
+  position: relative;
+  /* 子要素を地図上に配置可能にする */
+}
+
+/* line 7, app/assets/stylesheets/destinations/new.scss */
+#map {
+  height: 75vh;
+  width: 100%;
+  z-index: 1;
+  /* 地図を背景にする */
+}
+
+/* line 13, app/assets/stylesheets/destinations/new.scss */
+.form-overlay {
+  position: absolute;
+  top: 190px;
+  /* 地図上部からの距離 */
+  left: -82px;
+  /* 地図左端からの距離 */
+  z-index: 10;
+  /* 地図の上に表示 */
+  padding: 15px;
+  width: 600px;
+  /* フォームの幅 */
+}
+
+/* line 22, app/assets/stylesheets/destinations/new.scss */
+.form-overlay label {
+  font-weight: bold;
+}
+
+/* line 26, app/assets/stylesheets/destinations/new.scss */
+.form-group {
+  margin-bottom: 15px;
+}
+
+/* line 30, app/assets/stylesheets/destinations/new.scss */
+.form-overlay select,
+.form-overlay input {
+  margin-bottom: 10px;
+  width: 100%;
+}
+
+/* line 36, app/assets/stylesheets/destinations/new.scss */
+.btn-primary {
+  background-color: #007bff;
+  border-color: #007bff;
+}
+
+/* line 41, app/assets/stylesheets/destinations/new.scss */
+.btn-secondary {
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+
+/* line 1, app/assets/stylesheets/itineraries.scss */
+.error-container {
+  color: red;
+  /* エラーメッセージの文字色 */
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid red;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  /* 薄い赤背景 */
+}
+
+/* line 11, app/assets/stylesheets/itineraries.scss */
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* モーダルの影 */
+  width: 400px;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* line 21, app/assets/stylesheets/itineraries.scss */
+form div {
+  margin-bottom: 15px;
+  /* 各入力フィールドの下に余白を追加 */
+}
+
+/* line 25, app/assets/stylesheets/itineraries.scss */
+form label {
+  display: block;
+  font-weight: bold;
+  /* ラベルを太字に */
+  margin-bottom: 5px;
+}
+
+/* line 31, app/assets/stylesheets/itineraries.scss */
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* line 40, app/assets/stylesheets/itineraries.scss */
+.btn {
+  width: 100%;
+  /* ボタンをフォーム幅に合わせる */
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* line 53, app/assets/stylesheets/itineraries.scss */
+.btn:hover {
+  background-color: #0056b3;
+  /* ホバー時のボタン色 */
+}
