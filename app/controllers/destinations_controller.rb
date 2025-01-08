@@ -15,23 +15,30 @@ class DestinationsController < ApplicationController
   end
 
   def create
-    @itinerary = Itinerary.find(params[:itinerary_id])
-    current_day = params[:current_day].present? ? params[:current_day].to_i : 1
-    current_date = @itinerary.start_date + (current_day - 1).days
-    @day_number = (current_date - @itinerary.start_date).to_i + 1
-  
-    @destination = @itinerary.destinations.build(destination_params)
-    if @destination.save
-      next_day = params[:current_day].to_i + 1
-      if @itinerary.start_date + (next_day - 1).days <= @itinerary.end_date
-        redirect_to new_itinerary_destination_path(@itinerary, current_day: next_day), notice: "しおりが作成されました！次の日に進みます。"
-      else
-        redirect_to itinerary_path(@itinerary), notice: "全てのしおりが完成しました！"
+    Rails.logger.debug "Received params: #{params.inspect}"
+
+    ActiveRecord::Base.transaction do
+      params[:destinations].each do |destination_data|
+        next if destination_data[:destination].nil? # destination が nil の場合はスキップ  
+        @itinerary.destinations.create!(destination_data.permit(
+          :visit_date,
+          :arrival_order, 
+          :departure, 
+          :departure_latitude, 
+          :departure_longitude, 
+          :destination, 
+          :destination_latitude, 
+          :destination_longitude, 
+          :distance, 
+          :api_travel_time
+        ))
       end
-    else
-      @stations = Station.all
-      render :new, status: :unprocessable_entity
     end
+
+    render json: { message: '保存成功' }, status: :ok
+  rescue => e
+    Rails.logger.error "保存エラー: #{e.message}"
+    render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
   end
 
   private
@@ -41,6 +48,8 @@ class DestinationsController < ApplicationController
   end
 
   def destination_params
-    params.require(:destination).permit(:departure, :manual_address, :visit_date)
+    params.require(:destinations).map do |destination|
+      destination.permit(:arrival_order, :latitude, :longitude, :departure, :destination)
+    end
   end
 end

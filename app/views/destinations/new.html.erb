@@ -13,6 +13,7 @@
 
   <!-- 地図の表示領域 -->
   <div class="map-container">
+    <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
     <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
     <div id="map" ></div>
   </div>
@@ -21,17 +22,6 @@
 <!-- フッター -->
 <footer class="footer">
   <div class="footer-container">
-    <!-- モーダルを開くボタン -->
-    <button id="open-itinerary-modal" class="footer-link">日程を<br>作成する</button>
-
-    <!-- 前の日へ（1日目では非表示） -->
-    <% if @day_number > 1 %>
-      <%= link_to "前の日へ", new_itinerary_destination_path(@itinerary, current_day: @day_number - 1), class: "footer-link" %>
-    <% end %>
-
-    <!-- 次の日へ（end_date を超える場合は非表示） -->
-    <% if (@itinerary.start_date + @day_number.days - 1) < @itinerary.end_date %>
-      <%= link_to "次の日へ", new_itinerary_destination_path(@itinerary, current_day: @day_number + 1), class: "footer-link" %>
-    <% end %>
+    <button id="save-route-btn" class="footer-link">しおりを作成する</button>
   </div>
 </footer>

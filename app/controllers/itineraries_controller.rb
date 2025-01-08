@@ -5,7 +5,6 @@ class ItinerariesController < ApplicationController
     if @itinerary.save
       render json: { success: true, itinerary_id: @itinerary.id }
     else
-      # 登録失敗時にエラーメッセージ付きでフォームを再表示
       render json: { success: false, errors: @itinerary.errors.full_messages }, status: :unprocessable_entity
     end
   end

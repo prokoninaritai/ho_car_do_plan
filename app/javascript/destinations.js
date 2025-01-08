@@ -1,3 +1,12 @@
+// --- ページロード時に地図を初期化 ---
+document.addEventListener('turbo:load', () => {
+  if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
+    initMap();
+  }
+  const saveButton = document.getElementById('save-route-btn');
+  saveButton.addEventListener('click', saveRoute);
+});
+
 // --- 変数の宣言 ---
 let currentOrder = 1; // 現在の順番をトラッキング
 let routeMarkers = []; // 経路に含まれるマーカー
@@ -5,13 +14,8 @@ let routeRenderers = []; // 各経路を描画する DirectionsRenderer を保�
 let directionsService, directionsRenderer;
 const markers = []; // すべてのマーカーを格納
 const labeledMarkers = new Map(); // ラベルを設定したマーカーを追跡
-
-// --- ページロード時に地図を初期化 ---
-document.addEventListener('turbo:load', () => {
-  if (typeof google !== "undefined" && typeof google.maps !== "undefined") {
-    initMap();
-  }
-});
+const itineraryElement = document.getElementById('itinerary-data');
+const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得
 
 // --- 地図を初期化 ---
 function initMap() {
@@ -37,6 +41,7 @@ function initMap() {
     const marker = new google.maps.Marker({
       position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
       map: map,
+      title: station.name, // 道の駅名をマーカーのタイトルに設定
       icon: {
         url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png", // デフォルトのマーカーURL
         scaledSize: new google.maps.Size(60, 60), // サイズを指定
@@ -167,3 +172,93 @@ function resetMarkers() {
   clearRoutes(); // 経路をリセット
 }
 
+function saveRoute() {
+  const currentDay = 1; // 例: デフォルトで1日目を設定
+  const routeData = [];
+  for (let i = 0; i < routeMarkers.length - 1; i++) {
+    const startMarker = routeMarkers[i];
+    const endMarker = routeMarkers[i + 1];
+
+    const startDate = new Date("2025-01-11"); // 旅程開始日
+    const currentDate = new Date(startDate);
+    currentDate.setDate(startDate.getDate() + (currentDay - 1));
+    const visitDate = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD形式
+    
+    // Google Maps API から距離と移動時間を取得
+    const request = {
+      origin: startMarker.getPosition(),
+      destination: endMarker.getPosition(),
+      travelMode: 'DRIVING',
+    };
+
+    directionsService.route(request, (result, status) => {
+      if (status === 'OK') {
+        const leg = result.routes[0].legs[0];
+
+        // データを整理して格納
+        routeData.push({
+          visit_date: visitDate, 
+          arrival_order: i + 1,
+          departure: startMarker.getTitle(),
+          departure_latitude: startMarker.getPosition().lat(),
+          departure_longitude: startMarker.getPosition().lng(),
+          destination: endMarker.getTitle(),
+          destination_latitude: endMarker.getPosition().lat(),
+          destination_longitude: endMarker.getPosition().lng(),
+          distance: leg.distance.value, // 距離（メートル単位）
+          api_travel_time: leg.duration.value, // 移動時間（秒単位）
+        });
+
+         // 最後のマーカーに対するデータを追加
+         if (i === routeMarkers.length - 2) {
+          routeData.push({
+            visit_date: visitDate,
+            arrival_order: i + 2,
+            departure: endMarker.getTitle(),
+            departure_latitude: endMarker.getPosition().lat(),
+            departure_longitude: endMarker.getPosition().lng(),
+            destination: null,
+            destination_latitude: null,
+            destination_longitude: null,
+            distance: null,
+            api_travel_time: null,
+          });
+        }
+
+        // 最後のマーカーまで処理したら保存を送信
+        if (i === routeMarkers.length - 2) {
+          console.log("送信データ:", routeData);
+          postRouteData(routeData);
+        }
+      } else {
+        console.error("Google Maps API から経路を取得できませんでした:", status);
+      }
+    });
+  }
+}
+
+// サーバーにデータを送信
+function postRouteData(data) {
+  fetch(`/itineraries/${itineraryId}/destinations`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+    },
+    body: JSON.stringify({ destinations: data }),
+  })
+  .then(response => {
+    if (response.ok) {
+      return response.json();
+    } else {
+      throw new Error('保存に失敗しました');
+    }
+  })
+  .then(data => {
+    console.log('保存成功:', data);
+    // 必要なら次のページにリダイレクト
+  })
+  .catch(error => {
+    console.error('エラー:', error);
+  });
+}
