@@ -22,17 +22,17 @@ class DestinationsController < ApplicationController
         next if destination_data[:destination].nil? # destination が nil の場合はスキップ
 
         @itinerary.destinations.create!(destination_data.permit(
-                                          :visit_date,
-                                          :arrival_order,
-                                          :departure,
-                                          :departure_latitude,
-                                          :departure_longitude,
-                                          :destination,
-                                          :destination_latitude,
-                                          :destination_longitude,
-                                          :distance,
-                                          :api_travel_time
-                                        ))
+          :visit_date,
+          :arrival_order,
+          :departure,
+          :departure_latitude,
+          :departure_longitude,
+          :destination,
+          :destination_latitude,
+          :destination_longitude,
+          :distance,
+          :api_travel_time
+        ))
       end
     end
 
@@ -40,6 +40,12 @@ class DestinationsController < ApplicationController
   rescue StandardError => e
     Rails.logger.error "保存エラー: #{e.message}"
     render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
+  end
+
+  def show
+    @itinerary = Itinerary.find(params[:itinerary_id])
+    @destinations = @itinerary.destinations.includes(:time_management)
+    @day_label = "#{(@itinerary.start_date + (params[:current_day].to_i - 1).days).strftime('%m/%d')}の日程"
   end
 
   private

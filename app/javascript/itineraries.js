@@ -9,7 +9,6 @@ document.addEventListener("turbo:load", () => {
     modal.style.display = "block";
   });
 
-
   // モーダルを閉じる
   closeModalButton.addEventListener("click", () => {
     modal.style.display = "none";

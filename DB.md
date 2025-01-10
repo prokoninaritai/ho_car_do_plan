@@ -58,9 +58,9 @@
 |-------------------|----------|-------------------------------|
 |destination        |references|null: false, foreign_key: true |
 |departure_time     |time      |null: false                    |
-|custom_travel_time |integer   |                               | 
+|custom_travel_time |integer   |null: false                    | 
 |arrival_time       |time      |null: false                    | 
-|stay_duration      |integer   |                               |
+|stay_duration      |integer   |null: false                    |
 
 ## Association
 - belongs_to :destination
