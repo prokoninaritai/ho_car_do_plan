@@ -15,7 +15,7 @@ let directionsService, directionsRenderer;
 const markers = []; // すべてのマーカーを格納
 const labeledMarkers = new Map(); // ラベルを設定したマーカーを追跡
 const itineraryElement = document.getElementById('itinerary-data');
-const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得
+const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得 
 
 // --- 地図を初期化 ---
 function initMap() {

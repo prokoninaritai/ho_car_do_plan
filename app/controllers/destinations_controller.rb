@@ -19,20 +19,23 @@ class DestinationsController < ApplicationController
 
     ActiveRecord::Base.transaction do
       params[:destinations].each do |destination_data|
+        travel_time_in_seconds = destination_data[:api_travel_time].to_i
+        formatted_time = format_time(travel_time_in_seconds)
         next if destination_data[:destination].nil? # destination が nil の場合はスキップ
 
+        destination_data[:api_travel_time] = formatted_time
         @itinerary.destinations.create!(destination_data.permit(
-                                          :visit_date,
-                                          :arrival_order,
-                                          :departure,
-                                          :departure_latitude,
-                                          :departure_longitude,
-                                          :destination,
-                                          :destination_latitude,
-                                          :destination_longitude,
-                                          :distance,
-                                          :api_travel_time
-                                        ))
+          :visit_date,
+          :arrival_order,
+          :departure,
+          :departure_latitude,
+          :departure_longitude,
+          :destination,
+          :destination_latitude,
+          :destination_longitude,
+          :distance,
+          :api_travel_time
+        ))
       end
     end
 
@@ -40,6 +43,12 @@ class DestinationsController < ApplicationController
   rescue StandardError => e
     Rails.logger.error "保存エラー: #{e.message}"
     render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
+  end
+
+  def show
+    @itinerary = Itinerary.find(params[:itinerary_id])
+    @destinations = @itinerary.destinations.includes(:time_management)
+    @day_label = "#{(@itinerary.start_date + (params[:current_day].to_i - 1).days).strftime('%m/%d')}の日程"
   end
 
   private
@@ -52,5 +61,12 @@ class DestinationsController < ApplicationController
     params.require(:destinations).map do |destination|
       destination.permit(:arrival_order, :latitude, :longitude, :departure, :destination)
     end
+  end
+
+  def format_time(seconds)
+    minutes = seconds / 60
+    hours = minutes / 60
+    formatted_time = format("%02d:%02d", hours, minutes % 60)
+    formatted_time
   end
 end
