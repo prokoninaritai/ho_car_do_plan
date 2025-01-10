@@ -19,8 +19,11 @@ class DestinationsController < ApplicationController
 
     ActiveRecord::Base.transaction do
       params[:destinations].each do |destination_data|
+        travel_time_in_seconds = destination_data[:api_travel_time].to_i
+        formatted_time = format_time(travel_time_in_seconds)
         next if destination_data[:destination].nil? # destination が nil の場合はスキップ
 
+        destination_data[:api_travel_time] = formatted_time
         @itinerary.destinations.create!(destination_data.permit(
           :visit_date,
           :arrival_order,
@@ -58,5 +61,12 @@ class DestinationsController < ApplicationController
     params.require(:destinations).map do |destination|
       destination.permit(:arrival_order, :latitude, :longitude, :departure, :destination)
     end
+  end
+
+  def format_time(seconds)
+    minutes = seconds / 60
+    hours = minutes / 60
+    formatted_time = format("%02d:%02d", hours, minutes % 60)
+    formatted_time
   end
 end
