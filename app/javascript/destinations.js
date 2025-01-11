@@ -58,6 +58,9 @@ function initMap() {
   });
 }
 
+window.initMap = initMap;
+
+
 // --- 駅名ラベルを作成 ---
 function createStationLabel(map, marker, name) {
   const labelDiv = document.createElement("div");
@@ -256,9 +259,12 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
-    // 必要なら次のページにリダイレクト
+    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
+    window.location.href = nextUrl;
   })
+  
   .catch(error => {
     console.error('エラー:', error);
+    alert('データの保存中にエラーが発生しました。もう一度お試しください。');
   });
 }

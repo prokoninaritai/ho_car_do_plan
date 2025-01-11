@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_03_062822) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_10_203614) do
   create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date"
@@ -83,6 +83,17 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_03_062822) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "time_managements", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "destination_id", null: false
+    t.time "departure_time", null: false
+    t.integer "custom_travel_time", null: false
+    t.time "arrival_time", null: false
+    t.integer "stay_duration", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["destination_id"], name: "index_time_managements_on_destination_id"
+  end
+
   create_table "users", charset: "utf8mb3", force: :cascade do |t|
     t.string "nickname", null: false
     t.string "email", default: "", null: false
@@ -101,4 +112,5 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_03_062822) do
   add_foreign_key "destinations", "itineraries"
   add_foreign_key "itineraries", "users"
   add_foreign_key "stamp_available_hours", "stations"
+  add_foreign_key "time_managements", "destinations"
 end

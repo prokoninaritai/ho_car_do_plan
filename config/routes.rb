@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
   devise_for :users
-  resources :itineraries, only: :create do
-    resources :destinations, only: [:new, :create]
+  resources :itineraries, only: [:index, :create, :show] do
+    member do
+      get 'day_schedule'
+    end
+    resources :destinations, only: [:new, :create] 
   end
   
   

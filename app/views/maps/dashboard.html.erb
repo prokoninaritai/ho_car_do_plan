@@ -25,6 +25,12 @@
       </div>
     </div>
     <div id="map1"></div>
+     <%= javascript_importmap_tags %>
+    <!-- Google Maps API -->
+    <script 
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" 
+      defer>
+    </script>
 
     <!-- 日程を作成するモーダル構造 -->
     <div id="itinerary-modal" class="custom-modal">

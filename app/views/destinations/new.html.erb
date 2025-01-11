@@ -16,12 +16,21 @@
     <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
     <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
     <div id="map" ></div>
+     <%= javascript_importmap_tags %>
+
+    <!-- Google Maps API -->
+    <script
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" ,
+
+      defer>
+    </script>
   </div>
 </main>
 
 <!-- フッター -->
 <footer class="footer">
   <div class="footer-container">
-    <button id="save-route-btn" class="footer-link">しおりを作成する</button>
+     <button id="save-route-btn" class="footer-link">しおりを作成する</button>
+  </div>
   </div>
 </footer>

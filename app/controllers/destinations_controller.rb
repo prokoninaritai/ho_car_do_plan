@@ -36,17 +36,9 @@ class DestinationsController < ApplicationController
       end
     end
 
-    render json: { message: '保存成功' }, status: :ok
-  rescue StandardError => e
-    Rails.logger.error "保存エラー: #{e.message}"
-    render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
-  end
-
-  def show
-    @itinerary = Itinerary.find(params[:itinerary_id])
-    @destinations = @itinerary.destinations.includes(:time_management)
-    @day_label = "#{(@itinerary.start_date + (params[:current_day].to_i - 1).days).strftime('%m/%d')}の日程"
-  end
+    # 保存後、1日目のスケジュールページにリダイレクト
+    render json: { message: '保存成功', destination_id: @itinerary.destinations.last.id }, status: :ok
+end
 
   private
 
