@@ -1,5 +1,6 @@
 class Destination < ApplicationRecord
   belongs_to :itinerary
+  belongs_to :starting_point, optional: true
   has_one :time_management
 
   validates :visit_date, presence: true

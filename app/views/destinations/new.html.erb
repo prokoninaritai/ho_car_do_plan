@@ -2,7 +2,9 @@
 
 <!-- ヘッダー -->
   <header class="header">
-    <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
+    <div class="welcome">
+      <h2><%= @itinerary.title %> - <%= @display_date %>（<%= @day_label %>)</h2>
+    </div>
     <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
   </header>
 
@@ -10,10 +12,11 @@
 <div class="main-contents">
   <!-- インストラクション -->
   <div class="instructions">
-    タイトル：<%= @itinerary.title %><br>
-    <%= @display_date %>（<%= @day_label %>)
+    出発地を登録したら<br>
+    経路を登録してしおりを作成しましょう
   </div>
 
+<div class="map-container">
   <!-- 地図の表示領域 -->
   <div class="map-container">
     <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
@@ -25,12 +28,22 @@
       defer>
     </script>
   </div>
+
+  <!-- 出発地登録領域 -->
+    <div class="starting-point-form">
+      <label for="starting-point">出発地点を選ぶ:</label>
+      <input type="text" id="starting-point" placeholder="例: 苫小牧フェリー乗り場">
+      <button type="button" id="search-location">現在地を選ぶ</button>
+      <button type="button" id="select-michi-no-eki">道の駅から選ぶ</button>
+      <button type="button" id="register-starting-point">出発地を登録する</button>
+    </div>
+  </div>
 </main>
 
 <!-- フッター -->
 <footer class="footer">
   <div class="footer-container">
-     <button id="save-route-btn" class="footer-link">しおりを作成する</button>
+     <button id="save-route-btn" class="footer-link">しおりを<br>作成する</button>
   </div>
   </div>
 </footer>

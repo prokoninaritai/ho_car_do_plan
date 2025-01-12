@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_10_203614) do
+ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
   create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "station_id", null: false
     t.string "start_date"
@@ -71,6 +71,16 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_10_203614) do
     t.index ["station_id"], name: "index_stamp_available_hours_on_station_id"
   end
 
+  create_table "starting_points", charset: "utf8mb3", force: :cascade do |t|
+    t.bigint "itinerary_id", null: false
+    t.string "encrypted_starting_point", null: false
+    t.decimal "encrypted_starting_point_latitude", precision: 10, scale: 6, null: false
+    t.decimal "encrypted_point_longitude", precision: 10, scale: 6, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["itinerary_id"], name: "index_starting_points_on_itinerary_id"
+  end
+
   create_table "stations", charset: "utf8mb3", force: :cascade do |t|
     t.string "region", null: false
     t.integer "station_number", null: false
@@ -112,5 +122,6 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_10_203614) do
   add_foreign_key "destinations", "itineraries"
   add_foreign_key "itineraries", "users"
   add_foreign_key "stamp_available_hours", "stations"
+  add_foreign_key "starting_points", "itineraries"
   add_foreign_key "time_managements", "destinations"
 end
