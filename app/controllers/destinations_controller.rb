@@ -40,6 +40,20 @@ class DestinationsController < ApplicationController
     render json: { message: '保存成功', destination_id: @itinerary.destinations.last.id }, status: :ok
 end
 
+  def show
+    @itinerary = Itinerary.find(params[:itinerary_id])
+    @destinations = @itinerary.destinations.includes(:time_management)
+    @day_label = "#{(@itinerary.start_date + (params[:current_day].to_i - 1).days).strftime('%m/%d')}の日程"
+  end
+
+def arrival_time
+  return nil if departure_time.nil? || api_travel_time.nil?
+
+  # api_travel_timeを"HH:MM"形式から秒に変換
+  travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
+  departure_time + travel_seconds
+end
+
   private
 
   def set_itinerary

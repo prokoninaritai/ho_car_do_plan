@@ -1,59 +1,74 @@
-<div class="schedule-container">
-  <h2 class="header">〇月〇日の日程（1日目）</h2>
+<%= javascript_importmap_tags %>
 
-<!-- 出発地ブロック -->
-<div class="destination-block time-block departure-block">
-  <div class="left-container">
-    <div class="left-section">
-      <label>出発地:</label>
-      <input type="text" value="自宅" readonly>
+<!-- ヘッダー -->
+  <header class="header">
+    <div class="welcome">
+        <h2><%= @itinerary.title %> - <%= @visit_date.strftime('%Y年%m月%d日') %>（<%= params[:current_day] %>日目）</h2>
+      </div>
     </div>
-    <div class="left-section">
-      <label>出発時間:</label>
-      <input type="time">
+      <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
     </div>
-  </div>
-</div>
+  </header>
 
-<!-- 移動時間ブロック -->
-<div class="destination-block time-block travel-time-block">
-  <div class="left-container">
-    <div class="left-section">
-      <label>移動時間:</label>
-      <input type="text" placeholder="例: 0:30">
-    </div>
-  </div>
-</div>
-
-<!-- 目的地ブロック -->
-<div class="destination-block destination-details-block">
-  <div class="left-container">
-    <div class="left-section">
-      <label>到着予定時間:</label>
-      <input type="text" placeholder="例: 0:30">
-    </div>
-    <div class="left-section">
-      <label>滞在予定時間:</label>
-      <input type="text" placeholder="例: 1:00">
-    </div>
-    <div class="left-section">
-      <label>出発予定時間:</label>
-      <input type="time">
+<main>
+<div class="itinerary-contents">
+  <!-- 出発地ブロック -->
+  <div class="destination-block time-block departure-block">
+    <div class="left-container">
+      <div class="left-section">
+        <label>出発地:</label>
+        <input type="text" value="自宅" readonly>
+      </div>
+      <div class="left-section">
+        <label>出発時間:</label>
+        <input type="time" name="departure_time" value="<%= @destinations.first&.departure_time&.strftime('%H:%M') %>" required>
+      </div>
     </div>
   </div>
 
-  <div class="right-section">
-    <h3>目的地①: なないろ・ななえ</h3>
-    <p>休館日: なし</p>
-    <p>営業時間: 9:00 - 18:00</p>
-    <p>スタンプ押印時間: 9:00 - 18:00</p>
+  <!-- 移動時間ブロック -->
+  <div class="destination-block time-block travel-time-block">
+    <div class="left-container">
+      <div class="left-section">
+        <label>移動時間:</label>
+        <input type="text" placeholder="例: 0:30">
+      </div>
+    </div>
   </div>
-</div>
 
-  <!-- ページネーション -->
-  <div class="pagination">
-    <button>1</button>
-    <button>2</button>
-    <button>3</button>
+  <!-- 目的地ブロック -->
+  <% @destinations.each_with_index do |destination, index| %>
+  <div class="destination-block destination-details-block">
+    <div class="left-container">
+      <div class="left-section">
+        <label>到着予定時間:</label>
+        <input type="time" value="<%= destination.arrival_time&.strftime('%H:%M') %>">
+      </div>
+      <div class="left-section">
+        <label>滞在予定時間:</label>
+        <input type="text" value="<%= destination.stay_duration %>">
+      </div>
+      <div class="left-section">
+        <label>出発予定時間:</label>
+        <input type="time" value="<%= destination.departure_time&.strftime('%H:%M') %>">
+      </div>
+    </div>
+
+    <div class="right-section">
+      <h3>目的地<%= index + 1 %>: <%= destination.name %></h3>
+      <p>休館日: <%= destination.station.closed_days || 'なし' %></p>
+      <p>営業時間: <%= destination.station.business_hours || '未設定' %></p>
+      <p>スタンプ押印時間: <%= destination.station.stamp_available_hours || '未設定' %></p>
+    </div>
   </div>
-</div>
+<% end %>
+
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-container">
+     <button id="#" class="footer-link">しおりを<br>登録する</button>
+  </div>
+  </div>
+</footer>
+
+ 

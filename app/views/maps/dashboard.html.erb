@@ -1,11 +1,13 @@
-<body class="dashboard-page">
+  <%= javascript_importmap_tags %>
+  
   <!-- ヘッダー -->
   <header class="header">
     <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
     <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
   </header>
 
-  <main>
+<main>
+<div class="main-contents">
   <!-- インストラクション -->
   <div class="instructions">
     ピンを押して詳細を確認しましょう。<br>
@@ -13,6 +15,14 @@
   </div>
 
   <!-- 地図の表示領域 -->
+    <div id="map1"></div>
+    <!-- Google Maps API -->
+    <script 
+      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" 
+      defer>
+    </script>
+
+    <!-- 道の駅詳細モーダル -->
     <div id="station-modal" class="custom-modal">
       <div class="custom-modal-content">
         <span id="close-modal" class="close-button">&times;</span>
@@ -24,15 +34,9 @@
         <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
       </div>
     </div>
-    <div id="map1"></div>
-     <%= javascript_importmap_tags %>
-    <!-- Google Maps API -->
-    <script 
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" 
-      defer>
-    </script>
 
-    <!-- 日程を作成するモーダル構造 -->
+
+    <!--　日程を作成するモーダル　---->
     <div id="itinerary-modal" class="custom-modal">
       <div class="custom-modal-content">
         <span id="close-itinerary-modal" class="close-button">&times;</span>
@@ -40,6 +44,8 @@
         <%= render partial: "itineraries/new", locals: { itinerary: @itinerary } %>
       </div>
     </div>
+  </div>
+
 
   <!-- フッター -->
   <footer class="footer">
