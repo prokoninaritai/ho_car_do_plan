@@ -1,0 +1,2 @@
+class StartingPoint < ApplicationRecord
+end
