@@ -8,7 +8,7 @@ const itineraryId = itineraryElement.dataset.itineraryId;
 
 // マップを初期化
 function initMap() {
-  window.map = new google.maps.Map(document.getElementById('map'), {
+  window.map = new google.maps.Map(document.getElementById('map2'), {
     center: { lat: 41.92591, lng: 140.65724 },
     zoom: 10,
   });
@@ -115,7 +115,7 @@ function enableRouteSelection() {
 
 
 // 駅名ラベルを作成
-function createStationLabel(map, marker, name) {
+function createStationLabel(map2, marker, name) {
   const labelDiv = document.createElement("div");
   labelDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)";
   labelDiv.style.border = "1px solid #ccc";
@@ -139,5 +139,5 @@ function createStationLabel(map, marker, name) {
     labelDiv.style.top = position.y + 10 + "px";
   };
 
-  overlay.setMap(map);
+  overlay.setMap(map2);
 }
