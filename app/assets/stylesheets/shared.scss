@@ -1,5 +1,4 @@
 /* 全体のリセット */
-
 html, body {
   margin: 0;
   padding: 0;
@@ -8,54 +7,87 @@ html, body {
 }
 
 /* ヘッダー */
-
 .header {
-  background-color: #4CAF50;/* 緑色 */
-  color: #fff;
-  padding: 10px;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* ヘッダーの高さ */
+  background-color: #4CAF50;
   text-align: center;
+  line-height: 60px;
+  z-index: 1000; /* 前面に表示 */
+  color: #fff;
+  padding: 10px 20px;
   display: flex;
   justify-content: space-between;
+  align-items: center; /* 縦方向で中央揃え */
 }
 
 .logout-button {
-  background-color: #f44336;
+  background-color: #ff4d4d; /* ボタンの背景色 */
+  color: white; /* テキストの色 */
+  text-align: center; /* テキストを中央揃え */
+  padding: 10px 20px; /* ボタン内の余白 */
+  border-radius: 5px; /* 角を丸く */
+  text-decoration: none; /* リンクの下線を消す */
+  font-size: 16px; /* フォントサイズ */
+  line-height: 1; /* テキストの高さ調整 */
+  white-space: nowrap; /* テキストの折り返しを防ぐ */
+  margin-right: 40px;
+}
 
-  /* 赤色 */
-  color: #fff;
-  text-decoration: none;
-  padding: 5px 10px;
-  border-radius: 5px;
+.logout-button:hover {
+  background-color: #ff6666;
+}
+
+/* メインコンテンツエリア */
+.main-contents {
+  margin-top: 60px; /* ヘッダーの高さ分マージンを取る */
+  margin-bottom: 60px; /* フッターの高さ分マージンを取る */
+  overflow: hidden; /* スクロールを無効にする */
+  padding: 20px; /* コンテンツ内の余白 */
+  background-color: #f9f9f9; /* 背景色 */
+  height: calc(100vh - 120px); /* 画面全体の高さからヘッダーとフッター分を引く */
+}
+
+/* ページ全体のスクロールを無効化 */
+body {
+  overflow: hidden; /* 全体のスクロールを無効化 */
+}
+
+/* 地図エリア */
+#map1, #map {
+  min-height: 71vh; 
+  width: 100%;
 }
 
 /* インストラクション */
-
 .instructions {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
-  margin: 10px;
+  font-size: 16px;
+  text-align: center;
+  margin: 10px 20px;
   padding: 10px;
   text-align: center;
   font-size: 16px;
   line-height: 1.5;
-  height: 50px;
 }
 
-/* 地図エリア */
-
-#map1 {
-  height: 75vh;
-  width: 100%;
-}
 
 /* フッター */
-
 .footer-container {
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
   background-color: #4CAF50; /* フッターの背景色 */
   height: 60px;
   display: flex;
   justify-content: space-around; /* ボタンを均等に配置 */
-  position: relative; /* relativeを設定 */
   overflow: visible; /* 円がはみ出しても表示されるように */
   padding: 10px 0; /* 上下の余白調整 */
 }
@@ -83,33 +115,31 @@ html, body {
 }
 
 .footer-link:hover {
-  transform: translateY(-50%) scale(1.1); /* ホバー時もtranslateYを維持しつつ拡大 */
+   transform: translateY(-50%) scale(1.1); /* ホバー時もtranslateYを維持しつつ拡大 */
 }
 
-/* モーダルの背景 */
+/* モーダル */
 .custom-modal {
   display: none;
   position: fixed;
-  z-index: 1000;
-  left: 0;
   top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 }
 
-/* モーダルの内容 */
 .custom-modal-content {
   position: relative;
   margin: 10% auto;
   padding: 20px;
-  background: white;
+  background-color: white;
   width: 80%;
   max-width: 500px;
   border-radius: 5px;
 }
 
-/* 閉じるボタン */
 .close-button {
   position: absolute;
   top: 10px;

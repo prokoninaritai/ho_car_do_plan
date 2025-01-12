@@ -1,25 +1,11 @@
-body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  width: 90%;
-  margin: 0 auto;
-}
-
-.schedule-container {
-  padding: 20px;
-}
-
-.header {
-  text-align: center;
-  font-size: 24px;
-  margin-bottom: 20px;
-  background-color: #28a745;
-  color: #fff;
-  padding: 10px;
+/* メインコンテンツ全体　*/
+.itinerary-contents {
+  margin: 70px 10px; /* ヘッダーの高さ分 */
+  margin-bottom: 60px; /* フッターの高さ分 */
+  overflow-y: auto; /* 縦スクロールを有効にする */
+  height: calc(100vh - 120px); /* 画面全体の高さからヘッダーとフッター分を引く */
+  padding: 20px; /* コンテンツの内側余白 */
+  background-color: #f9f9f9;
 }
 
 /* 出発地ブロック */
@@ -51,7 +37,8 @@ body {
 
 .destination-block {
   display: flex;
-  gap: 60px; /* 左右の間隔を広げる */
+  justify-content: space-between;
+  margin-bottom: 10px;
   }
 
 .left-container {
@@ -65,6 +52,8 @@ body {
   align-items: center; /* ラベルと入力欄を縦方向で中央揃え */
   gap: 10px; /* ラベルと入力欄の間隔 */
 }
+
+
 
 .left-section label {
   white-space: nowrap; /* ラベルの改行を防止して一行にする */
@@ -80,7 +69,7 @@ body {
 }
 
 .time-block {
-  margin-bottom: 20px; /* 時間ブロックの下に余白を追加 */
+  margin-bottom: 10px; /* 時間ブロックの下に余白を追加 */
 }
 
 .right-section {
@@ -89,6 +78,8 @@ body {
   border: 1px solid #c3e6cb;
   background-color: #f5f5dc; /* 必要に応じてスタイル調整 */
   border-radius: 5px;
+  width: 80vh;
+  margin-left: 30px;
 
     h3 {
       font-size: 18px;
