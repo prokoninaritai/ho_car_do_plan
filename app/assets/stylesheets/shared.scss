@@ -110,11 +110,10 @@ body {
   padding: 10px; /* 内側の余白を大きくして見やすくする */
   font-size: 16px; /* フォントを大きくする */
   border-radius: 5px; /* ボタンの角を丸くする */
-  
 }
 
 .starting-point-form button {
-  margin: 5px 0;
+  margin: 0;
   width: 100%; /* フォームやボタンの幅を親要素に合わせる */
   padding: 10px; /* 内側の余白を大きくして見やすくする */
   font-size: 16px; /* フォントを大きくする */
@@ -126,6 +125,7 @@ body {
   color: white;
   border: none;
   cursor: pointer;
+  
 }
 
 #register-starting-point:hover {

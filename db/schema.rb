@@ -73,9 +73,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
 
   create_table "starting_points", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "itinerary_id", null: false
-    t.string "encrypted_starting_point", null: false
-    t.decimal "encrypted_starting_point_latitude", precision: 10, scale: 6, null: false
-    t.decimal "encrypted_point_longitude", precision: 10, scale: 6, null: false
+    t.string "starting_point", null: false
+    t.decimal "starting_point_latitude", precision: 10, scale: 6, null: false
+    t.decimal "starting_point_longitude", precision: 10, scale: 6, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["itinerary_id"], name: "index_starting_points_on_itinerary_id"

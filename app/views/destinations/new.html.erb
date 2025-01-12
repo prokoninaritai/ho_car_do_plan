@@ -15,26 +15,26 @@
     出発地を登録したら<br>
     経路を登録してしおりを作成しましょう
   </div>
+ 
 
-<div class="map-container">
-  <!-- 地図の表示領域 -->
   <div class="map-container">
-    <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
-    <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
-    <div id="map2"></div>
-    <!-- Google Maps API -->
-    <script
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" ,
-      defer>
-    </script>
-  </div>
+    <!-- 地図の表示領域 -->
+    <div class="map-container">
+      <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
+      <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
+      <div id="map2"></div>
+      <!-- Google Maps API -->
+      <script
+        src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" ,
+       defer>
+       </script>
+    </div>
 
-  <!-- 出発地登録領域 -->
+    <!-- 出発地登録領域 -->
     <div class="starting-point-form">
-      <label for="starting-point">出発地点を選ぶ:</label>
+      <label for="starting-point" class="starting-point-heading">出発地点を選ぶ:</label>
       <input type="text" id="starting-point" placeholder="例: 苫小牧フェリー乗り場">
       <button type="button" id="search-location">現在地を選ぶ</button>
-      <button type="button" id="select-michi-no-eki">道の駅から選ぶ</button>
       <button type="button" id="register-starting-point">出発地を登録する</button>
     </div>
   </div>

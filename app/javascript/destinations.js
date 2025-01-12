@@ -1,5 +1,7 @@
 document.addEventListener('turbo:load', () => {
   const routeMarkers = [];
+  let currentOrder = 1; 
+  let routeRenderers = []; 
   const directionsService = new google.maps.DirectionsService();
   const directionsRenderer = new google.maps.DirectionsRenderer({
     map: window.map, // starting_points.js で初期化されたマップを使用

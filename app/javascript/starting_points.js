@@ -1,8 +1,13 @@
+document.addEventListener("turbo:load", () => {
+  if (window.map) { // Google Maps の地図オブジェクトを確認
+    initMap(); // 初回のみマップを初期化
+  }
+});
+
 // --- 変数の宣言 ---
 let startMarker = null;
 window.markers = []; // グローバル変数として定義
-let currentOrder = 1; 
-let routeRenderers = []; 
+
 const itineraryElement = document.getElementById('itinerary-data');
 const itineraryId = itineraryElement.dataset.itineraryId; 
 
@@ -34,7 +39,7 @@ function initMap() {
 
     // マーカーのクリックイベントをここで登録
     marker.addListener("click", () => {
-      const position = marker.getPosition();
+      const position = marker.getPosition(); //　マーカーの緯度と経度を取得している
       setStartingPoint(position.lat(), position.lng(), marker.getTitle());
     });
   });
@@ -44,7 +49,7 @@ window.initMap = initMap;
 
 
 // 現在地を選ぶ
-document.getElementById('choose-current-location').addEventListener('click', () => {
+document.getElementById('search-location').addEventListener('click', () => {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -71,17 +76,19 @@ function setStartingPoint(lat, lng, title) {
 }
 
 // 出発地を登録
+  // 出発地を登録する際に出発地名も送信
 document.getElementById('register-starting-point').addEventListener('click', () => {
   if (startMarker) {
     const position = startMarker.getPosition();
-    saveStartingPoint(position.lat(), position.lng());
+    const title = startMarker.getTitle(); // マーカーのタイトル（出発地名）
+    saveStartingPoint(position.lat(), position.lng(), title);
   } else {
     alert("出発地点を選択してください。");
   }
 });
 
-// サーバーに出発地点を保存
-function saveStartingPoint(lat, lng) {
+// サーバーに送信する関数
+function saveStartingPoint(lat, lng, title) {
   fetch(`/itineraries/${itineraryId}/starting_points`, {
     method: 'POST',
     headers: {
@@ -91,6 +98,7 @@ function saveStartingPoint(lat, lng) {
     body: JSON.stringify({
       starting_point: {
         itinerary_id: itineraryId,
+        starting_point: title, // ここで出発地名を送信
         starting_point_latitude: lat,
         starting_point_longitude: lng,
       },
@@ -99,7 +107,19 @@ function saveStartingPoint(lat, lng) {
   .then(response => {
     if (!response.ok) throw new Error("出発地の登録に失敗しました");
     alert("出発地が登録されました！");
-    enableRouteSelection(); 
+
+     // 文言を変更する
+    const heading = document.querySelector('.starting-point-heading'); 
+    if (heading) {
+      heading.textContent = '経路を選択する:';
+    }
+
+    // 隠したい部分だけ非表示にする
+    document.getElementById('starting-point').style.display = 'none';
+    document.getElementById('search-location').style.display = 'none';
+    document.getElementById('register-starting-point').style.display = 'none';
+
+    enableRouteSelection(); // 経路選択を有効化
   })
   .catch(error => {
     console.error("エラー:", error);
@@ -107,12 +127,11 @@ function saveStartingPoint(lat, lng) {
   });
 }
 
+
 // 経路選択を有効化
 function enableRouteSelection() {
   window.routeSelectionEnabled = true;
 }
-
-
 
 // 駅名ラベルを作成
 function createStationLabel(map2, marker, name) {
