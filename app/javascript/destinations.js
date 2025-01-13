@@ -17,13 +17,17 @@ const itineraryElement = document.getElementById('itinerary-data');
 const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得 
 window.selectRouteMarker = selectRouteMarker;
 
+
 function selectRouteMarker(marker) {
+  console.log("Route renderers after redraw:", routeRenderers);
   const clickedIndex = routeMarkers.indexOf(marker);
 
   if (clickedIndex > -1) {
     routeMarkers.splice(clickedIndex, 1); // マーカーをリストから削除
     marker.setLabel(null); // ラベルをクリア
     updateMarkerLabels(); // 順番を更新
+
+    console.log("Before deletion:", routeRenderers);
 
     // 関連する経路を削除
     if (clickedIndex < routeRenderers.length) {
@@ -37,12 +41,16 @@ function selectRouteMarker(marker) {
       routeRenderers[clickedIndex - 1].setMap(null);
       routeRenderers.splice(clickedIndex - 1, 1);
     }
+
+    console.log("After deletion:", routeRenderers);
   } else {
     routeMarkers.push(marker);
     updateMarkerLabels();
   }
 
   drawAllRoutes(); // 残りの経路を再描画
+
+  console.log("Route renderers after redraw:", routeRenderers);
 }
 
 window.selectRouteMarker = selectRouteMarker;
@@ -71,8 +79,9 @@ function updateRoutes() {
 
 function clearRouteRenderer(index) {
   if (routeRenderers[index]) {
-    routeRenderers[index].setMap(null); // 地図から経路を削除
-    routeRenderers.splice(index, 1); // 配列から削除
+    console.log(`Removing renderer at index: ${index}`);
+    routeRenderers[index].setMap(null);
+    routeRenderers.splice(index, 1);
   }
 }
 
@@ -90,15 +99,14 @@ function updateMarkerLabels() {
   });
 }
 
-// --- すべての経路を描画 ---
 function drawAllRoutes() {
   console.log("Redrawing all routes...");
 
-  // 既存の経路をすべて削除
+  // 既存の経路を削除
   routeRenderers.forEach(renderer => renderer.setMap(null));
   routeRenderers = []; // 配列をリセット
 
-  // 新しい経路を描画
+  // 出発地から最初の目的地までの経路を描画
   if (routeMarkers.length > 0 && window.startPoint) {
     drawRoute(
       new google.maps.LatLng(window.startPoint.lat, window.startPoint.lng),
@@ -106,6 +114,7 @@ function drawAllRoutes() {
     );
   }
 
+  // 目的地間の経路を描画
   for (let i = 0; i < routeMarkers.length - 1; i++) {
     drawRoute(routeMarkers[i].getPosition(), routeMarkers[i + 1].getPosition());
   }
@@ -145,26 +154,75 @@ function clearRoutes() {
 }
 
 // --- マーカーと経路をリセット ---
-function resetMarkers() {
-  routeMarkers.forEach(marker => marker.setLabel(null)); // ラベルをクリア
-  routeMarkers = []; // ルートマーカーをクリア
-  currentOrder = 1; // 順番をリセット
-  clearRoutes(); // 経路をリセット
+function saveRoute() {
+  if (!window.startMarker) {
+    console.error('出発地点が設定されていません。');
+    return;
+  }
+  
+  console.log('出発地点:', window.startMarker.getPosition());
+  
+  const routeData = [];
+  const startDate = new Date("2025-01-11"); // 旅程開始日
+  const currentDate = new Date(startDate);
+  currentDate.setDate(startDate.getDate());
+
+  const visitDate = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD形式
+
+  // 出発地が設定されている場合
+  if (startMarker) {
+    const startPosition = startMarker.getPosition();
+    const startTitle = startMarker.getTitle();
+    const visitDate = new Date().toISOString().split('T')[0]; // 例: 今日の日付
+
+    // 出発地から最初の目的地への経路
+  if (routeMarkers.length > 0) {
+    const firstMarker = routeMarkers[0];
+    routeData.push({
+      visit_date: visitDate,
+      arrival_order: 1,
+      departure: window.startPoint.title,
+      departure_latitude: window.startPoint.lat,
+      departure_longitude: window.startPoint.lng,
+      destination: firstMarker.getTitle(),
+      destination_latitude: firstMarker.getPosition().lat(),
+      destination_longitude: firstMarker.getPosition().lng(),
+      distance: null, // ここで距離データを後で取得する
+      api_travel_time: null // ここで移動時間データを後で取得する
+    });
+  }
+
+        console.log("出発地から最初の目的地を追加:", routeData);
+
+        // 目的地間の経路
+  routeMarkers.forEach((marker, index) => {
+    if (index < routeMarkers.length - 1) {
+      const nextMarker = routeMarkers[index + 1];
+      routeData.push({
+        visit_date: visitDate,
+        arrival_order: index + 2, // 次の順序
+        departure: marker.getTitle(),
+        departure_latitude: marker.getPosition().lat(),
+        departure_longitude: marker.getPosition().lng(),
+        destination: nextMarker.getTitle(),
+        destination_latitude: nextMarker.getPosition().lat(),
+        destination_longitude: nextMarker.getPosition().lng(),
+        distance: null,
+        api_travel_time: null
+      });
+    }
+  });
+
+  console.log("送信データ:", routeData);
+  postRouteData(routeData); // サーバーへ送信
 }
 
-function saveRoute() {
-  const currentDay = 1; // 例: デフォルトで1日目を設定
-  const routeData = [];
-  for (let i = 0; i < routeMarkers.length - 1; i++) {
+
+function processRemainingRoutes(routeData, visitDate) {
+  for (let i = 1; i < routeMarkers.length - 1; i++) {
     const startMarker = routeMarkers[i];
     const endMarker = routeMarkers[i + 1];
 
-    const startDate = new Date("2025-01-11"); // 旅程開始日
-    const currentDate = new Date(startDate);
-    currentDate.setDate(startDate.getDate() + (currentDay - 1));
-    const visitDate = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD形式
-    
-    // Google Maps API から距離と移動時間を取得
     const request = {
       origin: startMarker.getPosition(),
       destination: endMarker.getPosition(),
@@ -174,10 +232,8 @@ function saveRoute() {
     directionsService.route(request, (result, status) => {
       if (status === 'OK') {
         const leg = result.routes[0].legs[0];
-
-        // データを整理して格納
         routeData.push({
-          visit_date: visitDate, 
+          visit_date: visitDate,
           arrival_order: i + 1,
           departure: startMarker.getTitle(),
           departure_latitude: startMarker.getPosition().lat(),
@@ -189,23 +245,7 @@ function saveRoute() {
           api_travel_time: leg.duration.value, // 移動時間（秒単位）
         });
 
-         // 最後のマーカーに対するデータを追加
-         if (i === routeMarkers.length - 2) {
-          routeData.push({
-            visit_date: visitDate,
-            arrival_order: i + 2,
-            departure: endMarker.getTitle(),
-            departure_latitude: endMarker.getPosition().lat(),
-            departure_longitude: endMarker.getPosition().lng(),
-            destination: null,
-            destination_latitude: null,
-            destination_longitude: null,
-            distance: null,
-            api_travel_time: null,
-          });
-        }
-
-        // 最後のマーカーまで処理したら保存を送信
+        // 最後のマーカーに対するデータを追加
         if (i === routeMarkers.length - 2) {
           console.log("送信データ:", routeData);
           postRouteData(routeData);
@@ -215,6 +255,7 @@ function saveRoute() {
       }
     });
   }
+}
 }
 
 // サーバーにデータを送信
@@ -236,7 +277,8 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
-    // 必要なら次のページにリダイレクト
+    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
+    window.location.href = nextUrl;
   })
   .catch(error => {
     console.error('エラー:', error);

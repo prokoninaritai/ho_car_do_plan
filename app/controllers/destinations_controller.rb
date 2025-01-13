@@ -18,8 +18,9 @@ class DestinationsController < ApplicationController
     Rails.logger.debug "Received params: #{params.inspect}"
 
     ActiveRecord::Base.transaction do
-      params[:destinations].each do |destination_data|
-        next if destination_data[:destination].nil? # destination が nil の場合はスキップ
+      params[:destinations].each_with_index do |destination_data, index|
+        destination_data[:arrival_order] = index + 1
+         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
 
         @itinerary.destinations.create!(destination_data.permit(
           :visit_date,

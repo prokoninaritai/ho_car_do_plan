@@ -5,7 +5,7 @@ document.addEventListener("turbo:load", () => {
 });
 
 // --- 変数の宣言 ---
-let startMarker = null;
+window.startMarker = null;
 window.markers = []; // グローバル変数として定義
 const itineraryElement = document.getElementById('itinerary-data');
 const itineraryId = itineraryElement.dataset.itineraryId;
@@ -78,8 +78,8 @@ document.getElementById('search-location').addEventListener('click', () => {
 
 // 出発地を設定する
 function setStartingPoint(lat, lng, title) {
-  if (startMarker) startMarker.setMap(null); 
-  startMarker = new google.maps.Marker({
+  if (window.startMarker) window.startMarker.setMap(null); 
+  window.startMarker = new google.maps.Marker({
     position: { lat: lat, lng: lng },
     map: window.map,
     label: 'S',
