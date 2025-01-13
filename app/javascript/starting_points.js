@@ -7,9 +7,8 @@ document.addEventListener("turbo:load", () => {
 // --- 変数の宣言 ---
 let startMarker = null;
 window.markers = []; // グローバル変数として定義
-
 const itineraryElement = document.getElementById('itinerary-data');
-const itineraryId = itineraryElement.dataset.itineraryId; 
+const itineraryId = itineraryElement.dataset.itineraryId;
 
 // マップを初期化
 function initMap() {
@@ -37,10 +36,15 @@ function initMap() {
     createStationLabel(window.map, marker, station.name);
     window.markers.push(marker);
 
-    // マーカーのクリックイベントをここで登録
+    // マーカークリック時の処理を登録
     marker.addListener("click", () => {
-      const position = marker.getPosition(); //　マーカーの緯度と経度を取得している
-      setStartingPoint(position.lat(), position.lng(), marker.getTitle());
+      if (window.routeSelectionEnabled) {
+        // 経路選択モード
+        selectRouteMarker(marker); // 経路選択用の処理
+      } else {
+        // 出発地点登録モード
+        setStartingPoint(marker.getPosition().lat(), marker.getPosition().lng(), marker.getTitle());
+      }
     });
   });
 }
@@ -76,7 +80,6 @@ function setStartingPoint(lat, lng, title) {
 }
 
 // 出発地を登録
-  // 出発地を登録する際に出発地名も送信
 document.getElementById('register-starting-point').addEventListener('click', () => {
   if (startMarker) {
     const position = startMarker.getPosition();
@@ -131,6 +134,18 @@ function saveStartingPoint(lat, lng, title) {
 // 経路選択を有効化
 function enableRouteSelection() {
   window.routeSelectionEnabled = true;
+
+  // 出発地マーカー（startMarker）を固定
+  if (startMarker) {
+    startMarker.setDraggable(false); // マーカーをドラッグ不可にする
+    startMarker.setLabel('S'); // ラベルを 'S' に固定
+    startMarker.setIcon({
+      url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png", // 青色のアイコンに変更（任意）
+      scaledSize: new google.maps.Size(50, 50), // サイズ調整（任意）
+    });
+  } else {
+    console.error("出発地のマーカーが見つかりません");
+  }
 }
 
 // 駅名ラベルを作成
