@@ -1,5 +1,3 @@
-  <%= javascript_importmap_tags %>
-  
   <!-- ヘッダー -->
   <header class="header">
     <div class="welcome">ようこそ <%= current_user.nickname %> さん</div>
@@ -16,13 +14,7 @@
 
   <!-- 地図の表示領域 -->
     <div id="map1"></div>
-    <!-- Google Maps API -->
-    <script 
-      src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&callback=initMap" 
-      async
-      defer>
-    </script>
-
+    
     <!-- 道の駅詳細モーダル -->
     <div id="station-modal" class="custom-modal">
       <div class="custom-modal-content">
