@@ -69,6 +69,14 @@ def arrival_time
   departure_time + travel_seconds
 end
 
+def arrival_time
+  return nil if departure_time.nil? || api_travel_time.nil?
+
+  # api_travel_timeを"HH:MM"形式から秒に変換
+  travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
+  departure_time + travel_seconds
+end
+
   private
 
   def set_itinerary
