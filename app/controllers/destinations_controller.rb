@@ -24,10 +24,6 @@ class DestinationsController < ApplicationController
       params[:destinations].each_with_index do |destination_data, index|
         destination_data[:arrival_order] = index + 1
         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
-
-
-
-        destination_data[:api_travel_time] = formatted_time
         @itinerary.destinations.create!(destination_data.permit(
                                           :visit_date,
                                           :arrival_order,
