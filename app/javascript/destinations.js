@@ -1,98 +1,87 @@
-document.addEventListener('turbo:load', () => {
-  const routeMarkers = [];
-  let currentOrder = 1; 
-  let routeRenderers = []; 
-  const directionsService = new google.maps.DirectionsService();
-  const directionsRenderer = new google.maps.DirectionsRenderer({
-    map: window.map, // starting_points.js で初期化されたマップを使用
-    preserveViewport: true,
-    suppressMarkers: true,
-  });
-
-  // 経路選択のロジック
-  window.markers.forEach((marker) => {
-    marker.addListener("click", () => handleMarkerClick(marker));
-  });
-
-  function handleMarkerClick(marker) {
-    if (routeMarkers.includes(marker)) {
-      // マーカー削除
-      routeMarkers.splice(routeMarkers.indexOf(marker), 1);
-      marker.setLabel(null);
-    } else {
-      // 新しいマーカー追加
-      routeMarkers.push(marker);
-      marker.setLabel((routeMarkers.length).toString());
-    }
-    updateRoutes();
-  }
-
-  function updateRoutes() {
-    directionsRenderer.setDirections({}); // 既存ルートをクリア
-    for (let i = 0; i < routeMarkers.length - 1; i++) {
-      drawRoute(routeMarkers[i].getPosition(), routeMarkers[i + 1].getPosition());
-    }
-  }
-
-  function drawRoute(start, end) {
-    directionsService.route(
-      {
-        origin: start,
-        destination: end,
-        travelMode: "DRIVING",
-      },
-      (result, status) => {
-        if (status === "OK") {
-          directionsRenderer.setDirections(result);
-        } else {
-          console.error("経路描画に失敗しました:", status);
-        }
-      }
-    );
+document.addEventListener('DOMContentLoaded', () => {
+  const saveButton = document.getElementById('save-route-btn');
+  if (saveButton) {
+    saveButton.addEventListener('click', saveRoute);
+  } else {
+    console.error('save-route-btn 要素が見つかりませんでした。');
   }
 });
 
+// --- 変数の宣言 ---
+let currentOrder = 1; // 現在の順番をトラッキング
+let routeMarkers = []; // 経路に含まれるマーカー
+let routeRenderers = []; // 各経路を描画する DirectionsRenderer を保存
+const markers = []; // すべてのマーカーを格納
+const labeledMarkers = new Map(); // ラベルを設定したマーカーを追跡
+const itineraryElement = document.getElementById('itinerary-data');
+const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得 
+window.selectRouteMarker = selectRouteMarker;
 
-
-
-  // DirectionsRendererを初期化し、preserveViewportを設定
-  directionsService = new google.maps.DirectionsService();
-  directionsRenderer = new google.maps.DirectionsRenderer({
-    map: map,
-    preserveViewport: true, // ズームを変更しないようにする
-    suppressMarkers: true, // デフォルトマーカーを非表示にする
-  });
-
-// --- マーカークリック時の処理 ---
-function handleMarkerClick(marker) {
+function selectRouteMarker(marker) {
   const clickedIndex = routeMarkers.indexOf(marker);
 
   if (clickedIndex > -1) {
-    // 既に設定済みのマーカーをクリックした場合（取り消し）
     routeMarkers.splice(clickedIndex, 1); // マーカーをリストから削除
-    marker.setLabel(null); // マーカーのラベルをリセット
-    updateMarkerLabels(); // 順番を詰める
-    
-    // 対応する経路を削除
-    if (clickedIndex > 0) {
-      routeRenderers[clickedIndex - 1].setMap(null); // 経路を削除
-      routeRenderers.splice(clickedIndex - 1, 1); // 経路を配列から削除
+    marker.setLabel(null); // ラベルをクリア
+    updateMarkerLabels(); // 順番を更新
+
+    // 関連する経路を削除
+    if (clickedIndex < routeRenderers.length) {
+      console.log("Removing renderer at index:", clickedIndex);
+      routeRenderers[clickedIndex].setMap(null);
+      routeRenderers.splice(clickedIndex, 1);
     }
 
-    if (clickedIndex < routeRenderers.length) {
-      routeRenderers[clickedIndex].setMap(null); // 経路を削除
-      routeRenderers.splice(clickedIndex, 1); // 経路を配列から削除
+    if (clickedIndex > 0 && clickedIndex - 1 < routeRenderers.length) {
+      console.log("Removing previous renderer at index:", clickedIndex - 1);
+      routeRenderers[clickedIndex - 1].setMap(null);
+      routeRenderers.splice(clickedIndex - 1, 1);
     }
-    drawAllRoutes(); // 経路の再描画
-    
   } else {
-    // 新しいマーカーをクリックした場合
-    routeMarkers.push(marker); // マーカーを追加
-    updateMarkerLabels(); // 順番を更新
-    currentOrder++; // 次の順番へ
-    drawAllRoutes(); // 経路を再描画
+    routeMarkers.push(marker);
+    updateMarkerLabels();
+  }
+
+  drawAllRoutes(); // 残りの経路を再描画
+}
+
+window.selectRouteMarker = selectRouteMarker;
+
+// --- マーカーの再ラベル付け ---
+function updateRoutes() {
+  console.log("Updating routes...");
+  
+  // すべての既存経路をクリア
+  routeRenderers.forEach(renderer => renderer.setMap(null));
+  routeRenderers = []; // 配列をリセット
+
+  // 出発地点から最初の目的地までの経路を描画
+  if (routeMarkers.length > 0 && window.startPoint) {
+    drawRoute(
+      new google.maps.LatLng(window.startPoint.lat, window.startPoint.lng),
+      routeMarkers[0].getPosition()
+    );
+  }
+
+  // 目的地間の経路を順番に描画
+  for (let i = 0; i < routeMarkers.length - 1; i++) {
+    drawRoute(routeMarkers[i].getPosition(), routeMarkers[i + 1].getPosition());
   }
 }
+
+function clearRouteRenderer(index) {
+  if (routeRenderers[index]) {
+    routeRenderers[index].setMap(null); // 地図から経路を削除
+    routeRenderers.splice(index, 1); // 配列から削除
+  }
+}
+
+function handleMarkerClick(marker) {
+  console.log(`Marker clicked: ${marker.getTitle()}`);
+  // 必要に応じて追加処理を実装
+}
+
+window.handleMarkerClick = handleMarkerClick; // グローバルスコープに公開
 
 // --- マーカーの再ラベル付け ---
 function updateMarkerLabels() {
@@ -103,25 +92,38 @@ function updateMarkerLabels() {
 
 // --- すべての経路を描画 ---
 function drawAllRoutes() {
-  // 現在の経路描画をクリア
+  console.log("Redrawing all routes...");
+
+  // 既存の経路をすべて削除
   routeRenderers.forEach(renderer => renderer.setMap(null));
   routeRenderers = []; // 配列をリセット
 
-  // 経路を順番に描画
+  // 新しい経路を描画
+  if (routeMarkers.length > 0 && window.startPoint) {
+    drawRoute(
+      new google.maps.LatLng(window.startPoint.lat, window.startPoint.lng),
+      routeMarkers[0].getPosition()
+    );
+  }
+
   for (let i = 0; i < routeMarkers.length - 1; i++) {
     drawRoute(routeMarkers[i].getPosition(), routeMarkers[i + 1].getPosition());
   }
+
+  console.log("Current routeRenderers after redraw:", routeRenderers);
 }
 
 // --- 経路を描画する関数 ---
 function drawRoute(startPosition, endPosition) {
+  console.log('Drawing route from', startPosition, 'to', endPosition);
+  
   const request = {
     origin: startPosition,
     destination: endPosition,
     travelMode: 'DRIVING', // 車での移動
   };
 
-  directionsService.route(request, (result, status) => {
+  window.directionsService.route(request, (result, status) => {
     if (status === 'OK') {
       const renderer = new google.maps.DirectionsRenderer({
         map: directionsRenderer.getMap(),
@@ -130,6 +132,7 @@ function drawRoute(startPosition, endPosition) {
       });
       renderer.setDirections(result); // 新しい経路を描画
       routeRenderers.push(renderer); // 経路を保存
+      console.log("Added renderer to routeRenderers:", renderer);
     } else {
       console.error('経路を取得できませんでした:', status);
     }
@@ -233,12 +236,9 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
-    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
-    window.location.href = nextUrl;
+    // 必要なら次のページにリダイレクト
   })
-  
   .catch(error => {
     console.error('エラー:', error);
-    alert('データの保存中にエラーが発生しました。もう一度お試しください。');
   });
 }

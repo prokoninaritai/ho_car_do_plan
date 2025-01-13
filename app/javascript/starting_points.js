@@ -17,6 +17,14 @@ function initMap() {
     zoom: 10,
   });
 
+  // DirectionsServiceとDirectionsRendererをグローバルスコープで初期化
+  window.directionsService = new google.maps.DirectionsService();
+  window.directionsRenderer = new google.maps.DirectionsRenderer({
+    map: window.map,
+    preserveViewport: true,
+    suppressMarkers: true,
+  });
+
   // 駅データを取得
   const stationsElement = document.getElementById("stations-data");
   const stations = JSON.parse(stationsElement.dataset.stations);
@@ -77,7 +85,13 @@ function setStartingPoint(lat, lng, title) {
     label: 'S',
     title: title,
   });
+
+  // グローバル変数に出発地点を保存
+  window.startPoint = { lat: lat, lng: lng, title: title };
+
+  console.log("出発地点が設定されました:", window.startPoint); // デバッグ用
 }
+
 
 // 出発地を登録
 document.getElementById('register-starting-point').addEventListener('click', () => {
@@ -110,6 +124,7 @@ function saveStartingPoint(lat, lng, title) {
   .then(response => {
     if (!response.ok) throw new Error("出発地の登録に失敗しました");
     alert("出発地が登録されました！");
+    console.log(window.startPoint);
 
      // 文言を変更する
     const heading = document.querySelector('.starting-point-heading'); 
