@@ -1,0 +1,70 @@
+@charset "UTF-8";
+/* line 1, app/assets/stylesheets/itineraries.scss */
+.error-container {
+  color: red;
+  /* エラーメッセージの文字色 */
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid red;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  /* 薄い赤背景 */
+}
+
+/* line 11, app/assets/stylesheets/itineraries.scss */
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* モーダルの影 */
+  width: 80%;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* line 21, app/assets/stylesheets/itineraries.scss */
+form div {
+  margin-bottom: 15px;
+  /* 各入力フィールドの下に余白を追加 */
+}
+
+/* line 25, app/assets/stylesheets/itineraries.scss */
+form label {
+  display: block;
+  font-weight: bold;
+  /* ラベルを太字に */
+  margin-bottom: 5px;
+}
+
+/* line 31, app/assets/stylesheets/itineraries.scss */
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* line 40, app/assets/stylesheets/itineraries.scss */
+.btn {
+  width: 100%;
+  /* ボタンをフォーム幅に合わせる */
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* line 53, app/assets/stylesheets/itineraries.scss */
+.btn:hover {
+  background-color: #0056b3;
+  /* ホバー時のボタン色 */
+}

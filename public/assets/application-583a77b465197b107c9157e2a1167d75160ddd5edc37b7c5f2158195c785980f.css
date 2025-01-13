@@ -1,0 +1,755 @@
+@charset "UTF-8";
+/* 背景画像 */
+/* line 3, app/assets/stylesheets/static_pages/home.scss */
+body.top-page {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-size: cover;
+  background-image: url(/assets/top_background-db6b913ca5ab7b2b1f7b34a94c33f25ae7d8803fd4faf8dd1371d5eb1c7c8fe0.jpg);
+  /* 画面全体を覆う */
+  background-position: center;
+  /* 中央に配置 */
+  background-repeat: no-repeat;
+  height: 100vh;
+  /* 画面全体を覆う */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+/* コンテンツのオーバーレイ */
+/* line 25, app/assets/stylesheets/static_pages/home.scss */
+.home_overlay {
+  text-align: center;
+  color: #ffffff;
+  background-color: rgba(0, 0, 0, 0.5);
+  /* 半透明の黒背景を追加 */
+  padding: 20px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* ヘッダー */
+/* line 40, app/assets/stylesheets/static_pages/home.scss */
+.home_title {
+  margin-bottom: 20px;
+}
+
+/* line 43, app/assets/stylesheets/static_pages/home.scss */
+.home_title h1 {
+  font-size: 2rem;
+  margin: 0;
+  color: #ffffff;
+}
+
+/* line 48, app/assets/stylesheets/static_pages/home.scss */
+.home_title h1 span {
+  color: #4CAF50;
+  /* "CarDo!"部分を緑色に */
+}
+
+/* line 55, app/assets/stylesheets/static_pages/home.scss */
+.home_title p {
+  font-size: 1rem;
+  margin-top: 10px;
+  color: #ffffff;
+}
+
+/* ボタン */
+/* line 64, app/assets/stylesheets/static_pages/home.scss */
+.button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  /* ボタン間の間隔 */
+  margin-top: 20px;
+}
+
+/* line 72, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button {
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #fff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #4CAF50;
+  /* ボタンの背景色 */
+  border-radius: 5px;
+  /* 角丸 */
+  transition: background-color 0.3s ease;
+}
+
+/* line 84, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button:hover {
+  background-color: #45a049;
+  /* ホバー時の色 */
+}
+
+/* line 89, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button.sign-up {
+  background-color: #2196F3;
+  /* 新規登録ボタンの色 */
+}
+
+/* line 93, app/assets/stylesheets/static_pages/home.scss */
+.button-container .button.sign-up:hover {
+  background-color: #1e88e5;
+  /* ホバー時の色 */
+}
+
+/* line 97, app/assets/stylesheets/static_pages/home.scss */
+.footer_home {
+  text-align: center;
+}
+
+/* 全体のリセット */
+/* line 3, app/assets/stylesheets/devise/registrations.scss */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 75vh;
+  font-family: Arial, sans-serif;
+}
+
+/* 上部と下部の緑色バナー */
+/* line 12, app/assets/stylesheets/devise/registrations.scss */
+.top-banner {
+  background-color: #4CAF50;
+  /* 緑色 */
+  height: 10vh;
+  width: 100%;
+}
+
+/* line 20, app/assets/stylesheets/devise/registrations.scss */
+.bottom-banner {
+  background-color: #4CAF50;
+  /* 緑色 */
+  height: 15vh;
+  width: 100%;
+  margin-top: 100px;
+}
+
+/* フォームコンテナ */
+/* line 31, app/assets/stylesheets/devise/registrations.scss */
+.form-container {
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 30px;
+  width: 90%;
+  max-width: 400px;
+  margin: 0 auto;
+  /* 中央に配置 */
+  position: relative;
+  top: 20;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+/* line 46, app/assets/stylesheets/devise/registrations.scss */
+.form-container h1 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+/* 入力フィールド */
+/* line 55, app/assets/stylesheets/devise/registrations.scss */
+.form-group {
+  text-align: left;
+  margin: 5% 0;
+}
+
+/* line 59, app/assets/stylesheets/devise/registrations.scss */
+.form-group label {
+  display: block;
+  font-size: 0.9rem;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+/* line 66, app/assets/stylesheets/devise/registrations.scss */
+.form-group input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* 登録ボタン */
+/* line 78, app/assets/stylesheets/devise/registrations.scss */
+.submit-button {
+  background-color: #4CAF50;
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  margin: 5% 0;
+  cursor: pointer;
+  width: 100%;
+  transition: background-color 0.3s ease;
+}
+
+/* line 92, app/assets/stylesheets/devise/registrations.scss */
+.submit-button:hover {
+  background-color: #45a049;
+}
+
+/* line 1, app/assets/stylesheets/itineraries.scss */
+.error-container {
+  color: red;
+  /* エラーメッセージの文字色 */
+  font-size: 14px;
+  margin-bottom: 10px;
+  padding: 5px;
+  border: 1px solid red;
+  border-radius: 4px;
+  background-color: #f8d7da;
+  /* 薄い赤背景 */
+}
+
+/* line 11, app/assets/stylesheets/itineraries.scss */
+form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  /* モーダルの影 */
+  width: 80%;
+  margin: 0 auto;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* line 21, app/assets/stylesheets/itineraries.scss */
+form div {
+  margin-bottom: 15px;
+  /* 各入力フィールドの下に余白を追加 */
+}
+
+/* line 25, app/assets/stylesheets/itineraries.scss */
+form label {
+  display: block;
+  font-weight: bold;
+  /* ラベルを太字に */
+  margin-bottom: 5px;
+}
+
+/* line 31, app/assets/stylesheets/itineraries.scss */
+.form-control {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+/* line 40, app/assets/stylesheets/itineraries.scss */
+.btn {
+  width: 100%;
+  /* ボタンをフォーム幅に合わせる */
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+/* line 53, app/assets/stylesheets/itineraries.scss */
+.btn:hover {
+  background-color: #0056b3;
+  /* ホバー時のボタン色 */
+}
+
+/* メインコンテンツ全体　*/
+/* line 2, app/assets/stylesheets/day_schedule.scss */
+.itinerary-contents {
+  margin-top: 60px;
+  /* ヘッダーの高さ分 */
+  margin-bottom: 60px;
+  padding: 30px 10px 60px;
+  overflow-y: auto;
+  /* 縦スクロールを有効にする */
+  height: calc(100vh - 130px);
+  /* 画面全体の高さからヘッダーとフッター分を引く */
+  background-color: #f9f9f9;
+}
+
+/* 出発地ブロック */
+/* line 12, app/assets/stylesheets/day_schedule.scss */
+.departure-block {
+  background-color: #ffe4e1;
+  /* 薄いピンク */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+/* 移動時間ブロック */
+/* line 21, app/assets/stylesheets/day_schedule.scss */
+.travel-time-block {
+  background-color: #ffffe0;
+  /* 薄い黄色 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+/* 目的地ブロック */
+/* line 30, app/assets/stylesheets/day_schedule.scss */
+.destination-details-block {
+  background-color: #e6ffe6;
+  /* 薄い緑 */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 20px;
+}
+
+/* line 38, app/assets/stylesheets/day_schedule.scss */
+.destination-block {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* line 44, app/assets/stylesheets/day_schedule.scss */
+.left-container {
+  display: flex;
+  flex-direction: column;
+  /* 縦に並べる */
+  justify-content: space-between;
+  /* 上下の要素を等間隔に配置 */
+}
+
+/* line 50, app/assets/stylesheets/day_schedule.scss */
+.left-section {
+  display: flex;
+  align-items: center;
+  /* ラベルと入力欄を縦方向で中央揃え */
+  gap: 10px;
+  /* ラベルと入力欄の間隔 */
+}
+
+/* line 58, app/assets/stylesheets/day_schedule.scss */
+.left-section label {
+  white-space: nowrap;
+  /* ラベルの改行を防止して一行にする */
+  width: 120px;
+  /* ラベルの幅を統一 */
+  text-align: right;
+  /* ラベルを右揃え */
+  margin-right: 10px;
+  /* ラベルと入力欄の間隔 */
+}
+
+/* line 65, app/assets/stylesheets/day_schedule.scss */
+.left-section input {
+  flex-grow: 1;
+  /* 入力欄の幅を自動調整 */
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
+/* line 71, app/assets/stylesheets/day_schedule.scss */
+.time-block {
+  margin-bottom: 10px;
+  /* 時間ブロックの下に余白を追加 */
+}
+
+/* line 75, app/assets/stylesheets/day_schedule.scss */
+.right-section {
+  background-color: #d4edda;
+  padding: 10px;
+  border: 1px solid #c3e6cb;
+  background-color: #f5f5dc;
+  /* 必要に応じてスタイル調整 */
+  border-radius: 5px;
+  width: 80vh;
+  margin-left: 30px;
+}
+
+/* line 84, app/assets/stylesheets/day_schedule.scss */
+.right-section h3 {
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+/* line 89, app/assets/stylesheets/day_schedule.scss */
+.right-section p {
+  margin: 5px 0;
+}
+
+/* line 95, app/assets/stylesheets/day_schedule.scss */
+.red-block, .yellow-block {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 15px;
+  margin-bottom: 20px;
+}
+
+/* line 101, app/assets/stylesheets/day_schedule.scss */
+.red-block {
+  background-color: #f8d7da;
+}
+
+/* line 104, app/assets/stylesheets/day_schedule.scss */
+.yellow-block {
+  background-color: #fff3cd;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+/* line 110, app/assets/stylesheets/day_schedule.scss */
+.yellow-block .left,
+.yellow-block .right {
+  width: 48%;
+}
+
+/* line 114, app/assets/stylesheets/day_schedule.scss */
+.yellow-block .right {
+  background-color: #eaffd0;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* line 119, app/assets/stylesheets/day_schedule.scss */
+.form-group {
+  margin-bottom: 10px;
+}
+
+/* line 122, app/assets/stylesheets/day_schedule.scss */
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* line 127, app/assets/stylesheets/day_schedule.scss */
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+/* line 133, app/assets/stylesheets/day_schedule.scss */
+.footer {
+  text-align: center;
+  margin-top: 20px;
+}
+
+/* line 137, app/assets/stylesheets/day_schedule.scss */
+.footer .nav {
+  display: inline-flex;
+  gap: 10px;
+}
+
+/* line 141, app/assets/stylesheets/day_schedule.scss */
+.footer .nav button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+/* 全体のリセット */
+/* line 2, app/assets/stylesheets/shared.scss */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* ヘッダー */
+/* line 10, app/assets/stylesheets/shared.scss */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  /* ヘッダーの高さ */
+  background-color: #4CAF50;
+  text-align: center;
+  line-height: 60px;
+  z-index: 1000;
+  /* 前面に表示 */
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* 縦方向で中央揃え */
+}
+
+/* line 27, app/assets/stylesheets/shared.scss */
+.logout-button {
+  background-color: #ff4d4d;
+  /* ボタンの背景色 */
+  color: white;
+  /* テキストの色 */
+  text-align: center;
+  /* テキストを中央揃え */
+  padding: 10px 20px;
+  /* ボタン内の余白 */
+  border-radius: 5px;
+  /* 角を丸く */
+  text-decoration: none;
+  /* リンクの下線を消す */
+  font-size: 16px;
+  /* フォントサイズ */
+  line-height: 1;
+  /* テキストの高さ調整 */
+  white-space: nowrap;
+  /* テキストの折り返しを防ぐ */
+  margin-right: 40px;
+}
+
+/* line 40, app/assets/stylesheets/shared.scss */
+.logout-button:hover {
+  background-color: #ff6666;
+}
+
+/* メインコンテンツエリア */
+/* line 45, app/assets/stylesheets/shared.scss */
+.main-contents {
+  margin-top: 60px;
+  /* ヘッダーの高さ分マージンを取る */
+  margin-bottom: 60px;
+  /* フッターの高さ分マージンを取る */
+  overflow: hidden;
+  /* スクロールを無効にする */
+  padding: 20px;
+  /* コンテンツ内の余白 */
+  background-color: #f9f9f9;
+  /* 背景色 */
+  height: calc(100vh - 120px);
+  /* 画面全体の高さからヘッダーとフッター分を引く */
+}
+
+/* ページ全体のスクロールを無効化 */
+/* line 55, app/assets/stylesheets/shared.scss */
+body {
+  overflow: hidden;
+  /* 全体のスクロールを無効化 */
+}
+
+/* インストラクション */
+/* line 60, app/assets/stylesheets/shared.scss */
+.instructions {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  text-align: center;
+  margin: 10px 20px;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 地図エリア */
+/* line 73, app/assets/stylesheets/shared.scss */
+#map1 {
+  min-height: 71vh;
+  width: 100%;
+}
+
+/* 経路登録地図エリア */
+/* line 79, app/assets/stylesheets/shared.scss */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 75vh;
+}
+
+/* line 85, app/assets/stylesheets/shared.scss */
+#map2 {
+  min-height: 71vh;
+  width: 100%;
+  z-index: 9;
+}
+
+/* 出発地登録 */
+/* line 92, app/assets/stylesheets/shared.scss */
+.starting-point-form {
+  position: absolute;
+  margin: 50px 0px;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  /* 要素を縦に並べる */
+  gap: 10px;
+  /* 各要素の間隔を調整 */
+  width: 20vh;
+  /* フォーム全体を大きくする */
+}
+
+/* line 108, app/assets/stylesheets/shared.scss */
+.starting-point-form input {
+  width: 90%;
+  /* フォームやボタンの幅を親要素に合わせる */
+  padding: 10px;
+  /* 内側の余白を大きくして見やすくする */
+  font-size: 16px;
+  /* フォントを大きくする */
+  border-radius: 5px;
+  /* ボタンの角を丸くする */
+}
+
+/* line 115, app/assets/stylesheets/shared.scss */
+.starting-point-form button {
+  margin: 0;
+  width: 100%;
+  /* フォームやボタンの幅を親要素に合わせる */
+  padding: 10px;
+  /* 内側の余白を大きくして見やすくする */
+  font-size: 16px;
+  /* フォントを大きくする */
+  border-radius: 5px;
+  /* ボタンの角を丸くする */
+}
+
+/* line 123, app/assets/stylesheets/shared.scss */
+#register-starting-point {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+/* line 131, app/assets/stylesheets/shared.scss */
+#register-starting-point:hover {
+  background-color: #45a049;
+}
+
+/* モーダル */
+/* line 136, app/assets/stylesheets/shared.scss */
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+/* line 147, app/assets/stylesheets/shared.scss */
+.custom-modal-content {
+  position: relative;
+  margin: 10% auto;
+  padding: 20px;
+  background-color: white;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 5px;
+}
+
+/* line 157, app/assets/stylesheets/shared.scss */
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* フッター */
+/* line 166, app/assets/stylesheets/shared.scss */
+.footer-container {
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  background-color: #4CAF50;
+  /* フッターの背景色 */
+  height: 60px;
+  display: flex;
+  justify-content: space-around;
+  /* ボタンを均等に配置 */
+  overflow: visible;
+  /* 円がはみ出しても表示されるように */
+  padding: 10px 0;
+  /* 上下の余白調整 */
+}
+
+/* line 181, app/assets/stylesheets/shared.scss */
+.footer-link {
+  width: 100px;
+  /* 円の幅 */
+  height: 100px;
+  /* 円の高さ */
+  background-color: white;
+  /* ボタンの背景色 */
+  border-radius: 50%;
+  /* 円形にする */
+  border: 2px solid #4CAF50;
+  /* 緑の淵 */
+  transform: translateY(-50%);
+  /* 上に半分はみ出させる */
+  z-index: 10;
+  /* 地図の上に表示 */
+  display: flex;
+  /* 文字中央揃え用 */
+  align-items: center;
+  /* 文字縦方向中央揃え */
+  justify-content: center;
+  /* 文字横方向中央揃え */
+  color: #28a745;
+  /* ボタンの文字色 */
+  text-decoration: none;
+  /* リンクの下線を消す */
+  font-size: 16px;
+  /* 文字サイズ */
+  font-weight: bold;
+  /* 文字を太字に */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  /* ボタンの影 */
+  transition: transform 0.3s;
+  /* ホバー時のアニメーション */
+  transform: translateY(-50%);
+  /* 初期位置を設定 */
+  transform-origin: center center;
+  /* 拡大の基準をボタンの下側中央に設定 */
+  padding: 5px;
+  /* 文字の周りに余白を追加 */
+}
+
+/* line 203, app/assets/stylesheets/shared.scss */
+.footer-link:hover {
+  transform: translateY(-50%) scale(1.1);
+  /* ホバー時もtranslateYを維持しつつ拡大 */
+}
