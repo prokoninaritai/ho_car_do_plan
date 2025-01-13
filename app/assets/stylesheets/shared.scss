@@ -1,0 +1,206 @@
+/* 全体のリセット */
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: Arial, sans-serif;
+}
+
+/* ヘッダー */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px; /* ヘッダーの高さ */
+  background-color: #4CAF50;
+  text-align: center;
+  line-height: 60px;
+  z-index: 1000; /* 前面に表示 */
+  color: #fff;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 縦方向で中央揃え */
+}
+
+.logout-button {
+  background-color: #ff4d4d; /* ボタンの背景色 */
+  color: white; /* テキストの色 */
+  text-align: center; /* テキストを中央揃え */
+  padding: 10px 20px; /* ボタン内の余白 */
+  border-radius: 5px; /* 角を丸く */
+  text-decoration: none; /* リンクの下線を消す */
+  font-size: 16px; /* フォントサイズ */
+  line-height: 1; /* テキストの高さ調整 */
+  white-space: nowrap; /* テキストの折り返しを防ぐ */
+  margin-right: 40px;
+}
+
+.logout-button:hover {
+  background-color: #ff6666;
+}
+
+/* メインコンテンツエリア */
+.main-contents {
+  margin-top: 60px; /* ヘッダーの高さ分マージンを取る */
+  margin-bottom: 60px; /* フッターの高さ分マージンを取る */
+  overflow: hidden; /* スクロールを無効にする */
+  padding: 20px; /* コンテンツ内の余白 */
+  background-color: #f9f9f9; /* 背景色 */
+  height: calc(100vh - 120px); /* 画面全体の高さからヘッダーとフッター分を引く */
+}
+
+/* ページ全体のスクロールを無効化 */
+body {
+  overflow: hidden; /* 全体のスクロールを無効化 */
+}
+
+/* インストラクション */
+.instructions {
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  font-size: 16px;
+  text-align: center;
+  margin: 10px 20px;
+  padding: 10px;
+  text-align: center;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* 地図エリア */
+#map1 {
+  min-height: 71vh; 
+  width: 100%;
+}
+
+/* 経路登録地図エリア */
+.map-container {
+  position: relative;
+  width: 100%;
+  height: 75vh;
+}
+
+#map2 {
+  min-height: 71vh; 
+  width: 100%;
+  z-index: 9;
+}
+
+/* 出発地登録 */
+.starting-point-form {
+  position: absolute;
+  margin: 50px 0px;
+  top: 10px;
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  display: flex;
+  flex-direction: column; /* 要素を縦に並べる */
+  gap: 10px; /* 各要素の間隔を調整 */
+  width: 20vh; /* フォーム全体を大きくする */
+}
+
+.starting-point-form input {
+  width: 90%; /* フォームやボタンの幅を親要素に合わせる */
+  padding: 10px; /* 内側の余白を大きくして見やすくする */
+  font-size: 16px; /* フォントを大きくする */
+  border-radius: 5px; /* ボタンの角を丸くする */
+}
+
+.starting-point-form button {
+  margin: 0;
+  width: 100%; /* フォームやボタンの幅を親要素に合わせる */
+  padding: 10px; /* 内側の余白を大きくして見やすくする */
+  font-size: 16px; /* フォントを大きくする */
+  border-radius: 5px; /* ボタンの角を丸くする */
+}
+
+#register-starting-point {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  cursor: pointer;
+  
+}
+
+#register-starting-point:hover {
+  background-color: #45a049;
+}
+
+/* モーダル */
+.custom-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+}
+
+.custom-modal-content {
+  position: relative;
+  margin: 10% auto;
+  padding: 20px;
+  background-color: white;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 5px;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+/* フッター */
+.footer-container {
+  align-items: center;
+  bottom: 0;
+  left: 0;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  background-color: #4CAF50; /* フッターの背景色 */
+  height: 60px;
+  display: flex;
+  justify-content: space-around; /* ボタンを均等に配置 */
+  overflow: visible; /* 円がはみ出しても表示されるように */
+  padding: 10px 0; /* 上下の余白調整 */
+}
+
+.footer-link {
+  width: 100px; /* 円の幅 */
+  height: 100px; /* 円の高さ */
+  background-color: white; /* ボタンの背景色 */
+  border-radius: 50%; /* 円形にする */
+  border: 2px solid #4CAF50; /* 緑の淵 */
+  transform: translateY(-50%); /* 上に半分はみ出させる */
+  z-index: 10; /* 地図の上に表示 */
+  display: flex; /* 文字中央揃え用 */
+  align-items: center; /* 文字縦方向中央揃え */
+  justify-content: center; /* 文字横方向中央揃え */
+  color: #28a745; /* ボタンの文字色 */
+  text-decoration: none; /* リンクの下線を消す */
+  font-size: 16px; /* 文字サイズ */
+  font-weight: bold; /* 文字を太字に */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* ボタンの影 */
+  transition: transform 0.3s; /* ホバー時のアニメーション */
+  transform: translateY(-50%); /* 初期位置を設定 */
+  transform-origin: center center; /* 拡大の基準をボタンの下側中央に設定 */
+  padding: 5px; /* 文字の周りに余白を追加 */
+}
+
+.footer-link:hover {
+   transform: translateY(-50%) scale(1.1); /* ホバー時もtranslateYを維持しつつ拡大 */
+}
+

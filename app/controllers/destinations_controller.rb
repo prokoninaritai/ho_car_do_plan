@@ -4,6 +4,8 @@ class DestinationsController < ApplicationController
   def new
     @destination = Destination.new
     @stations = Station.all
+    @itinerary = Itinerary.find(params[:itinerary_id])
+    @start_date = @itinerary.start_date
 
     # 現在の「何日目」を取得（デフォルトは1日目）
     current_day = params[:current_day].present? ? params[:current_day].to_i : 1
@@ -18,37 +20,45 @@ class DestinationsController < ApplicationController
     Rails.logger.debug "Received params: #{params.inspect}"
 
     ActiveRecord::Base.transaction do
-      params[:destinations].each do |destination_data|
-        travel_time_in_seconds = destination_data[:api_travel_time].to_i
-        formatted_time = format_time(travel_time_in_seconds)
-        next if destination_data[:destination].nil? # destination が nil の場合はスキップ
+
+      params[:destinations].each_with_index do |destination_data, index|
+        destination_data[:arrival_order] = index + 1
+        Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
+
+
 
         destination_data[:api_travel_time] = formatted_time
         @itinerary.destinations.create!(destination_data.permit(
-          :visit_date,
-          :arrival_order,
-          :departure,
-          :departure_latitude,
-          :departure_longitude,
-          :destination,
-          :destination_latitude,
-          :destination_longitude,
-          :distance,
-          :api_travel_time
-        ))
+                                          :visit_date,
+                                          :arrival_order,
+                                          :departure,
+                                          :departure_latitude,
+                                          :departure_longitude,
+                                          :destination,
+                                          :destination_latitude,
+                                          :destination_longitude,
+                                          :distance,
+                                          :api_travel_time
+                                        ))
       end
     end
 
-    render json: { message: '保存成功' }, status: :ok
-  rescue StandardError => e
-    Rails.logger.error "保存エラー: #{e.message}"
-    render json: { message: '保存失敗', error: e.message }, status: :unprocessable_entity
+    # 保存後、1日目のスケジュールページにリダイレクト
+    render json: { message: '保存成功', destination_id: @itinerary.destinations.last.id }, status: :ok
   end
 
   def show
     @itinerary = Itinerary.find(params[:itinerary_id])
     @destinations = @itinerary.destinations.includes(:time_management)
     @day_label = "#{(@itinerary.start_date + (params[:current_day].to_i - 1).days).strftime('%m/%d')}の日程"
+  end
+
+  def arrival_time
+    return nil if departure_time.nil? || api_travel_time.nil?
+
+    # api_travel_timeを"HH:MM"形式から秒に変換
+    travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
+    departure_time + travel_seconds
   end
 
   private

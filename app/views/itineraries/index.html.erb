@@ -1,0 +1,10 @@
+<h1>しおり一覧</h1>
+
+<ul>
+  <% @itineraries.each do |itinerary| %>
+    <li>
+      <%= link_to itinerary.title, itinerary_path(itinerary) %>
+      （開始日: <%= itinerary.start_date %>, 終了日: <%= itinerary.end_date %>）
+    </li>
+  <% end %>
+</ul>
