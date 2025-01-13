@@ -20,7 +20,7 @@
   <div class="map-container">
     <!-- 地図の表示領域 -->
     <div class="map-container">
-      <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>"></div>
+      <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>" data-start-date="<%= @start_date %>"></div>
       <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
       <div id="map2"></div>
       <!-- Google Maps API -->
