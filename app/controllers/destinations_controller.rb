@@ -20,10 +20,14 @@ class DestinationsController < ApplicationController
     Rails.logger.debug "Received params: #{params.inspect}"
 
     ActiveRecord::Base.transaction do
+
       params[:destinations].each_with_index do |destination_data, index|
         destination_data[:arrival_order] = index + 1
         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
 
+
+
+        destination_data[:api_travel_time] = formatted_time
         @itinerary.destinations.create!(destination_data.permit(
                                           :visit_date,
                                           :arrival_order,
@@ -67,5 +71,12 @@ class DestinationsController < ApplicationController
     params.require(:destinations).map do |destination|
       destination.permit(:arrival_order, :latitude, :longitude, :departure, :destination)
     end
+  end
+
+  def format_time(seconds)
+    minutes = seconds / 60
+    hours = minutes / 60
+    formatted_time = format("%02d:%02d", hours, minutes % 60)
+    formatted_time
   end
 end
