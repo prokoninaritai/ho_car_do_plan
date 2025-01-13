@@ -21,7 +21,7 @@
       </div>
       <div class="left-section">
         <label>出発時間:</label>
-        <input type="time" name="departure_time" value="<%= @destinations.first&.departure_time&.strftime('%H:%M') %>" required>
+        <input type="time" >
       </div>
     </div>
   </div>
@@ -42,23 +42,23 @@
     <div class="left-container">
       <div class="left-section">
         <label>到着予定時間:</label>
-        <input type="time" value="<%= destination.arrival_time&.strftime('%H:%M') %>">
+        <input type="time" value="">
       </div>
       <div class="left-section">
         <label>滞在予定時間:</label>
-        <input type="text" value="<%= destination.stay_duration %>">
+        <input type="text" value="">
       </div>
       <div class="left-section">
         <label>出発予定時間:</label>
-        <input type="time" value="<%= destination.departure_time&.strftime('%H:%M') %>">
+        <input type="time" value="">
       </div>
     </div>
 
     <div class="right-section">
-      <h3>目的地<%= index + 1 %>: <%= destination.name %></h3>
-      <p>休館日: <%= destination.station.closed_days || 'なし' %></p>
-      <p>営業時間: <%= destination.station.business_hours || '未設定' %></p>
-      <p>スタンプ押印時間: <%= destination.station.stamp_available_hours || '未設定' %></p>
+      <h3>目的地: </h3>
+      <p>休館日: </p>
+      <p>営業時間: </p>
+      <p>スタンプ押印時間: </p>
     </div>
   </div>
 <% end %>

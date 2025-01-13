@@ -321,8 +321,8 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
-    //const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
-    //window.location.href = nextUrl;
+    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
+    window.location.href = nextUrl;
   })
   .catch(error => {
     console.error('エラー:', error);

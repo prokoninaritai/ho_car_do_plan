@@ -1,10 +1,10 @@
 /* メインコンテンツ全体　*/
 .itinerary-contents {
-  margin: 70px 10px; /* ヘッダーの高さ分 */
-  margin-bottom: 60px; /* フッターの高さ分 */
+  margin-top: 60px; /* ヘッダーの高さ分 */
+  margin-bottom: 60px;
+  padding: 30px 10px 60px;
   overflow-y: auto; /* 縦スクロールを有効にする */
-  height: calc(100vh - 120px); /* 画面全体の高さからヘッダーとフッター分を引く */
-  padding: 20px; /* コンテンツの内側余白 */
+  height: calc(100vh - 130px); /* 画面全体の高さからヘッダーとフッター分を引く */
   background-color: #f9f9f9;
 }
 

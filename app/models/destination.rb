@@ -8,4 +8,6 @@ class Destination < ApplicationRecord
   validates :departure, presence: true
   validates :destination, presence: true
   
+  
+
 end
