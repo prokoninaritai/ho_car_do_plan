@@ -10,3 +10,4 @@ pin "itineraries", to: "itineraries.js"
 pin "destinations", to: "destinations.js"
 pin "day_schedule", to: "day_schedule.js"
 pin "starting_points", to: "starting_points.js"
+

@@ -12,7 +12,6 @@ class ItinerariesController < ApplicationController
   end
 
   def day_schedule
-    @itinerary = Itinerary.find(params[:id])
     current_day = params[:current_day].to_i
     @visit_date = @itinerary.start_date + (current_day - 1).days
     @destinations = @itinerary.destinations.where(visit_date: @visit_date).order(:arrival_order)
