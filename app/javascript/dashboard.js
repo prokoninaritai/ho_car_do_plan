@@ -2,7 +2,7 @@ document.addEventListener("turbo:load", () => {
   function initMap() {
     const mapOptions = {
       center: { lat: 41.92591, lng: 140.65724 },
-      zoom: 10,
+      zoom: 7,
     };
 
     const map = new google.maps.Map(document.getElementById("map1"), mapOptions);

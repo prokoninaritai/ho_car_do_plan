@@ -14,7 +14,7 @@ const itineraryId = itineraryElement.dataset.itineraryId;
 function initMap() {
   window.map = new google.maps.Map(document.getElementById('map2'), {
     center: { lat: 41.92591, lng: 140.65724 },
-    zoom: 10,
+    zoom: 7,
   });
 
   // DirectionsServiceとDirectionsRendererをグローバルスコープで初期化
