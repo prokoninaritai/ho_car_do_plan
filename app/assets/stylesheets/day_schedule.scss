@@ -1,11 +1,16 @@
 /* メインコンテンツ全体　*/
-.itinerary-contents {
-  margin-top: 60px; /* ヘッダーの高さ分 */
-  margin-bottom: 60px;
-  padding: 30px 10px 60px;
+.itinerary-contents{
+  margin-top: 70px; /* ヘッダーの高さ分だけ余白を確保 */
+  margin-bottom: 70px; /* フッターの高さ分だけ余白を確保 */
   overflow-y: auto; /* 縦スクロールを有効にする */
-  height: calc(100vh - 130px); /* 画面全体の高さからヘッダーとフッター分を引く */
+  height: calc(100vh - 110px); /* 画面全体の高さからヘッダーとフッター分を引く */
   background-color: #f9f9f9;
+}
+
+.welcome {
+  line-height: 1.2;
+  text-align: left;
+  padding: 10px;
 }
 
 /* 出発地ブロック */
@@ -15,6 +20,23 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 20px;
+  height: 10vh;
+  display: flex;
+}
+
+.departure-block.left-section {
+  flex-direction: column; /* 子要素を縦方向に配置 */
+}
+
+/* 出発地ブロックの右側　*/
+.right-destination {
+  padding: 2px;
+  width: 80vh;
+  margin-left: 30px;
+  display: flex;
+  align-items: center; /* ラベルと入力欄を縦方向で中央揃え */
+  gap: 10px; /* ラベルと入力欄の間隔 */  
+  text-align: center;
 }
 
 /* 移動時間ブロック */
@@ -35,6 +57,16 @@
   margin-bottom: 20px;
 }
 
+.goal-destination {
+  background-color: #d1f5fc; /* ゴール地点の背景色をスタート地点と同じに設定 */
+}
+
+input[type="time"], input[type="text"] {
+  width: 10vh; /* 幅を適切な値に調整 */
+  padding: 5px; /* 余白を適宜設定 */
+  font-size: 14px; /* 必要に応じてフォントサイズを調整 */
+}
+
 .destination-block {
   display: flex;
   justify-content: space-between;
@@ -50,16 +82,15 @@
 .left-section {
   display: flex;
   align-items: center; /* ラベルと入力欄を縦方向で中央揃え */
-  gap: 10px; /* ラベルと入力欄の間隔 */
+  gap: 10px; /* ラベルと入力欄の間隔 */  
 }
-
-
 
 .left-section label {
   white-space: nowrap; /* ラベルの改行を防止して一行にする */
-  width: 120px; /* ラベルの幅を統一 */
+  width: 10vh; /* ラベルの幅を統一 */
   text-align: right; /* ラベルを右揃え */
   margin-right: 10px; /* ラベルと入力欄の間隔 */
+  font-size: small;
 }
 
 .left-section input {
@@ -72,9 +103,10 @@
   margin-bottom: 10px; /* 時間ブロックの下に余白を追加 */
 }
 
+/*目的地表示ブロック*/
 .right-section {
   background-color: #d4edda;
-  padding: 10px;
+  padding: 2px;
   border: 1px solid #c3e6cb;
   background-color: #f5f5dc; /* 必要に応じてスタイル調整 */
   border-radius: 5px;
@@ -82,15 +114,28 @@
   margin-left: 30px;
 
     h3 {
-      font-size: 18px;
+      font-size: 15px;
       margin-bottom: 5px;
     }
 
     p {
       margin: 5px 0;
+      font-size: 12px;
     }
   }
 
+/*休館日*/
+.no-bullet {
+  list-style-type: none; /* 黒点を削除 */
+  padding-left: 0; /* 左側の余白を削除 */
+  margin: 0; /* マージンをリセット */
+  font-size: small;
+}
+
+.no-bullet li {
+  margin-bottom: 10px; /* 各項目の間に適度な余白を追加 */
+  line-height: 1; /* 行間を広げて見やすく */
+}
 
 .red-block, .yellow-block {
   border: 1px solid #ccc;
