@@ -133,7 +133,7 @@ function saveStartingPoint(lat, lng, title) {
     }
 
     // 隠したい部分だけ非表示にする
-    document.getElementById('starting-point').style.display = 'none';
+    //document.getElementById('starting-point').style.display = 'none';
     document.getElementById('search-location').style.display = 'none';
     document.getElementById('register-starting-point').style.display = 'none';
 
