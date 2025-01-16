@@ -2,9 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save-route-btn');
   if (saveButton) {
     saveButton.addEventListener('click', saveRoute);
-  } else {
-    console.error('save-route-btn 要素が見つかりませんでした。');
-  }
+  } 
 });
 
 // --- 変数の宣言 ---
