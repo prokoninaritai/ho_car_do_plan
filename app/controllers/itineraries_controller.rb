@@ -14,8 +14,14 @@ class ItinerariesController < ApplicationController
   def day_schedule
     current_day = params[:current_day].to_i
     @visit_date = @itinerary.start_date + (current_day - 1).days
+    # 当日の目的地を取得
     @destinations = @itinerary.destinations.where(visit_date: @visit_date).order(:arrival_order)
+    # 出発地情報
+    @starting_point = StartingPoint.find_by(itinerary_id: @itinerary.id) 
+    # 目的地の駅情報を取得
+    @station_data = Station.where(name: @destinations.pluck(:destination))
   end
+  
 
 
   private
