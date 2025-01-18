@@ -25,17 +25,17 @@ class DestinationsController < ApplicationController
         destination_data[:arrival_order] = index + 1
         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
         @itinerary.destinations.create!(destination_data.permit(
-                                          :visit_date,
-                                          :arrival_order,
-                                          :departure,
-                                          :departure_latitude,
-                                          :departure_longitude,
-                                          :destination,
-                                          :destination_latitude,
-                                          :destination_longitude,
-                                          :distance,
-                                          :api_travel_time
-                                        ))
+            :visit_date,
+            :arrival_order,
+            :departure,
+            :departure_latitude,
+            :departure_longitude,
+            :destination,
+            :destination_latitude,
+            :destination_longitude,
+            :distance,
+            :api_travel_time
+           ))
       end
     end
 

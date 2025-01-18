@@ -203,7 +203,7 @@ function saveRoute() {
             destination_latitude: firstMarker.getPosition().lat(),
             destination_longitude: firstMarker.getPosition().lng(),
             distance: leg.distance.value,
-            api_travel_time: leg.duration.value,
+            api_travel_time: leg.duration.text,
           });
           resolve();
         } else {
@@ -237,7 +237,7 @@ function saveRoute() {
               destination_latitude: nextMarker.getPosition().lat(),
               destination_longitude: nextMarker.getPosition().lng(),
               distance: leg.distance.value,
-              api_travel_time: leg.duration.value,
+              api_travel_time: leg.duration.text,
             });
             resolve();
           } else {
@@ -284,7 +284,7 @@ function addRemainingRoutes(routeData, visitDate, directionsService) {
             destination_latitude: nextMarker.getPosition().lat(),
             destination_longitude: nextMarker.getPosition().lng(),
             distance: leg.distance.value,
-            api_travel_time: leg.duration.value,
+            api_travel_time: leg.duration.text,
           });
 
           // 全てのルートデータを追加した後に送信

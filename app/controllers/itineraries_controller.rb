@@ -22,8 +22,6 @@ class ItinerariesController < ApplicationController
     @station_data = Station.where(name: @destinations.pluck(:destination))
   end
   
-
-
   private
 
   def itinerary_params
