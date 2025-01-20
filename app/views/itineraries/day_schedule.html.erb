@@ -15,11 +15,11 @@
   <div class="destination-block time-block departure-block">
     <div class="left-section">   
       <label>出発時間:</label>
-      <input type="time">
+      <input type="time" class="departure-time" value="07:00">
     </div>
     <div class="right-destination">
       <label>出発地:</label>
-      <input type="text" value="<%= @starting_point&.starting_point %>" readonly >
+      <input type="text" value="<%= @starting_point&.starting_point %>" readonly>
     </div>
   </div>
 
@@ -28,7 +28,8 @@
     <div class="left-container">
       <div class="left-section">
         <label>移動時間:</label>
-        <input type="text" class="travel-time" value="0:30">
+        <input type="time" class="travel-time" 
+          value="<%= @destinations.first&.api_travel_time.rjust(5, '0')  %>">
       </div>
     </div>
   </div>
@@ -36,66 +37,69 @@
   <!-- 目的地ブロック -->
   <% @destinations.each_with_index do |destination, index| %>
     <% station = @station_data.find { |s| s.name == destination.destination } %>
-      <div class="destination-block destination-details-block <%= 'goal-destination' if index == @destinations.size - 1 %>">
-        
-        <div class="left-container time-block">
-          <div class="left-section">
-            <label>到着予定時間:</label>
-            <input type="time" value="" readonly>
-          </div>
-          <% unless index == @destinations.size - 1 %>
-            <div class="left-section">
-              <label>滞在予定時間:</label>
-              <input type="number" value="20">
-            </div>
-            <div class="left-section">   
-              <label>出発時間:</label>
-              <input type="time" class="departure-time">
-            </div>
-          <% end %>
-        </div>
-
-        <div class="right-section">
-          <h3>目的地:<%= destination.destination %></h3>
-          <p><strong>休館日:</strong></p>
-            <ul class="no-bullet">
-              <% station.closed_days.each do |day| %>
-                <li>
-                  <%= day.closed_info %> 
-                   (<%= day.start_date.gsub('-', '月') + '日' %> 〜 <%= day.end_date.gsub('-', '月') + '日' %>)
-                  <% if day.remarks.present? %>
-                    <br><small>備考: <%= day.remarks %></small>
-                  <% end %>
-                </li>
-              <% end %>
-            </ul>
-          <p><strong>営業時間:</strong></p>
-          <ul class="no-bullet">
-            <% station.business_hours.each do |hour| %>
-              <li>
-                <%= "#{hour.opening_time.strftime('%H:%M')} 〜 #{hour.closing_time.strftime('%H:%M')}" %>
-                (<%= hour.start_date.gsub('-', '月') + '日' %> 〜 <%= hour.end_date.gsub('-', '月') + '日' %>)              
-              </li>
-            <% end %>
-          </ul>
-          <p><strong>スタンプ押印時間:</strong></p>
-            <p class="stamp-hours"><%= station.stamp_available_hours.map(&:available_hour).join(', ') %></p>
-        </div>
-      </div>
-   
-
-  <% unless index == @destinations.size - 1 %>
-    <!-- 中間の移動時間ブロック -->
-    <div class="destination-block time-block travel-time-block">
-      <div class="left-container">
+    <div class="destination-block destination-details-block <%= 'goal-destination' if index == @destinations.size - 1 %>">
+      <div class="left-container time-block">
         <div class="left-section">
-          <label>移動時間:</label>
-          <input type="text" placeholder="例: 0:30">
+          <label>到着予定時間:</label>
+          <input type="time" class="arrival-time" readonly>
+        </div>
+        <% unless index == @destinations.size - 1 %>
+          <div class="left-section">
+            <label>滞在予定時間:</label>
+            <input type="time" value="00:20">
+          </div>
+          <div class="left-section">   
+            <label>出発時間:</label>
+            <input type="hidden" name="destinations[<%= index %>][next_departure_time]" class="next-departure-time-hidden">
+            <input type="time" class="next-departure-time" readonly>
+          </div>
+        <% end %>
+      </div>
+
+      <div class="right-section">
+        <h3>目的地:<%= destination.destination %></h3>
+        <p><strong>休館日:</strong></p>
+        <ul class="no-bullet">
+          <% station.closed_days.each do |day| %>
+            <li>
+              <%= day.closed_info %>
+              (<%= day.start_date.gsub('-', '月') + '日' %> 〜 <%= day.end_date.gsub('-', '月') + '日' %>)
+              <% if day.remarks.present? %>
+                <br><small>備考: <%= day.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>営業時間:</strong></p>
+        <ul class="no-bullet">
+          <% station.business_hours.each do |hour| %>
+            <li>
+              <%= "#{hour.opening_time.strftime('%H:%M')} 〜 #{hour.closing_time.strftime('%H:%M')}" %>
+              (<%= hour.start_date.gsub('-', '月') + '日' %> 〜 <%= hour.end_date.gsub('-', '月') + '日' %>)
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>スタンプ押印時間:</strong></p>
+        <p class="stamp-hours"><%= station.stamp_available_hours.map(&:available_hour).join(', ') %></p>
+      </div>
+   </div>
+
+      <!-- 中間の移動時間ブロック -->
+      <% unless index == @destinations.size - 1 %> <!-- 最後の目的地では移動時間を表示しない -->
+      <div class="destination-block time-block travel-time-block">
+        <div class="left-container">
+          <div class="left-section">
+            <label>移動時間:</label>
+            <input type="time" name="destinations[<%= index + 1 %>][custom_travel_time]" class="travel-time"
+              value="<%= @destinations[index + 1].api_travel_time.rjust(5, '0')%>">
+          </div>
         </div>
       </div>
-    </div>
+    <% end %>
   <% end %>
- <% end %>
+</div>
+
+
 
 
 <!-- フッター -->
@@ -103,7 +107,5 @@
   <div class="footer-container">
      <button id="#" class="footer-link">しおりを<br>登録する</button>
   </div>
-  </div>
+</div>
 </footer>
-
- 

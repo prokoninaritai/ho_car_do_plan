@@ -37,7 +37,6 @@ document.addEventListener("turbo:load", () => {
     })
       .then((response) => response.json()) // レスポンスをJSONとしてパース
       .then((data) => {
-        console.log(data); // レスポンスデータを確認
         if (data.success) {
           window.location.href = `/itineraries/${data.itinerary_id}/destinations/new?current_day=1`;
         } else {
