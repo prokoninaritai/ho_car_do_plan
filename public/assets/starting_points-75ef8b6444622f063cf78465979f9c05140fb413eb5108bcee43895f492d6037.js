@@ -1,6 +1,6 @@
 document.addEventListener("turbo:load", () => {
-  if (window.map) { // Google Maps の地図オブジェクトを確認
-    initMap(); // 初回のみマップを初期化
+  if (typeof initMap === "function") {
+    initMap();
   }
 });
 
@@ -14,7 +14,7 @@ const itineraryId = itineraryElement.dataset.itineraryId;
 function initMap() {
   window.map = new google.maps.Map(document.getElementById('map2'), {
     center: { lat: 41.92591, lng: 140.65724 },
-    zoom: 10,
+    zoom: 7,
   });
 
   // DirectionsServiceとDirectionsRendererをグローバルスコープで初期化
@@ -133,7 +133,7 @@ function saveStartingPoint(lat, lng, title) {
     }
 
     // 隠したい部分だけ非表示にする
-    document.getElementById('starting-point').style.display = 'none';
+    //document.getElementById('starting-point').style.display = 'none';
     document.getElementById('search-location').style.display = 'none';
     document.getElementById('register-starting-point').style.display = 'none';
 

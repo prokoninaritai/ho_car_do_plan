@@ -15,7 +15,7 @@ html, body {
   top: 0;
   left: 0;
   width: 100%;
-  height: 60px;
+  height: 50px;
   /* ヘッダーの高さ */
   background-color: #4CAF50;
   text-align: center;
@@ -31,6 +31,13 @@ html, body {
 }
 
 /* line 27, app/assets/stylesheets/shared.scss */
+.welcome {
+  line-height: 1.2;
+  text-align: left;
+  padding: 10px;
+}
+
+/* line 33, app/assets/stylesheets/shared.scss */
 .logout-button {
   background-color: #ff4d4d;
   /* ボタンの背景色 */
@@ -53,13 +60,13 @@ html, body {
   margin-right: 40px;
 }
 
-/* line 40, app/assets/stylesheets/shared.scss */
+/* line 46, app/assets/stylesheets/shared.scss */
 .logout-button:hover {
   background-color: #ff6666;
 }
 
 /* メインコンテンツエリア */
-/* line 45, app/assets/stylesheets/shared.scss */
+/* line 51, app/assets/stylesheets/shared.scss */
 .main-contents {
   margin-top: 60px;
   /* ヘッダーの高さ分マージンを取る */
@@ -76,14 +83,14 @@ html, body {
 }
 
 /* ページ全体のスクロールを無効化 */
-/* line 55, app/assets/stylesheets/shared.scss */
+/* line 61, app/assets/stylesheets/shared.scss */
 body {
   overflow: hidden;
   /* 全体のスクロールを無効化 */
 }
 
 /* インストラクション */
-/* line 60, app/assets/stylesheets/shared.scss */
+/* line 66, app/assets/stylesheets/shared.scss */
 .instructions {
   background-color: #f9f9f9;
   border: 1px solid #ddd;
@@ -97,29 +104,45 @@ body {
 }
 
 /* 地図エリア */
-/* line 73, app/assets/stylesheets/shared.scss */
+/* line 79, app/assets/stylesheets/shared.scss */
 #map1 {
   min-height: 71vh;
   width: 100%;
 }
 
 /* 経路登録地図エリア */
-/* line 79, app/assets/stylesheets/shared.scss */
+/* line 85, app/assets/stylesheets/shared.scss */
 .map-container {
   position: relative;
   width: 100%;
   height: 75vh;
 }
 
-/* line 85, app/assets/stylesheets/shared.scss */
+/* line 91, app/assets/stylesheets/shared.scss */
 #map2 {
   min-height: 71vh;
   width: 100%;
   z-index: 9;
 }
 
+/* line 97, app/assets/stylesheets/shared.scss */
+#businessHours {
+  list-style-type: none;
+  /* 箇条書き記号を削除 */
+  padding: 0;
+  /* 左側の余白を削除 */
+  margin: 0;
+  /* 上下の余白を調整（必要なら） */
+}
+
+/* line 103, app/assets/stylesheets/shared.scss */
+#businessHours li {
+  margin-bottom: 5px;
+  /* リスト項目の間隔を調整 */
+}
+
 /* 出発地登録 */
-/* line 92, app/assets/stylesheets/shared.scss */
+/* line 110, app/assets/stylesheets/shared.scss */
 .starting-point-form {
   position: absolute;
   margin: 50px 0px;
@@ -139,7 +162,7 @@ body {
   /* フォーム全体を大きくする */
 }
 
-/* line 108, app/assets/stylesheets/shared.scss */
+/* line 126, app/assets/stylesheets/shared.scss */
 .starting-point-form input {
   width: 90%;
   /* フォームやボタンの幅を親要素に合わせる */
@@ -151,7 +174,7 @@ body {
   /* ボタンの角を丸くする */
 }
 
-/* line 115, app/assets/stylesheets/shared.scss */
+/* line 133, app/assets/stylesheets/shared.scss */
 .starting-point-form button {
   margin: 0;
   width: 100%;
@@ -164,7 +187,7 @@ body {
   /* ボタンの角を丸くする */
 }
 
-/* line 123, app/assets/stylesheets/shared.scss */
+/* line 141, app/assets/stylesheets/shared.scss */
 #register-starting-point {
   background-color: #4CAF50;
   color: white;
@@ -172,13 +195,13 @@ body {
   cursor: pointer;
 }
 
-/* line 131, app/assets/stylesheets/shared.scss */
+/* line 148, app/assets/stylesheets/shared.scss */
 #register-starting-point:hover {
   background-color: #45a049;
 }
 
 /* モーダル */
-/* line 136, app/assets/stylesheets/shared.scss */
+/* line 153, app/assets/stylesheets/shared.scss */
 .custom-modal {
   display: none;
   position: fixed;
@@ -190,7 +213,7 @@ body {
   z-index: 1000;
 }
 
-/* line 147, app/assets/stylesheets/shared.scss */
+/* line 164, app/assets/stylesheets/shared.scss */
 .custom-modal-content {
   position: relative;
   margin: 10% auto;
@@ -201,7 +224,23 @@ body {
   border-radius: 5px;
 }
 
-/* line 157, app/assets/stylesheets/shared.scss */
+/* フォームの入力欄 */
+/* line 175, app/assets/stylesheets/shared.scss */
+.custom-modal-content input[type="text"],
+.custom-modal-content input[type="date"] {
+  width: 100%;
+  /* 入力欄をモーダルの幅に合わせる */
+  padding: 10px;
+  /* 内側の余白を調整 */
+  margin-bottom: 10px;
+  /* 下に余白を追加 */
+  font-size: 16px;
+  /* フォントサイズを調整 */
+  box-sizing: border-box;
+  /* パディング込みで幅を計算 */
+}
+
+/* line 186, app/assets/stylesheets/shared.scss */
 .close-button {
   position: absolute;
   top: 10px;
@@ -211,7 +250,7 @@ body {
 }
 
 /* フッター */
-/* line 166, app/assets/stylesheets/shared.scss */
+/* line 195, app/assets/stylesheets/shared.scss */
 .footer-container {
   align-items: center;
   bottom: 0;
@@ -221,7 +260,7 @@ body {
   z-index: 1000;
   background-color: #4CAF50;
   /* フッターの背景色 */
-  height: 60px;
+  height: 50px;
   display: flex;
   justify-content: space-around;
   /* ボタンを均等に配置 */
@@ -231,7 +270,7 @@ body {
   /* 上下の余白調整 */
 }
 
-/* line 181, app/assets/stylesheets/shared.scss */
+/* line 210, app/assets/stylesheets/shared.scss */
 .footer-link {
   width: 100px;
   /* 円の幅 */
@@ -273,7 +312,7 @@ body {
   /* 文字の周りに余白を追加 */
 }
 
-/* line 203, app/assets/stylesheets/shared.scss */
+/* line 232, app/assets/stylesheets/shared.scss */
 .footer-link:hover {
   transform: translateY(-50%) scale(1.1);
   /* ホバー時もtranslateYを維持しつつ拡大 */

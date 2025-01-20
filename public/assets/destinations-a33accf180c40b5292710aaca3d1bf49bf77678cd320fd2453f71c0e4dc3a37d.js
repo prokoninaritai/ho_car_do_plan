@@ -2,9 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save-route-btn');
   if (saveButton) {
     saveButton.addEventListener('click', saveRoute);
-  } else {
-    console.error('save-route-btn 要素が見つかりませんでした。');
-  }
+  } 
 });
 
 // --- 変数の宣言 ---
@@ -180,6 +178,13 @@ function saveRoute() {
   // Google Maps Directions Service
   const directionsService = new google.maps.DirectionsService();
 
+  // 移動時間のフォーマット変更
+  function formatTravelTime(seconds) {
+    const hours = Math.floor(seconds / 3600); // 秒を3600で割って時間を計算
+    const minutes = Math.floor((seconds % 3600) / 60); // 残りの秒を60で割って分を計算
+    return `${hours}:${minutes.toString().padStart(2, '0')}`; // 時間:分形式で返す
+  }
+
   // 出発地から最初の目的地までの経路
   const promises = [];
 
@@ -205,7 +210,7 @@ function saveRoute() {
             destination_latitude: firstMarker.getPosition().lat(),
             destination_longitude: firstMarker.getPosition().lng(),
             distance: leg.distance.value,
-            api_travel_time: leg.duration.value,
+            api_travel_time: formatTravelTime(leg.duration.value), // 秒数を「時間:分」に変換
           });
           resolve();
         } else {
@@ -239,7 +244,7 @@ function saveRoute() {
               destination_latitude: nextMarker.getPosition().lat(),
               destination_longitude: nextMarker.getPosition().lng(),
               distance: leg.distance.value,
-              api_travel_time: leg.duration.value,
+              api_travel_time: formatTravelTime(leg.duration.value), // 秒数を「時間:分」に変換
             });
             resolve();
           } else {
@@ -286,7 +291,7 @@ function addRemainingRoutes(routeData, visitDate, directionsService) {
             destination_latitude: nextMarker.getPosition().lat(),
             destination_longitude: nextMarker.getPosition().lng(),
             distance: leg.distance.value,
-            api_travel_time: leg.duration.value,
+            api_travel_time: formatTravelTime(leg.duration.value), // 秒数を「時間:分」に変換
           });
 
           // 全てのルートデータを追加した後に送信
