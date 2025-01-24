@@ -15,7 +15,7 @@
   <div class="destination-block time-block departure-block">
     <div class="left-section">   
       <label>出発時間:</label>
-      <input type="time" class="departure-time" value="07:00">
+      <input type="time" class="departure-time">
     </div>
     <div class="right-destination">
       <label>出発地:</label>
@@ -46,10 +46,10 @@
         <% unless index == @destinations.size - 1 %>
           <div class="left-section">
             <label>滞在予定時間:</label>
-            <input type="time" value="00:20">
+             <input type="time" class="stay-time" value="00:20">
           </div>
           <div class="left-section">   
-            <label>出発時間:</label>
+            <label>出発予定時間:</label>
             <input type="hidden" name="destinations[<%= index %>][next_departure_time]" class="next-departure-time-hidden">
             <input type="time" class="next-departure-time" readonly>
           </div>
