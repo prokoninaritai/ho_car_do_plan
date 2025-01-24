@@ -20,6 +20,7 @@ class ItinerariesController < ApplicationController
     @starting_point = StartingPoint.find_by(itinerary_id: @itinerary.id) 
     # 目的地の駅情報を取得
     @station_data = Station.where(name: @destinations.pluck(:destination))
+    @destinations = @itinerary.destinations
   end
   
   private
