@@ -17,11 +17,11 @@ class ItinerariesController < ApplicationController
     # 当日の目的地を取得
     @destinations = @itinerary.destinations.order(:arrival_order)
     # 出発地情報
-    @starting_point = StartingPoint.find_by(itinerary_id: @itinerary.id) 
+    @starting_point = StartingPoint.find_by(itinerary_id: @itinerary.id)
     # 目的地の駅情報を取得
     @station_data = Station.where(name: @destinations.pluck(:destination))
   end
-  
+
   private
 
   def itinerary_params

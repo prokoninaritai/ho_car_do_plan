@@ -12,7 +12,9 @@ let routeRenderers = []; // 各経路を描画する DirectionsRenderer を保�
 const markers = []; // すべてのマーカーを格納
 const labeledMarkers = new Map(); // ラベルを設定したマーカーを追跡
 const itineraryElement = document.getElementById('itinerary-data');
-const itineraryId = itineraryElement.dataset.itineraryId; // しおりのIDを取得 
+if (itineraryElement) {
+  const itineraryId = itineraryElement.dataset.itineraryId;
+}
 window.selectRouteMarker = selectRouteMarker;
 
 

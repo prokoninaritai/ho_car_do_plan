@@ -19,12 +19,12 @@ class TimeManagementsController < ApplicationController
     end
 
     def convert_time_to_minutes(time_str)
-      hours, minutes = time_str.split(":").map(&:to_i)
+      hours, minutes = time_str.split(':').map(&:to_i)
       hours * 60 + minutes
     end
 
-    render json: { message: "Time managements saved successfully", saved_records: saved_records }, status: :ok
-  rescue => e
+    render json: { message: 'Time managements saved successfully', saved_records: saved_records }, status: :ok
+  rescue StandardError => e
     render json: { error: e.message }, status: :unprocessable_entity
   end
 

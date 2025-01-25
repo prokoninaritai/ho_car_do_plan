@@ -783,7 +783,7 @@ body {
   /* パディング込みで幅を計算 */
 }
 
-/* line 186, app/assets/stylesheets/shared.scss */
+/* line 184, app/assets/stylesheets/shared.scss */
 .close-button {
   position: absolute;
   top: 10px;
@@ -793,7 +793,7 @@ body {
 }
 
 /* フッター */
-/* line 195, app/assets/stylesheets/shared.scss */
+/* line 193, app/assets/stylesheets/shared.scss */
 .footer-container {
   align-items: center;
   bottom: 0;
@@ -813,7 +813,7 @@ body {
   /* 上下の余白調整 */
 }
 
-/* line 210, app/assets/stylesheets/shared.scss */
+/* line 208, app/assets/stylesheets/shared.scss */
 .footer-link {
   width: 100px;
   /* 円の幅 */
@@ -855,7 +855,7 @@ body {
   /* 文字の周りに余白を追加 */
 }
 
-/* line 232, app/assets/stylesheets/shared.scss */
+/* line 230, app/assets/stylesheets/shared.scss */
 .footer-link:hover {
   transform: translateY(-50%) scale(1.1);
   /* ホバー時もtranslateYを維持しつつ拡大 */

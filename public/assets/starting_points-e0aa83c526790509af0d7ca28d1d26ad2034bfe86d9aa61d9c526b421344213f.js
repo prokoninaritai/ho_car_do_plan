@@ -2,13 +2,15 @@ document.addEventListener("turbo:load", () => {
   if (typeof initMap === "function") {
     initMap();
   }
+  const itineraryElement = document.getElementById('itinerary-data');
+  if (itineraryElement) {
+    window.itineraryId = itineraryElement.dataset.itineraryId;
+  }
 });
 
 // --- 変数の宣言 ---
 window.startMarker = null;
 window.markers = []; // グローバル変数として定義
-const itineraryElement = document.getElementById('itinerary-data');
-const itineraryId = itineraryElement.dataset.itineraryId;
 
 // マップを初期化
 function initMap() {
@@ -61,20 +63,23 @@ window.initMap = initMap;
 
 
 // 現在地を選ぶ
-document.getElementById('search-location').addEventListener('click', () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const latitude = position.coords.latitude;
-        const longitude = position.coords.longitude;
-        setStartingPoint(latitude, longitude, "現在地");
-      },
-      (error) => alert("現在地を取得できませんでした: " + error.message)
-    );
-  } else {
-    alert("ブラウザが現在地取得をサポートしていません。");
-  }
-});
+const searchLocationButton = document.getElementById('search-location');
+if (searchLocationButton) {
+  searchLocationButton.addEventListener('click', () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          setStartingPoint(latitude, longitude, "現在地");
+        },
+        (error) => alert("現在地を取得できませんでした: " + error.message)
+      );
+    } else {
+      alert("ブラウザが現在地取得をサポートしていません。");
+    }
+  });
+}
 
 // 出発地を設定する
 function setStartingPoint(lat, lng, title) {
@@ -94,15 +99,18 @@ function setStartingPoint(lat, lng, title) {
 
 
 // 出発地を登録
-document.getElementById('register-starting-point').addEventListener('click', () => {
-  if (startMarker) {
-    const position = startMarker.getPosition();
-    const title = startMarker.getTitle(); // マーカーのタイトル（出発地名）
-    saveStartingPoint(position.lat(), position.lng(), title);
-  } else {
-    alert("出発地点を選択してください。");
-  }
-});
+const registerButton = document.getElementById('register-starting-point');
+if (registerButton) {
+  registerButton.addEventListener('click', () => {
+    if (startMarker) {
+      const position = startMarker.getPosition();
+      const title = startMarker.getTitle(); // マーカーのタイトル（出発地名）
+      saveStartingPoint(position.lat(), position.lng(), title);
+    } else {
+      alert("出発地点を選択してください。");
+    }
+  });
+}
 
 // サーバーに送信する関数
 function saveStartingPoint(lat, lng, title) {
