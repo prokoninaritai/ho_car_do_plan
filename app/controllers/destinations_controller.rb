@@ -20,7 +20,6 @@ class DestinationsController < ApplicationController
     Rails.logger.debug "Received params: #{params.inspect}"
 
     ActiveRecord::Base.transaction do
-
       params[:destinations].each_with_index do |destination_data, index|
         destination_data[:arrival_order] = index + 1
         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
@@ -57,21 +56,21 @@ class DestinationsController < ApplicationController
     departure_time + travel_seconds
   end
 
-def arrival_time
-  return nil if departure_time.nil? || api_travel_time.nil?
+  def arrival_time
+    return nil if departure_time.nil? || api_travel_time.nil?
 
-  # api_travel_timeを"HH:MM"形式から秒に変換
-  travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
-  departure_time + travel_seconds
-end
+    # api_travel_timeを"HH:MM"形式から秒に変換
+    travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
+    departure_time + travel_seconds
+  end
 
-def arrival_time
-  return nil if departure_time.nil? || api_travel_time.nil?
+  def arrival_time
+    return nil if departure_time.nil? || api_travel_time.nil?
 
-  # api_travel_timeを"HH:MM"形式から秒に変換
-  travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
-  departure_time + travel_seconds
-end
+    # api_travel_timeを"HH:MM"形式から秒に変換
+    travel_seconds = api_travel_time.split(':').map(&:to_i).inject(0) { |a, b| a * 60 + b }
+    departure_time + travel_seconds
+  end
 
   private
 
@@ -88,7 +87,6 @@ end
   def format_time(seconds)
     minutes = seconds / 60
     hours = minutes / 60
-    formatted_time = format("%02d:%02d", hours, minutes % 60)
-    formatted_time
+    format('%02d:%02d', hours, minutes % 60)
   end
 end

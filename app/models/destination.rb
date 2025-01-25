@@ -7,7 +7,4 @@ class Destination < ApplicationRecord
   validates :arrival_order, presence: true
   validates :departure, presence: true
   validates :destination, presence: true
-  
-  
-
 end
