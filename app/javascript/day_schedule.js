@@ -7,16 +7,14 @@ document.addEventListener("turbo:load", () => {
   setupSaveButtons();
 });
 
-// === 時間計算関連 ===
 function setupTimeCalculations() {
-  const departureTimeInput = document.querySelector(".departure-time");
-  const travelTimeInputs = document.querySelectorAll(".travel-time");
-  const arrivalTimeInputs = document.querySelectorAll(".arrival-time");
-  const stayTimeInputs = document.querySelectorAll(".stay-time");
-  const nextDepartureTimeInputs = document.querySelectorAll(".next-departure-time");
+  const departureTimeInput = document.querySelector(".departure-time"); // 出発時間
+  const travelTimeInputs = document.querySelectorAll(".travel-time"); // 移動時間
+  const arrivalTimeInputs = document.querySelectorAll(".arrival-time"); // 到着時間
+  const stayTimeInputs = document.querySelectorAll(".stay-time"); // 滞在時間
+  const nextDepartureTimeInputs = document.querySelectorAll(".next-departure-time"); // 出発予定時間
 
 
-  
   // 出発時間が変更されたときの処理
   departureTimeInput?.addEventListener("input", () => {
     calculateTimes();
@@ -36,6 +34,7 @@ function setupTimeCalculations() {
     });
   });
 
+  
   // 時間を計算する関数
   function calculateTimes() {
     let currentDepartureTime = parseTime(departureTimeInput?.value || "00:00");
@@ -43,31 +42,24 @@ function setupTimeCalculations() {
     travelTimeInputs.forEach((travelInput, index) => {
       const travelTime = parseTime(travelInput.value || "00:00");
       const stayTime = parseTime(stayTimeInputs[index]?.value || "00:00");
-      
-      // 到着予定時間を計算して反映
+
+      // 到着予定時間の計算
       const arrivalTime = addTimes(currentDepartureTime, travelTime);
       if (arrivalTimeInputs[index]) {
         arrivalTimeInputs[index].value = formatTime(arrivalTime);
-        arrivalTimeInputs[index].setAttribute("value", formatTime(arrivalTime));
-        
       }
-      
 
-    // 出発予定時間の計算
-    const nextDepartureTime = addTimes(arrivalTime, stayTime);
-    if (nextDepartureTimeInputs[index]) {
-      nextDepartureTimeInputs[index].value = formatTime(nextDepartureTime);
-      nextDepartureTimeInputs[index].setAttribute("value", formatTime(nextDepartureTime));
+      // 次の目的地の出発時間 = 現在の目的地の到着時間 + 滞在時間
+      if (nextDepartureTimeInputs[index]) {
+        const nextDepartureTime = addTimes(arrivalTime, stayTime);
+        nextDepartureTimeInputs[index].value = formatTime(nextDepartureTime);
+      }
 
-    }
-
-      currentDepartureTime = nextDepartureTime; // 次の出発時間を更新
+      // 次の目的地の出発時間を次のループの出発時間として更新
+      currentDepartureTime = addTimes(arrivalTime, stayTime);
     });
   }
 }
-
-
-
 
 // === 保存関連 ===
 function setupSaveButtons() {
@@ -77,60 +69,54 @@ function setupSaveButtons() {
     return;
   }
 
+  saveButton.addEventListener("click", () => {
+    console.log("Saving time managements...");
+    const timeManagements = [];
 
-saveButton.addEventListener("click", () => {
-  console.log("Saving time managements...");
+    let currentDepartureTime = document.querySelector(".departure-time")?.value || "00:00";
 
-  const timeManagements = [];
+    document.querySelectorAll(".destination-details-block").forEach((block, index, array) => {
+      const destinationId = block.dataset.destinationId;
+      const arrivalTime = block.querySelector(".arrival-time")?.value;
+      const travelTime = block.querySelector(".travel-time")?.value || "00:00";
+      const stayDuration = index !== array.length - 1 ? block.querySelector(".stay-time")?.value || "00:00" : "00:00";
 
-      // すべての目的地データを取得
-      document.querySelectorAll(".destination-details-block").forEach((block) => {
-        const destinationId = block.dataset.destinationId;
-        const arrivalTime = block.querySelector(".arrival-time")?.value;
-        const departureTime = block.querySelector(".next-departure-time")?.value;
-        const travelTime = block.querySelector(".travel-time")?.value || "00:00";
-        const stayDuration = block.querySelector(".stay-time")?.value || "00:00";
-            
-        // 必須データが欠けていないか確認
-        if (!destinationId || !arrivalTime || !departureTime) {
-          console.error(`Missing data for destination ID: ${destinationId}`);
-          return;
-        }
-      
-        // データを配列に追加
-        timeManagements.push({
-          destination_id: parseInt(destinationId, 10),
-          arrival_time: arrivalTime, // HH:MM形式
-          departure_time: departureTime, // HH:MM形式
-          custom_travel_time: travelTime, // HH:MM形式
-          stay_duration: stayDuration, // HH:MM形式
-        });
+      if (!destinationId || !arrivalTime) {
+        console.error(`Missing data for destination ID: ${destinationId}`);
+        return;
+      }
+
+      timeManagements.push({
+        destination_id: parseInt(destinationId, 10),
+        departure_time: currentDepartureTime, // 修正：出発時間を「その目的地に行くための出発時間」にする
+        custom_travel_time: travelTime,
+        arrival_time: arrivalTime,
+        stay_duration: stayDuration,
       });
-      
-      // 配列の内容を確認
-      console.log("Collected time managements:", timeManagements);
 
-      // サーバーに送信
-      fetch("/time_managements", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
-        },
-        body: JSON.stringify({ time_managements }),
-      })
-        .then((response) => {
-          if (!response.ok) throw new Error("Failed to save time managements");
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Server response:", data.message);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
+      // 次の目的地の出発時間を更新（到着時間 + 滞在時間）
+      currentDepartureTime = index !== array.length - 1 ? formatTime(addTimes(parseTime(arrivalTime), parseTime(stayDuration))) : null;
     });
-  }
+
+    console.table(timeManagements);
+
+    fetch("/time_managements", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
+      },
+      body: JSON.stringify({ time_managements }),
+    })
+      .then(response => response.ok ? response.json() : Promise.reject("Failed to save"))
+      .then(data => console.log("Server response:", data.message))
+      .catch(error => console.error("Error:", error));
+  });
+}
+
+
+  
+
 
 // === 補助関数 ===
 // HH:MM形式を解析
