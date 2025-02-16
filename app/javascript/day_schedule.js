@@ -71,15 +71,21 @@ function setupSaveButtons() {
 
   saveButton.addEventListener("click", () => {
     console.log("Saving time managements...");
+    
     const timeManagements = [];
+
+    const travelTimeInputs = document.querySelectorAll(".travel-time"); // 移動時間のリストを取得
 
     let currentDepartureTime = document.querySelector(".departure-time")?.value || "00:00";
 
     document.querySelectorAll(".destination-details-block").forEach((block, index, array) => {
       const destinationId = block.dataset.destinationId;
       const arrivalTime = block.querySelector(".arrival-time")?.value;
-      const travelTime = block.querySelector(".travel-time")?.value || "00:00";
       const stayDuration = index !== array.length - 1 ? block.querySelector(".stay-time")?.value || "00:00" : "00:00";
+     
+      const travelTime = index < travelTimeInputs.length ? travelTimeInputs[index].value : "00:00";
+      
+      console.log(`Destination ID: ${destinationId}, Travel Time: ${travelTime}`);
 
       if (!destinationId || !arrivalTime) {
         console.error(`Missing data for destination ID: ${destinationId}`);
@@ -113,9 +119,6 @@ function setupSaveButtons() {
       .catch(error => console.error("Error:", error));
   });
 }
-
-
-  
 
 
 // === 補助関数 ===
