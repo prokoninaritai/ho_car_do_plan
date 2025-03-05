@@ -1,52 +1,82 @@
 require 'csv'
 
-# Stationデータの登録
+# 空欄をnilにする共通メソッド
+def normalize_row(row)
+  row.to_h.transform_values { |v| v.presence }
+end
+
+# Stationデータの登録・更新
 CSV.foreach(Rails.root.join('db/csv/stations.csv'), headers: true) do |row|
-  Station.find_or_create_by!(
-    station_number: row['station_number'] # 一意性を確認
-  ) do |station|
-    station.region = row['region']
-    station.name = row['name']
-    station.address = row['address']
-    station.phone = row['phone']
-    station.latitude = row['latitude']
-    station.longitude = row['longitude']
+  data = normalize_row(row)
+
+  station = Station.find_or_initialize_by(station_number: data['station_number'])
+
+  station.region = data['region']
+  station.name = data['name']
+  station.address = data['address']
+  station.phone = data['phone']
+  station.latitude = data['latitude']&.to_f
+  station.longitude = data['longitude']&.to_f
+
+  if station.changed?
+    station.save!
+    puts "Updated station: #{station.station_number}"
   end
 end
 
-# ClosedDays データの登録
+# ClosedDaysデータの登録・更新
 CSV.foreach(Rails.root.join('db/csv/closed_days.csv'), headers: true) do |row|
-  ClosedDay.find_or_create_by!(
-    station_id: row['station_id'],
-    start_date: row['start_date'], 
-    end_date: row['end_date']      
-  ) do |closed_day|
-    closed_day.closed_info = row['closed_info']
-    closed_day.remarks = row['remarks']
+  data = normalize_row(row)
+
+  closed_day = ClosedDay.find_or_initialize_by(
+    station_number: data['station_number'],
+    start_date: data['start_date'],
+    end_date: data['end_date']
+  )
+
+  closed_day.closed_info = data['closed_info']
+  closed_day.remarks = data['remarks']
+
+  if closed_day.changed?
+    closed_day.save!
+    puts "Updated ClosedDay: station_number=#{data['station_number']} start_date=#{data['start_date']} end_date=#{data['end_date']}"
   end
 end
 
-# business_hours データの登録
+# BusinessHoursデータの登録・更新
 CSV.foreach(Rails.root.join('db/csv/business_hours.csv'), headers: true) do |row|
-  BusinessHour.find_or_create_by!(
-    station_id: row['station_id'],
-    start_date: row['start_date'], 
-    end_date: row['end_date'],      
-    start_day: row['start_day'].presence, # 空欄を nil に変換
-    end_day: row['end_day'].presence      # 空欄を nil に変換
-  ) do |business_hour|
-    business_hour.opening_time = row['opening_time']
-    business_hour.closing_time = row['closing_time']
+  data = normalize_row(row)
+
+  business_hour = BusinessHour.find_or_initialize_by(
+    station_number: data['station_number'],
+    start_date: data['start_date'],
+    end_date: data['end_date'],
+    start_day: data['start_day'],
+    end_day: data['end_day']
+  )
+
+  business_hour.opening_time = data['opening_time']
+  business_hour.closing_time = data['closing_time']
+
+  if business_hour.changed?
+    business_hour.save!
+    puts "Updated BusinessHour: station_number=#{data['station_number']} start_date=#{data['start_date']} end_date=#{data['end_date']}"
   end
 end
 
-# stamp_available_hours データの登録
+# StampAvailableHoursデータの登録・更新
 CSV.foreach(Rails.root.join('db/csv/stamp_available_hours.csv'), headers: true) do |row|
-  StampAvailableHour.find_or_create_by!(
-    station_id: row['station_id'],     
-  ) do |stamp_available_hour|
-    stamp_available_hour.available_hour = row['available_hour']
-    stamp_available_hour.remarks = row['remarks']
+  data = normalize_row(row)
+
+  stamp_available_hour = StampAvailableHour.find_or_initialize_by(
+    station_number: data['station_number']
+  )
+
+  stamp_available_hour.available_hour = data['available_hour']
+  stamp_available_hour.remarks = data['remarks']
+
+  if stamp_available_hour.changed?
+    stamp_available_hour.save!
+    puts "Updated StampAvailableHour: station_number=#{data['station_number']}"
   end
 end
-
