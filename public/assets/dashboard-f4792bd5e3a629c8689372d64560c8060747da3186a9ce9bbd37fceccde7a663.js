@@ -1,3 +1,126 @@
+//休館日の表示
+function formatClosedPeriod(day) {
+  const isFreeTextDate = (date) => {
+    return date && !date.includes("-");
+  };
+
+  // 日付が両方空なら何も表示しない
+  if (!day.start_date && !day.end_date) {
+    return "";
+  }
+
+  // 【1】start_dateが文字列でend_dateが文字列 → そのまま表示（4月中旬～11月上旬）
+  if (isFreeTextDate(day.start_date) && isFreeTextDate(day.end_date)) {
+    return `${day.start_date}〜${day.end_date}`;
+  }
+
+  // 【2】start_dateが文字列でend_dateが無い → 単発の特別日表示（GWなど）
+  if (isFreeTextDate(day.start_date) && !day.end_date) {
+    return day.start_date;
+  }
+
+  // ここからは普通の「月-日」形式の処理
+
+  const parseDate = (dateString) => {
+    const parts = dateString.split("-");
+    return {
+      month: parseInt(parts[0], 10),
+      day: parseInt(parts[1], 10),
+    };
+  };
+
+  const start = parseDate(day.start_date);
+  const end = parseDate(day.end_date);
+
+  // 【3】年末年始は月日表示
+  if (day.closed_info.includes("年末年始")) {
+    return `${start.month}月${start.day}日〜${end.month}月${end.day}日`;
+  }
+
+  // 【4】1月1日～12月31日の場合（通年）、期間表示なし
+  if (start.month === 1 && start.day === 1 && end.month === 12 && end.day === 31) {
+    return "";  // 通年は期間表示なし
+  }
+
+  // 【5】月初～月末なら「○月」
+  const isFullMonth = (
+    start.day === 1 &&
+    (
+      (end.day === 31 && [1, 3, 5, 7, 8, 10, 12].includes(end.month)) ||  // 31日の月
+      (end.day === 30 && [4, 6, 9, 11].includes(end.month)) ||            // 30日の月
+      (end.day === 28 && end.month === 2)                                 // 平年2月
+    ) &&
+    start.month === end.month
+  );
+
+  if (isFullMonth) {
+    return `${start.month}月`;
+  }
+
+  // 【6】普通の「○月～○月」
+  if (start.month !== end.month) {
+    return `${start.month}月〜${end.month}月`;
+  }
+
+  // 【7】同じ月なら「○月○日～○日」
+  return `${start.month}月${start.day}日〜${end.month}月${end.day}日`;
+}
+
+//開館時間の表示
+function formatBusinessPeriod(hour) {
+  if (!hour.start_date && !hour.end_date && !hour.start_day && !hour.end_day) {
+    return "";  // 日付も曜日も無いなら期間表示しない
+  }
+
+  const isFullYear = hour.start_date === "1-1" && hour.end_date === "12-31";
+
+  // 通年の場合は期間表示しない
+  if (isFullYear) return "";
+
+  // 文字列期間対応（GW・夏休みなど）
+  if (hour.start_date && isNaN(hour.start_date[0])) {
+    return hour.start_date;
+  }
+
+  // 日付フォーマット処理
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";  // end_dateがnullの場合などを考慮
+
+    if (dateStr.includes("上旬") || dateStr.includes("中旬") || dateStr.includes("下旬")) {
+      return dateStr;  // 「4月上旬」などはそのまま
+    }
+
+    const [month, day] = dateStr.split("-").map(Number);
+    return `${month}月${day}日`;
+  };
+
+  const startDate = formatDate(hour.start_date);
+  const endDate = formatDate(hour.end_date);
+
+  // 曜日指定処理
+  const daysOfWeek = ["月", "火", "水", "木", "金", "土", "日"];
+  const startDay = hour.start_day ? daysOfWeek[hour.start_day - 1] + "曜日" : "";
+  const endDay = hour.end_day ? daysOfWeek[hour.end_day - 1] + "曜日" : "";
+
+  let periodText = "";
+
+  if (startDate && endDate) {
+    periodText = `${startDate}〜${endDate}`;
+  } else if (startDate && !endDate) {
+    periodText = startDate;
+  }
+
+  if (startDay && endDay) {
+    if (periodText) {
+      periodText += `（${startDay}〜${endDay}）`;
+    } else {
+      periodText = `${startDay}〜${endDay}`;
+    }
+  }
+
+  return periodText;
+}
+
 document.addEventListener("turbo:load", () => {
   function initMap() {
     const mapOptions = {
@@ -68,12 +191,11 @@ document.addEventListener("turbo:load", () => {
               const divItem = document.createElement("div");
 
               // 表示用テキストの作成
-              let formattedStartDate = day.start_date.replace("-", "月") + "日";
-              let formattedEndDate = day.end_date.replace("-", "月") + "日";
               const closedInfo = day.closed_info.includes("曜日") ? `毎週${day.closed_info}` : day.closed_info;
+              let periodText = formatClosedPeriod(day);
               let text = `${closedInfo}`;
-              if (formattedStartDate && formattedEndDate) {
-                text += ` (${formattedStartDate}〜${formattedEndDate})`;
+              if (periodText) {
+                text += ` (${periodText})`;
               }
 
               // メインテキスト部分
@@ -143,3 +265,4 @@ document.addEventListener("turbo:load", () => {
     }
   }
 });
+

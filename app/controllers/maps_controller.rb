@@ -8,9 +8,9 @@ class MapsController < ApplicationController
 
   def stations_data
     stations = Station
-      .select(:station_number, :name, :latitude, :longitude, :address)
-      .includes(:closed_days, :business_hours, :stamp_available_hours)
-  
+               .select(:station_number, :name, :latitude, :longitude, :address)
+               .includes(:closed_days, :business_hours, :stamp_available_hours)
+
     render json: stations.as_json(include: [:closed_days, :business_hours, :stamp_available_hours])
   end
 end
