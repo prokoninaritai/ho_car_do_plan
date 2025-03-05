@@ -12,27 +12,25 @@
 
 ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
   create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "station_id", null: false
+    t.integer "station_number", null: false
     t.string "start_date"
     t.string "end_date"
-    t.time "opening_time", null: false
-    t.time "closing_time", null: false
+    t.time "opening_time"
+    t.time "closing_time"
     t.integer "start_day"
     t.integer "end_day"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["station_id"], name: "index_business_hours_on_station_id"
   end
 
   create_table "closed_days", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "station_id", null: false
-    t.string "start_date", null: false
-    t.string "end_date", null: false
-    t.string "closed_info", null: false
+    t.integer "station_number", null: false
+    t.string "start_date"
+    t.string "end_date"
+    t.string "closed_info"
     t.string "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["station_id"], name: "index_closed_days_on_station_id"
   end
 
   create_table "destinations", charset: "utf8mb3", force: :cascade do |t|
@@ -63,12 +61,11 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
   end
 
   create_table "stamp_available_hours", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "station_id", null: false
+    t.integer "station_number", null: false
     t.string "available_hour", null: false
     t.string "remarks"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["station_id"], name: "index_stamp_available_hours_on_station_id"
   end
 
   create_table "starting_points", charset: "utf8mb3", force: :cascade do |t|
@@ -95,10 +92,10 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
 
   create_table "time_managements", charset: "utf8mb3", force: :cascade do |t|
     t.bigint "destination_id", null: false
-    t.time "departure_time", null: false
-    t.integer "custom_travel_time", null: false
-    t.time "arrival_time", null: false
-    t.integer "stay_duration", null: false
+    t.string "departure_time", null: false
+    t.string "custom_travel_time", null: false
+    t.string "arrival_time", null: false
+    t.string "stay_duration", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["destination_id"], name: "index_time_managements_on_destination_id"
@@ -117,11 +114,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
-  add_foreign_key "business_hours", "stations"
-  add_foreign_key "closed_days", "stations"
   add_foreign_key "destinations", "itineraries"
   add_foreign_key "itineraries", "users"
-  add_foreign_key "stamp_available_hours", "stations"
   add_foreign_key "starting_points", "itineraries"
   add_foreign_key "time_managements", "destinations"
 end
