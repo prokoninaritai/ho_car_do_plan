@@ -7,7 +7,12 @@ class TimeManagementsController < ApplicationController
     time_managements = params.require(:timeManagements)
 
     time_managements.each do |tm_params|
-      time_management = TimeManagement.new(tm_params.permit(:destination_id, :departure_time, :custom_travel_time, :arrival_time, :stay_duration))
+      permitted = tm_params.permit(:destination_id, :departure_time, :custom_travel_time, :arrival_time, :stay_duration)
+
+      # 既存のtime_managementがあれば更新、なければ新規作成
+      existing = TimeManagement.find_by(destination_id: permitted[:destination_id])
+      time_management = existing || TimeManagement.new
+      time_management.assign_attributes(permitted)
 
       if time_management.save
         Rails.logger.info "TimeManagement saved: #{time_management.inspect}"

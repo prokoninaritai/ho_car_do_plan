@@ -11,7 +11,7 @@
 # It's strongly recommended that you check this file into your version control system.
 
 ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
-  create_table "business_hours", charset: "utf8mb3", force: :cascade do |t|
+  create_table "business_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
     t.string "end_date"
@@ -23,7 +23,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "closed_days", charset: "utf8mb3", force: :cascade do |t|
+  create_table "closed_days", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
     t.string "end_date"
@@ -33,8 +33,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "destinations", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "itinerary_id", null: false
+  create_table "destinations", force: :cascade do |t|
+    t.integer "itinerary_id", null: false
     t.date "visit_date", null: false
     t.integer "arrival_order", null: false
     t.string "departure", null: false
@@ -50,17 +50,17 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.index ["itinerary_id"], name: "index_destinations_on_itinerary_id"
   end
 
-  create_table "itineraries", charset: "utf8mb3", force: :cascade do |t|
+  create_table "itineraries", force: :cascade do |t|
     t.string "title", null: false
     t.date "start_date", null: false
     t.date "end_date", null: false
-    t.bigint "user_id", null: false
+    t.integer "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_itineraries_on_user_id"
   end
 
-  create_table "stamp_available_hours", charset: "utf8mb3", force: :cascade do |t|
+  create_table "stamp_available_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "available_hour", null: false
     t.string "remarks"
@@ -68,8 +68,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "starting_points", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "itinerary_id", null: false
+  create_table "starting_points", force: :cascade do |t|
+    t.integer "itinerary_id", null: false
     t.string "starting_point", null: false
     t.decimal "starting_point_latitude", precision: 10, scale: 6, null: false
     t.decimal "starting_point_longitude", precision: 10, scale: 6, null: false
@@ -78,7 +78,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.index ["itinerary_id"], name: "index_starting_points_on_itinerary_id"
   end
 
-  create_table "stations", charset: "utf8mb3", force: :cascade do |t|
+  create_table "stations", force: :cascade do |t|
     t.string "region", null: false
     t.integer "station_number", null: false
     t.string "name", null: false
@@ -90,8 +90,8 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "time_managements", charset: "utf8mb3", force: :cascade do |t|
-    t.bigint "destination_id", null: false
+  create_table "time_managements", force: :cascade do |t|
+    t.integer "destination_id", null: false
     t.string "departure_time", null: false
     t.string "custom_travel_time", null: false
     t.string "arrival_time", null: false
@@ -101,7 +101,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.index ["destination_id"], name: "index_time_managements_on_destination_id"
   end
 
-  create_table "users", charset: "utf8mb3", force: :cascade do |t|
+  create_table "users", force: :cascade do |t|
     t.string "nickname", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false

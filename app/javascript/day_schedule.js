@@ -4,7 +4,7 @@ document.addEventListener("turbo:load", () => {
   setupTimeCalculations();
 
   // しおりの登録ボタンを設定
-  setupSaveButtons();
+  setupSaveButton();
 });
 
 // === 時間計算関連 ===
@@ -83,25 +83,27 @@ function setupSaveButton() {
 
     const timeManagements = [];
     const destinationBlocks = document.querySelectorAll(".destination-details-block");
+    // 移動時間ブロックは destination-details-block の外にあるので、全体から取得
+    const travelTimeBlocks = document.querySelectorAll(".travel-time-block");
 
     destinationBlocks.forEach((block, index, array) => {
       const destinationId = block.dataset.destinationId;
       const arrivalTime = block.querySelector(".arrival-time")?.value;
-      const departureTime = index !== array.length - 1 ? block.querySelector(".next-departure-time")?.value : null;
-      
-      // `travel-time` が正しく取得できるか確認
-      const travelTimeInput = block.querySelector(".travel-time");
+      const isLast = index === array.length - 1;
+
+      // 最後の目的地は次の出発がないので到着時間をセット
+      const departureTime = isLast ? arrivalTime : block.querySelector(".next-departure-time")?.value;
+
+      // 移動時間は対応する travel-time-block から取得（index番目のブロックが対応）
+      const travelTimeInput = travelTimeBlocks[index]?.querySelector(".travel-time");
       const stayTimeInput = block.querySelector(".stay-time");
 
-      console.log(`Travel Time Input (${destinationId}):`, travelTimeInput?.value);
-      console.log(`Stay Duration Input (${destinationId}):`, stayTimeInput?.value);
-
       const travelTime = travelTimeInput?.value || "00:00";
-      const stayDuration = index !== array.length - 1 ? stayTimeInput?.value || "00:00" : "00:00";
+      const stayDuration = isLast ? "00:00" : (stayTimeInput?.value || "00:00");
 
-      console.log(`Destination ID: ${destinationId}, Arrival Time: ${arrivalTime}, Departure Time:${departureTime}, Travel Time: ${travelTime}, Stay Duration: ${stayDuration}`);
+      console.log(`Dest ${destinationId}: arrival=${arrivalTime} departure=${departureTime} travel=${travelTime} stay=${stayDuration}`);
 
-      if (!destinationId || !arrivalTime || (index !== array.length - 1 && !departureTime)) {
+      if (!destinationId || !arrivalTime || !departureTime) {
         console.error(`Missing data for destination ID: ${destinationId}`);
         return;
       }
@@ -110,8 +112,8 @@ function setupSaveButton() {
         destination_id: parseInt(destinationId, 10),
         arrival_time: arrivalTime,
         departure_time: departureTime,
-        custom_travel_time: travelTime,  // 修正: そのまま HH:MM 形式で保存
-        stay_duration: stayDuration,  // 修正: そのまま HH:MM 形式で保存
+        custom_travel_time: travelTime,
+        stay_duration: stayDuration,
       });
     });
 
@@ -123,10 +125,17 @@ function setupSaveButton() {
         "Content-Type": "application/json",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
       },
-      body: JSON.stringify({ time_managements }),
+      body: JSON.stringify({ timeManagements }),
     })
       .then(response => response.ok ? response.json() : Promise.reject("Failed to save"))
-      .then(data => console.log("Server response:", data.message))
+      .then(data => {
+        console.log("Server response:", data.message);
+        const scheduleData = document.getElementById("day-schedule-data");
+        const itineraryId = scheduleData.dataset.itineraryId;
+
+        // しおり確認画面へ戻る
+        window.location.href = `/itineraries/${itineraryId}`;
+      })
       .catch(error => console.error("Error:", error));
   });
 }

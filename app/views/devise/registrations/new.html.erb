@@ -1,16 +1,15 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>新規登録</title>
-  <link rel="stylesheet" href="<%= 'app/ devise/registrations/new.css' %>">
-</head>
-<body class="registration-page">
+<div class="registration-page">
   <div class="top-banner"></div>
   <div class="form-container">
     <h1>新規登録</h1>
-    <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { data: { turbo: false } }) do |f| %>
+      <% if resource.errors.any? %>
+        <div class="error-messages">
+          <% resource.errors.full_messages.each do |message| %>
+            <p><%= message %></p>
+          <% end %>
+        </div>
+      <% end %>
       <div class="form-group">
         <%= f.label :nickname, 'ニックネーム' %>
         <%= f.text_field :nickname, required: true, autofocus: true %>
@@ -29,5 +28,4 @@
     <% end %>
   </div>
   <div class="bottom-banner"></div>
-</body>
-</html>
+</div>

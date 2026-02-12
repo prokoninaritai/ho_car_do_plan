@@ -18,7 +18,24 @@
   <div class="map-container">
     <!-- 地図の表示領域 -->
     <div class="map-container">
-      <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>" data-start-date="<%= @start_date %>"></div>
+      <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>" data-start-date="<%= @start_date %>" data-current-day="<%= @current_day %>"
+        <% if @previous_last_destination %>
+          data-prev-destination-name="<%= @previous_last_destination.destination %>"
+          data-prev-destination-lat="<%= @previous_last_destination.destination_latitude %>"
+          data-prev-destination-lng="<%= @previous_last_destination.destination_longitude %>"
+        <% end %>
+        <% if @previous_destinations.present? %>
+          data-prev-destinations="<%= @previous_destinations.to_json %>"
+        <% end %>
+        <% if @existing_starting_point %>
+          data-existing-sp-name="<%= @existing_starting_point.starting_point %>"
+          data-existing-sp-lat="<%= @existing_starting_point.starting_point_latitude %>"
+          data-existing-sp-lng="<%= @existing_starting_point.starting_point_longitude %>"
+        <% end %>
+        <% if @existing_destinations.present? %>
+          data-existing-destinations="<%= @existing_destinations.map { |d| { name: d.destination } }.to_json %>"
+        <% end %>
+      ></div>
       <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
       <div id="map2"></div>
     </div>

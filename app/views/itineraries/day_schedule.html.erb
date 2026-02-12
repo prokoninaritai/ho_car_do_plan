@@ -1,8 +1,9 @@
 <!-- ヘッダー -->
+  <div id="day-schedule-data" data-itinerary-id="<%= @itinerary.id %>" data-current-day="<%= @current_day %>" data-total-days="<%= @total_days %>"></div>
   <header class="header">
     <div class="welcome">
       <%= @itinerary.title %> <br>
-      <%= @visit_date.strftime('%Y年%m月%d日') %>（<%= params[:current_day] %>日目）
+      <%= @visit_date.strftime('%Y年%m月%d日') %>（<%= @current_day %>日目）
     </div>
     </div>
       <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
@@ -11,11 +12,22 @@
 
 <main>
 <div class="itinerary-contents">
+  <%# 出発時間を計算: 1番目の到着時間 - 移動時間 %>
+  <% first_tm = @destinations.first&.time_management %>
+  <% saved_departure = nil %>
+  <% if first_tm && first_tm.arrival_time.present? && first_tm.custom_travel_time.present? %>
+    <% arr = first_tm.arrival_time.split(':').map(&:to_i) %>
+    <% trv = first_tm.custom_travel_time.split(':').map(&:to_i) %>
+    <% total_min = (arr[0] * 60 + arr[1]) - (trv[0] * 60 + trv[1]) %>
+    <% total_min += 24 * 60 if total_min < 0 %>
+    <% saved_departure = format('%02d:%02d', total_min / 60, total_min % 60) %>
+  <% end %>
+
   <!-- 出発地ブロック -->
   <div class="destination-block time-block departure-block">
-    <div class="left-section">   
+    <div class="left-section">
       <label>出発時間:</label>
-      <input type="time" class="departure-time">
+      <input type="time" class="departure-time" value="<%= saved_departure %>">
     </div>
     <div class="right-destination">
       <label>出発地:</label>
@@ -28,8 +40,8 @@
     <div class="left-container">
       <div class="left-section">
         <label>移動時間:</label>
-        <input type="time" class="travel-time" 
-          value="<%= @destinations.first&.api_travel_time.rjust(5, '0')  %>">
+        <input type="time" class="travel-time"
+          value="<%= first_tm&.custom_travel_time&.rjust(5, '0') || @destinations.first&.api_travel_time&.rjust(5, '0') %>">
       </div>
     </div>
   </div>
@@ -103,6 +115,9 @@
 
 <!-- フッター -->
  <footer class="footer-container">
+   <%= link_to '経路選択に<br>戻る'.html_safe,
+     new_itinerary_destination_path(@itinerary, current_day: @current_day),
+     class: 'footer-link' %>
    <button id="register_time" class="footer-link">しおりを<br>登録する</button>
  </footer>
 

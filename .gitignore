@@ -25,10 +25,11 @@
 !/tmp/storage/
 !/tmp/storage/.keep
 
-#/public/assets
+/public/assets
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
 /.Ds_Store
 /.env
+/db/*.sqlite3
 

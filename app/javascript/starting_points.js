@@ -5,6 +5,28 @@ document.addEventListener("turbo:load", () => {
   const itineraryElement = document.getElementById('itinerary-data');
   if (itineraryElement) {
     window.itineraryId = itineraryElement.dataset.itineraryId;
+
+    // 既存の出発地がある場合はスキップ（経路選択画面に戻った場合）
+    const hasExistingSp = itineraryElement.dataset.existingSpName;
+    if (hasExistingSp) return;
+
+    // 2日目以降の場合、前日の最後の目的地を自動でスタート地点にセット
+    const prevName = itineraryElement.dataset.prevDestinationName;
+    const prevLat = parseFloat(itineraryElement.dataset.prevDestinationLat);
+    const prevLng = parseFloat(itineraryElement.dataset.prevDestinationLng);
+
+    if (prevName && !isNaN(prevLat) && !isNaN(prevLng)) {
+      const currentDay = parseInt(itineraryElement.dataset.currentDay);
+      // マップの読み込みを待ってからセット
+      const waitForMap = setInterval(() => {
+        if (window.map) {
+          clearInterval(waitForMap);
+          setStartingPoint(prevLat, prevLng, prevName);
+          const msg = `${currentDay - 1}日目の日程を登録しました。${currentDay}日目の経路を登録してください`;
+          saveStartingPoint(prevLat, prevLng, prevName, msg);
+        }
+      }, 200);
+    }
   }
 });
 
@@ -26,6 +48,39 @@ function initMap() {
     preserveViewport: true,
     suppressMarkers: true,
   });
+
+  // 過去日の目的地を色分けピンで表示
+  const itineraryEl = document.getElementById('itinerary-data');
+  if (itineraryEl && itineraryEl.dataset.prevDestinations) {
+    const dayColors = {
+      1: 'red',
+      2: 'orange',
+      3: 'yellow',
+      4: 'green',
+      5: 'ltblue',
+      6: 'blue',
+      7: 'purple'
+    };
+    const prevDestinations = JSON.parse(itineraryEl.dataset.prevDestinations);
+    prevDestinations.forEach((dest) => {
+      const colorName = dayColors[dest.day] || 'red';
+      const iconUrl = `http://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`;
+      new google.maps.Marker({
+        position: { lat: parseFloat(dest.lat), lng: parseFloat(dest.lng) },
+        map: window.map,
+        title: dest.name,
+        label: {
+          text: String(dest.arrival_order),
+          color: '#000000',
+          fontWeight: 'bold'
+        },
+        icon: {
+          url: iconUrl,
+          scaledSize: new google.maps.Size(40, 40),
+        },
+      });
+    });
+  }
 
   // 駅データを取得
   const stationsElement = document.getElementById("stations-data");
@@ -57,10 +112,49 @@ function initMap() {
       }
     });
   });
+
+  // 既存の出発地がある場合、経路選択モードを復元
+  restoreExistingState();
 }
 
 window.initMap = initMap;
 
+// 既存の出発地・目的地がある場合に経路選択モードを復元
+function restoreExistingState() {
+  const itineraryEl = document.getElementById('itinerary-data');
+  if (!itineraryEl) return;
+
+  const spName = itineraryEl.dataset.existingSpName;
+  const spLat = parseFloat(itineraryEl.dataset.existingSpLat);
+  const spLng = parseFloat(itineraryEl.dataset.existingSpLng);
+
+  if (!spName || isNaN(spLat) || isNaN(spLng)) return;
+
+  // 出発地マーカーをセット
+  setStartingPoint(spLat, spLng, spName);
+
+  // UIを経路選択モードに切り替え
+  const heading = document.querySelector('.starting-point-heading');
+  if (heading) heading.textContent = '経路を選択する:';
+  const searchBtn = document.getElementById('search-location');
+  if (searchBtn) searchBtn.style.display = 'none';
+  const registerBtn = document.getElementById('register-starting-point');
+  if (registerBtn) registerBtn.style.display = 'none';
+
+  enableRouteSelection();
+
+  // 既存の目的地があればマーカーを選択状態にする
+  const existingDestsJson = itineraryEl.dataset.existingDestinations;
+  if (existingDestsJson) {
+    const existingDests = JSON.parse(existingDestsJson);
+    existingDests.forEach((dest) => {
+      const marker = window.markers.find(m => m.getTitle() === dest.name);
+      if (marker) {
+        selectRouteMarker(marker);
+      }
+    });
+  }
+}
 
 // 現在地を選ぶ
 const searchLocationButton = document.getElementById('search-location');
@@ -113,7 +207,7 @@ if (registerButton) {
 }
 
 // サーバーに送信する関数
-function saveStartingPoint(lat, lng, title) {
+function saveStartingPoint(lat, lng, title, customMessage) {
   fetch(`/itineraries/${itineraryId}/starting_points`, {
     method: 'POST',
     headers: {
@@ -131,7 +225,7 @@ function saveStartingPoint(lat, lng, title) {
   })
   .then(response => {
     if (!response.ok) throw new Error("出発地の登録に失敗しました");
-    alert("出発地が登録されました！");
+    alert(customMessage || "出発地が登録されました！");
     console.log(window.startPoint);
 
      // 文言を変更する

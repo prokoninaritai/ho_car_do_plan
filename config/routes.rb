@@ -20,6 +20,9 @@ Rails.application.routes.draw do
     root 'static_pages#home'
   end
 
+  # Time managements bulk create
+  resources :time_managements, only: [:create]
+
   # Stations data endpoint for JSON
   get 'maps/stations_data', to: 'maps#stations_data'
 

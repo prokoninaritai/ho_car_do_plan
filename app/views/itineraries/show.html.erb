@@ -1,14 +1,359 @@
-<h1><%= @itinerary.title %></h1>
+<!-- ヘッダー -->
+<header class="header">
+  <div class="welcome">
+    <%= @itinerary.title %>
+  </div>
+  <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+</header>
 
-<h2>全体の旅程</h2>
-<% @destinations_by_date.each do |date, destinations| %>
-  <h3><%= date %> の経路</h3>
-  <ul>
-    <% destinations.each do |destination| %>
-      <li>
-        <%= destination.departure %> → <%= destination.destination %>
-        （距離: <%= destination.distance %> km, 移動時間: <%= destination.api_travel_time %> 分）
-      </li>
+<main>
+<div class="main-contents">
+  <!-- 地図 -->
+  <div class="map-container">
+    <div id="all-destinations-data"
+      data-destinations="<%= @all_destinations_for_map.to_json %>"
+      <% if @starting_point %>
+        data-sp-lat="<%= @starting_point.starting_point_latitude %>"
+        data-sp-lng="<%= @starting_point.starting_point_longitude %>"
+        data-sp-name="<%= @starting_point.starting_point %>"
+      <% end %>
+    ></div>
+    <div id="map-show"></div>
+  </div>
+
+  <!-- 凡例 -->
+  <% day_colors_hex = { 1 => '#FF0000', 2 => '#FF8C00', 3 => '#FFD700', 4 => '#228B22', 5 => '#00BFFF', 6 => '#0000FF', 7 => '#8B008B' } %>
+  <div class="map-legend">
+    <% (1..@total_days).each do |d| %>
+      <span class="legend-item">
+        <span class="legend-dot" style="background: <%= day_colors_hex[d] || '#FF0000' %>;"></span>
+        <%= d %>日目
+      </span>
     <% end %>
-  </ul>
-<% end %>
+  </div>
+
+  <!-- タブ -->
+  <div class="show-tabs">
+    <% (1..@total_days).each do |d| %>
+      <button class="show-tab <%= 'active' if d == 1 %>" data-day="<%= d %>">
+        <%= d %>日目
+      </button>
+    <% end %>
+  </div>
+
+  <!-- タブコンテンツ -->
+  <% (1..@total_days).each do |d| %>
+    <% date = @itinerary.start_date + (d - 1).days %>
+    <% destinations = @destinations_by_date[date] || [] %>
+    <div class="show-tab-content <%= 'active' if d == 1 %>" data-day="<%= d %>">
+      <h3><%= date.strftime('%Y年%-m月%-d日') %>（<%= d %>日目）</h3>
+
+      <% if destinations.any? %>
+        <%# 出発地の出発時間を計算: 1番目の到着時間 - 移動時間 %>
+        <% first_tm = destinations.first.time_management %>
+        <% start_departure = nil %>
+        <% if first_tm && first_tm.arrival_time.present? && first_tm.custom_travel_time.present? %>
+          <% arr = first_tm.arrival_time.split(':').map(&:to_i) %>
+          <% trv = first_tm.custom_travel_time.split(':').map(&:to_i) %>
+          <% total_min = (arr[0] * 60 + arr[1]) - (trv[0] * 60 + trv[1]) %>
+          <% total_min += 24 * 60 if total_min < 0 %>
+          <% start_departure = format('%02d:%02d', total_min / 60, total_min % 60) %>
+        <% end %>
+
+        <!-- 出発地 -->
+        <div class="show-block show-departure">
+          <div class="show-block-label">出発地</div>
+          <div class="show-block-body">
+            <span class="show-place-name"><%= destinations.first.departure %></span>
+            <% if start_departure %>
+              <span class="show-time">出発 <%= start_departure %></span>
+            <% end %>
+          </div>
+        </div>
+
+        <% destinations.each_with_index do |dest, idx| %>
+          <!-- 移動 -->
+          <div class="show-block show-travel">
+            <div class="show-block-icon">↓</div>
+            <div class="show-block-body">
+              <span class="show-detail">移動 <%= dest.time_management&.custom_travel_time || dest.api_travel_time %></span>
+              <span class="show-detail"><%= (dest.distance / 1000.0).round(1) %> km</span>
+            </div>
+          </div>
+
+          <!-- 目的地 -->
+          <div class="show-block show-destination">
+            <div class="show-block-label"><%= idx + 1 %></div>
+            <div class="show-block-body">
+              <span class="show-place-name"><%= dest.destination %></span>
+              <% if dest.time_management %>
+                <span class="show-time">着 <%= dest.time_management.arrival_time %></span>
+                <% if idx < destinations.size - 1 %>
+                  <span class="show-time">滞在 <%= dest.time_management.stay_duration %></span>
+                  <span class="show-time">発 <%= dest.time_management.departure_time %></span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="show-empty">この日の日程はまだ登録されていません。</p>
+      <% end %>
+
+      <!-- 変更ボタン -->
+      <div class="show-actions">
+        <% if destinations.any? %>
+          <%= link_to '時間を変更する',
+            day_schedule_itinerary_path(@itinerary, current_day: d),
+            class: 'show-action-btn' %>
+        <% end %>
+        <%= link_to '目的地を変更する',
+          new_itinerary_destination_path(@itinerary, current_day: d),
+          class: 'show-action-btn show-action-btn-outline' %>
+      </div>
+    </div>
+  <% end %>
+</div>
+</main>
+
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-container">
+    <%= link_to 'トップに<br>戻る'.html_safe, authenticated_root_path, class: 'footer-link' %>
+  </div>
+</footer>
+
+<style>
+  /* show画面はスクロール可能にする */
+  body.show-page { overflow: auto !important; }
+  body.show-page .main-contents {
+    overflow: auto !important;
+    height: auto !important;
+  }
+  body.show-page .map-container {
+    height: auto;
+  }
+  #map-show {
+    width: 100%;
+    height: 50vh;
+  }
+  .map-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid #ddd;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #999;
+  }
+
+  /* タブ */
+  .show-tabs {
+    display: flex;
+    border-bottom: 2px solid #4CAF50;
+    margin: 0;
+    padding: 0;
+    background: #fff;
+  }
+  .show-tab {
+    flex: 1;
+    padding: 10px 0;
+    border: none;
+    background: #e8e8e8;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+    cursor: pointer;
+    border-right: 1px solid #ddd;
+  }
+  .show-tab:last-child { border-right: none; }
+  .show-tab.active {
+    background: #4CAF50;
+    color: #fff;
+  }
+
+  /* タブコンテンツ */
+  .show-tab-content {
+    display: none;
+    padding: 12px;
+    margin-bottom: 80px;
+  }
+  .show-tab-content.active { display: block; }
+  .show-tab-content h3 {
+    margin: 0 0 12px;
+    font-size: 15px;
+    color: #333;
+  }
+
+  /* ブロック */
+  .show-block {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 10px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+  }
+  .show-block-label {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .show-departure { background: #ffe4e1; }
+  .show-departure .show-block-label { background: #e57373; }
+  .show-travel {
+    background: #fff;
+    padding: 4px 10px;
+  }
+  .show-block-icon {
+    width: 36px;
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+    flex-shrink: 0;
+  }
+  .show-destination { background: #e6ffe6; }
+  .show-destination .show-block-label { background: #4CAF50; }
+
+  .show-block-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .show-place-name {
+    font-weight: bold;
+    font-size: 14px;
+  }
+  .show-time {
+    font-size: 13px;
+    color: #555;
+  }
+  .show-detail {
+    font-size: 12px;
+    color: #888;
+  }
+  .show-empty {
+    text-align: center;
+    color: #999;
+    padding: 24px 0;
+  }
+  .show-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #ddd;
+  }
+  .show-action-btn {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    background: #4CAF50;
+    color: #fff;
+  }
+  .show-action-btn-outline {
+    background: #fff;
+    color: #4CAF50;
+    border: 2px solid #4CAF50;
+  }
+</style>
+
+<script>
+document.addEventListener("turbo:load", function() {
+  // show画面ではスクロール有効化
+  if (document.getElementById('map-show')) {
+    document.body.classList.add('show-page');
+  } else {
+    document.body.classList.remove('show-page');
+  }
+
+  // --- タブ切り替え ---
+  var tabs = document.querySelectorAll('.show-tab');
+  var contents = document.querySelectorAll('.show-tab-content');
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var day = this.dataset.day;
+      tabs.forEach(function(t) { t.classList.remove('active'); });
+      contents.forEach(function(c) { c.classList.remove('active'); });
+      this.classList.add('active');
+      document.querySelector('.show-tab-content[data-day="' + day + '"]').classList.add('active');
+    });
+  });
+
+  // --- 地図 ---
+  var dataEl = document.getElementById('all-destinations-data');
+  if (!dataEl) return;
+
+  var destinations = JSON.parse(dataEl.dataset.destinations || '[]');
+  if (destinations.length === 0) return;
+
+  var dayColors = {
+    1: 'red', 2: 'orange', 3: 'yellow',
+    4: 'green', 5: 'ltblue', 6: 'blue', 7: 'purple'
+  };
+
+  var map = new google.maps.Map(document.getElementById('map-show'), {
+    center: { lat: 43.0, lng: 141.3 },
+    zoom: 7,
+  });
+
+  var bounds = new google.maps.LatLngBounds();
+
+  // 出発地マーカー
+  var spLat = parseFloat(dataEl.dataset.spLat);
+  var spLng = parseFloat(dataEl.dataset.spLng);
+  var spName = dataEl.dataset.spName;
+  if (spName && !isNaN(spLat) && !isNaN(spLng)) {
+    var spPos = { lat: spLat, lng: spLng };
+    new google.maps.Marker({
+      position: spPos, map: map, title: spName,
+      label: { text: 'S', color: '#fff', fontWeight: 'bold' },
+      icon: {
+        url: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+        scaledSize: new google.maps.Size(44, 44),
+      },
+    });
+    bounds.extend(spPos);
+  }
+
+  // 全目的地マーカー
+  destinations.forEach(function(dest) {
+    var colorName = dayColors[dest.day] || 'red';
+    var pos = { lat: parseFloat(dest.lat), lng: parseFloat(dest.lng) };
+    new google.maps.Marker({
+      position: pos, map: map, title: dest.name,
+      label: { text: String(dest.arrival_order), color: '#000', fontWeight: 'bold' },
+      icon: {
+        url: 'http://maps.google.com/mapfiles/ms/icons/' + colorName + '-dot.png',
+        scaledSize: new google.maps.Size(40, 40),
+      },
+    });
+    bounds.extend(pos);
+  });
+
+  map.fitBounds(bounds);
+});
+</script>

@@ -171,7 +171,7 @@ function saveRoute() {
   const itineraryElement = document.getElementById('itinerary-data');
   const startDateString = itineraryElement.dataset.startDate; // データ属性から取得
   const startDate = new Date(startDateString); // 開始日を Date オブジェクトに変換
-  const currentDay = 1; // 例: デフォルトで1日目
+  const currentDay = parseInt(itineraryElement.dataset.currentDay) || 1;
   const currentDate = new Date(startDate);
   currentDate.setDate(startDate.getDate() + (currentDay - 1)); // 現在の日を計算
   const visitDate = currentDate.toISOString().split("T")[0]; // YYYY-MM-DD形式
@@ -328,7 +328,8 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
-    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=1`;
+    const currentDay = parseInt(document.getElementById('itinerary-data').dataset.currentDay) || 1;
+    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=${currentDay}`;
     window.location.href = nextUrl;
   })
   .catch(error => {
