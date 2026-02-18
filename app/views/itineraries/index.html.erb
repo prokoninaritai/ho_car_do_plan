@@ -1,10 +1,60 @@
-<h1>しおり一覧</h1>
+<!-- ヘッダー -->
+<header class="header">
+  <div class="welcome">しおり一覧</div>
+  <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+</header>
 
-<ul>
-  <% @itineraries.each do |itinerary| %>
-    <li>
-      <%= link_to itinerary.title, itinerary_path(itinerary) %>
-      （開始日: <%= itinerary.start_date %>, 終了日: <%= itinerary.end_date %>）
-    </li>
-  <% end %>
-</ul>
+<main>
+  <div class="main-contents index-contents">
+    <% if @itineraries.any? %>
+      <div class="itinerary-list">
+        <% @itineraries.each do |itinerary| %>
+          <%= link_to itinerary_path(itinerary), class: 'itinerary-card' do %>
+            <div class="card-map">
+              <% destinations = itinerary.destinations.order(:visit_date, :arrival_order) %>
+              <% sp = itinerary.starting_point %>
+              <% markers = [] %>
+              <% if sp && sp.starting_point_latitude.present? %>
+                <% markers << "color:blue|label:S|#{sp.starting_point_latitude},#{sp.starting_point_longitude}" %>
+              <% end %>
+              <% destinations.each_with_index do |d, i| %>
+                <% markers << "color:red|label:#{i + 1}|#{d.destination_latitude},#{d.destination_longitude}" %>
+              <% end %>
+              <% if markers.any? %>
+                <% marker_params = markers.map { |m| "markers=#{ERB::Util.url_encode(m)}" }.join("&") %>
+                <img src="https://maps.googleapis.com/maps/api/staticmap?size=240x240&<%= marker_params.html_safe %>&key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
+                     alt="<%= itinerary.title %> の地図"
+                     class="card-map-img"
+                     loading="lazy">
+              <% else %>
+                <div class="card-map-placeholder">地図データなし</div>
+              <% end %>
+            </div>
+            <div class="card-body">
+              <div class="card-title"><%= itinerary.title %></div>
+              <div class="card-dates">
+                <%= itinerary.start_date.strftime('%Y/%m/%d') %> 〜 <%= itinerary.end_date.strftime('%Y/%m/%d') %>
+                （<%= (itinerary.end_date - itinerary.start_date).to_i + 1 %>日間）
+              </div>
+              <div class="card-created">
+                作成日: <%= itinerary.created_at.strftime('%Y/%m/%d') %>
+              </div>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="itinerary-empty">
+        <p>しおりがまだありません。</p>
+        <p>トップページから新しいしおりを作成しましょう。</p>
+      </div>
+    <% end %>
+  </div>
+</main>
+
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-container">
+    <%= link_to 'トップに<br>戻る'.html_safe, authenticated_root_path, class: 'footer-link' %>
+  </div>
+</footer>

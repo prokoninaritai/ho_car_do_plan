@@ -57,6 +57,7 @@ CSV.foreach(Rails.root.join('db/csv/business_hours.csv'), headers: true) do |row
 
   business_hour.opening_time = data['opening_time']
   business_hour.closing_time = data['closing_time']
+  business_hour.remarks = data['remarks']
 
   if business_hour.changed?
     business_hour.save!

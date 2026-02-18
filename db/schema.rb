@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
+ActiveRecord::Schema[7.0].define(version: 2026_02_18_122836) do
   create_table "business_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
@@ -21,6 +21,7 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.integer "end_day"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "remarks"
   end
 
   create_table "closed_days", force: :cascade do |t|
@@ -110,6 +111,9 @@ ActiveRecord::Schema[7.0].define(version: 2025_01_12_030447) do
     t.datetime "remember_created_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "home_address"
+    t.decimal "home_latitude", precision: 10, scale: 6
+    t.decimal "home_longitude", precision: 10, scale: 6
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end

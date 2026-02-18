@@ -1,5 +1,11 @@
 <!-- ヘッダー -->
-  <div id="day-schedule-data" data-itinerary-id="<%= @itinerary.id %>" data-current-day="<%= @current_day %>" data-total-days="<%= @total_days %>"></div>
+  <div id="day-schedule-data"
+       data-itinerary-id="<%= @itinerary.id %>"
+       data-current-day="<%= @current_day %>"
+       data-total-days="<%= @total_days %>"
+       data-visit-date="<%= @visit_date.strftime('%m-%d') %>"
+       data-visit-wday="<%= @visit_date.wday %>"
+       data-visit-mday="<%= @visit_date.day %>"></div>
   <header class="header">
     <div class="welcome">
       <%= @itinerary.title %> <br>
@@ -27,11 +33,62 @@
   <div class="destination-block time-block departure-block">
     <div class="left-section">
       <label>出発時間:</label>
-      <input type="time" class="departure-time" value="<%= saved_departure %>">
+      <div class="time-select-group departure-time">
+        <%= time_select_fields('departure-time', saved_departure) %>
+      </div>
     </div>
-    <div class="right-destination">
-      <label>出発地:</label>
-      <input type="text" value="<%= @starting_point&.starting_point %>" readonly>
+    <div class="right-section">
+      <h3>出発地:<%= @departure_name %></h3>
+      <% if @departure_station %>
+        <p><strong>休館日:</strong></p>
+        <ul class="no-bullet">
+          <% @departure_station.closed_days.each do |day| %>
+            <li class="closed-day-item"
+                data-closed-info="<%= day.closed_info %>"
+                data-start-date="<%= day.start_date %>"
+                data-end-date="<%= day.end_date %>">
+              <%= day.closed_info %>
+              <% if day.start_date.present? || day.end_date.present? %>
+                (<%= format_date_display(day.start_date) %> 〜 <%= format_date_display(day.end_date) %>)
+              <% end %>
+              <% if day.remarks.present? %>
+                <br><small>備考: <%= day.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>営業時間:</strong></p>
+        <ul class="no-bullet">
+          <% @departure_station.business_hours.each do |hour| %>
+            <li class="business-hour-item"
+                data-opening="<%= hour.opening_time.strftime('%H:%M') %>"
+                data-closing="<%= hour.closing_time.strftime('%H:%M') %>"
+                data-bh-start-date="<%= hour.start_date %>"
+                data-bh-end-date="<%= hour.end_date %>"
+                data-start-day="<%= hour.start_day %>"
+                data-end-day="<%= hour.end_day %>">
+              <%= "#{hour.opening_time.strftime('%H:%M')} 〜 #{hour.closing_time.strftime('%H:%M')}" %>
+              (<%= format_date_display(hour.start_date) %> 〜 <%= format_date_display(hour.end_date) %>)
+              <% if hour.remarks.present? %>
+                <br><small><%= hour.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>スタンプ押印時間:</strong></p>
+        <ul class="no-bullet">
+          <% @departure_station.stamp_available_hours.each do |stamp| %>
+            <li class="stamp-hour-item"
+                data-available-hour="<%= stamp.available_hour %>"
+                data-stamp-remarks="<%= stamp.remarks %>">
+              <%= stamp.available_hour %>
+              <% if stamp.remarks.present? %>
+                <br><small><%= stamp.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
     </div>
   </div>
 
@@ -40,8 +97,10 @@
     <div class="left-container">
       <div class="left-section">
         <label>移動時間:</label>
-        <input type="time" class="travel-time"
-          value="<%= first_tm&.custom_travel_time&.rjust(5, '0') || @destinations.first&.api_travel_time&.rjust(5, '0') %>">
+        <% first_travel = first_tm&.custom_travel_time&.rjust(5, '0') || @destinations.first&.api_travel_time&.rjust(5, '0') %>
+        <div class="time-select-group travel-time">
+          <%= time_select_fields('travel-time', first_travel) %>
+        </div>
       </div>
     </div>
   </div>
@@ -55,46 +114,76 @@
     <div class="left-container time-block">
       <div class="left-section">
         <label>到着予定時間:</label>
-        <input type="time" class="arrival-time" readonly>
+        <span class="arrival-time time-display">--:--</span>
       </div>
       <% unless index == @destinations.size - 1 %>
         <div class="left-section">
           <label>滞在予定時間:</label>
-          <input type="time" class="stay-time" value="00:20">
+          <div class="time-select-group stay-time">
+            <%= time_select_fields('stay-time', '00:20') %>
+          </div>
         </div>
         <div class="left-section">   
           <label>出発予定時間:</label>
-          <input type="hidden" name="destinations[<%= index %>][next_departure_time]" class="next-departure-time-hidden">
-          <input type="time" class="next-departure-time" readonly>
+          <span class="next-departure-time time-display">--:--</span>
         </div>
       <% end %>
     </div>
 
     <div class="right-section">
       <h3>目的地:<%= destination.destination %></h3>
-      <p><strong>休館日:</strong></p>
-      <ul class="no-bullet">
-        <% station.closed_days.each do |day| %>
-          <li>
-            <%= day.closed_info %>
-            (<%= day.start_date.gsub('-', '月') + '日' %> 〜 <%= day.end_date.gsub('-', '月') + '日' %>)
-            <% if day.remarks.present? %>
-              <br><small>備考: <%= day.remarks %></small>
-            <% end %>
-          </li>
-        <% end %>
-      </ul>
-      <p><strong>営業時間:</strong></p>
-      <ul class="no-bullet">
-        <% station.business_hours.each do |hour| %>
-          <li>
-            <%= "#{hour.opening_time.strftime('%H:%M')} 〜 #{hour.closing_time.strftime('%H:%M')}" %>
-            (<%= hour.start_date.gsub('-', '月') + '日' %> 〜 <%= hour.end_date.gsub('-', '月') + '日' %>)
-          </li>
-        <% end %>
-      </ul>
-      <p><strong>スタンプ押印時間:</strong></p>
-      <p class="stamp-hours"><%= station.stamp_available_hours.map(&:available_hour).join(', ') %></p>
+      <% if station %>
+        <p><strong>休館日:</strong></p>
+        <ul class="no-bullet">
+          <% station.closed_days.each do |day| %>
+            <li class="closed-day-item"
+                data-closed-info="<%= day.closed_info %>"
+                data-start-date="<%= day.start_date %>"
+                data-end-date="<%= day.end_date %>">
+              <%= day.closed_info %>
+              <% if day.start_date.present? || day.end_date.present? %>
+                (<%= format_date_display(day.start_date) %> 〜 <%= format_date_display(day.end_date) %>)
+              <% end %>
+              <% if day.remarks.present? %>
+                <br><small>備考: <%= day.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>営業時間:</strong></p>
+        <ul class="no-bullet">
+          <% station.business_hours.each do |hour| %>
+            <li class="business-hour-item"
+                data-opening="<%= hour.opening_time.strftime('%H:%M') %>"
+                data-closing="<%= hour.closing_time.strftime('%H:%M') %>"
+                data-bh-start-date="<%= hour.start_date %>"
+                data-bh-end-date="<%= hour.end_date %>"
+                data-start-day="<%= hour.start_day %>"
+                data-end-day="<%= hour.end_day %>">
+              <%= "#{hour.opening_time.strftime('%H:%M')} 〜 #{hour.closing_time.strftime('%H:%M')}" %>
+              (<%= format_date_display(hour.start_date) %> 〜 <%= format_date_display(hour.end_date) %>)
+              <% if hour.remarks.present? %>
+                <br><small><%= hour.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+        <p><strong>スタンプ押印時間:</strong></p>
+        <ul class="no-bullet">
+          <% station.stamp_available_hours.each do |stamp| %>
+            <li class="stamp-hour-item"
+                data-available-hour="<%= stamp.available_hour %>"
+                data-stamp-remarks="<%= stamp.remarks %>">
+              <%= stamp.available_hour %>
+              <% if stamp.remarks.present? %>
+                <br><small><%= stamp.remarks %></small>
+              <% end %>
+            </li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p class="non-station-note">※ 道の駅以外の目的地です</p>
+      <% end %>
     </div>
   </div>
 
@@ -104,8 +193,9 @@
       <div class="left-container">
         <div class="left-section">
           <label>移動時間:</label>
-          <input type="time" name="destinations[<%= index + 1 %>][custom_travel_time]" class="travel-time"
-                value="<%= @destinations[index + 1].api_travel_time.rjust(5, '0') %>">
+          <div class="time-select-group travel-time">
+            <%= time_select_fields('travel-time', @destinations[index + 1].api_travel_time.rjust(5, '0')) %>
+          </div>
         </div>
       </div>
     </div>

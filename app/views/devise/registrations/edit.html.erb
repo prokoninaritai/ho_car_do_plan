@@ -1,43 +1,239 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<!-- ヘッダー -->
+<header class="header">
+  <div class="welcome">マイページ</div>
+  <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+</header>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+<main>
+<div class="main-contents mypage-contents">
 
-  <div class="field">
-    <%= f.label :email %><br />
-    <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+  <!-- 自宅登録セクション -->
+  <div class="mypage-section">
+    <h3 class="mypage-section-title">自宅の登録</h3>
+    <p class="mypage-description">自宅を登録すると、経路選択画面で「自宅を選ぶ」ボタンが使えます。</p>
+
+    <% if resource.home_address.present? %>
+      <div class="mypage-current-home">
+        <span class="mypage-label">現在の登録:</span>
+        <span class="mypage-value"><%= resource.home_address %></span>
+      </div>
+    <% end %>
+
+    <div class="home-map-controls">
+      <button type="button" id="home-current-location" class="mypage-location-btn">現在地から探す</button>
+      <div class="place-search-container">
+        <input type="text" id="home-search-input" placeholder="住所・施設名で検索">
+      </div>
+    </div>
+    <p class="mypage-map-hint">ピンをドラッグして位置を微調整できます</p>
+    <div id="home-map"
+      <% if resource.home_latitude.present? %>
+        data-home-lat="<%= resource.home_latitude %>"
+        data-home-lng="<%= resource.home_longitude %>"
+      <% end %>
+    ></div>
+    <div class="mypage-field">
+      <label for="home-name-input">自宅の名前:</label>
+      <input type="text" id="home-name-input" value="<%= resource.home_address || '自宅' %>" placeholder="自宅">
+    </div>
+    <button type="button" id="save-home-btn" class="mypage-save-btn">この位置を自宅として登録</button>
   </div>
 
-  <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
-    <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
-  <% end %>
+  <!-- アカウント設定セクション -->
+  <div class="mypage-section">
+    <h3 class="mypage-section-title">アカウント設定</h3>
 
-  <div class="field">
-    <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
-    <%= f.password_field :password, autocomplete: "new-password" %>
-    <% if @minimum_password_length %>
-      <br />
-      <em><%= @minimum_password_length %> characters minimum</em>
+    <%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+
+      <div class="mypage-field">
+        <%= f.label :nickname, 'ニックネーム' %><br />
+        <%= f.text_field :nickname %>
+      </div>
+
+      <div class="mypage-field">
+        <%= f.label :email, 'メールアドレス' %><br />
+        <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
+      </div>
+
+      <div class="mypage-field">
+        <%= f.label :password, 'パスワード' %> <i>(変更しない場合は空欄)</i><br />
+        <%= f.password_field :password, autocomplete: "new-password" %>
+      </div>
+
+      <div class="mypage-field">
+        <%= f.label :password_confirmation, 'パスワード確認' %><br />
+        <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      </div>
+
+      <div class="mypage-field">
+        <%= f.label :current_password, '現在のパスワード' %> <i>(変更の確認に必要です)</i><br />
+        <%= f.password_field :current_password, autocomplete: "current-password" %>
+      </div>
+
+      <div class="mypage-actions">
+        <%= f.submit "更新する", class: "mypage-submit-btn" %>
+      </div>
     <% end %>
   </div>
 
-  <div class="field">
-    <%= f.label :password_confirmation %><br />
-    <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+  <div class="mypage-section">
+    <h3 class="mypage-section-title">アカウント削除</h3>
+    <div>
+      <%= button_to "アカウントを削除する", registration_path(resource_name), data: { confirm: "本当に削除しますか？", turbo_confirm: "本当に削除しますか？" }, method: :delete, class: "mypage-delete-btn" %>
+    </div>
   </div>
 
-  <div class="field">
-    <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
-    <%= f.password_field :current_password, autocomplete: "current-password" %>
-  </div>
+  <%= link_to 'ダッシュボードに戻る', authenticated_root_path, class: "mypage-back-link" %>
+</div>
+</main>
 
-  <div class="actions">
-    <%= f.submit "Update" %>
-  </div>
-<% end %>
+<!-- フッター -->
+<footer class="footer">
+  <div class="footer-container footer-thin"></div>
+</footer>
 
-<h3>Cancel my account</h3>
+<script>
+document.addEventListener('turbo:load', function() {
+  var mapEl = document.getElementById('home-map');
+  if (!mapEl || typeof google === 'undefined') return;
 
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
+  // 既存の自宅座標、またはデフォルト（北海道中心）
+  var homeLat = parseFloat(mapEl.dataset.homeLat) || 43.06;
+  var homeLng = parseFloat(mapEl.dataset.homeLng) || 141.35;
+  var hasHome = mapEl.dataset.homeLat ? true : false;
 
-<%= link_to "Back", :back %>
+  var homeMap = new google.maps.Map(mapEl, {
+    center: { lat: homeLat, lng: homeLng },
+    zoom: hasHome ? 15 : 7,
+  });
+
+  // ドラッグ可能なピン
+  var homeMarker = new google.maps.Marker({
+    position: { lat: homeLat, lng: homeLng },
+    map: homeMap,
+    draggable: true,
+    title: '自宅',
+    icon: {
+      url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png",
+      scaledSize: new google.maps.Size(50, 50),
+    },
+  });
+
+  // ピンがない状態で始める（自宅未登録の場合）
+  if (!hasHome) {
+    homeMarker.setVisible(false);
+  }
+
+  // ピンの位置を表示するヘルパー
+  function showMarkerAt(lat, lng) {
+    homeMarker.setPosition({ lat: lat, lng: lng });
+    homeMarker.setVisible(true);
+    homeMap.setCenter({ lat: lat, lng: lng });
+    homeMap.setZoom(15);
+  }
+
+  // 現在地から探す
+  var locationBtn = document.getElementById('home-current-location');
+  if (locationBtn) {
+    locationBtn.addEventListener('click', function() {
+      if (!navigator.geolocation) {
+        alert("ブラウザが現在地取得をサポートしていません。");
+        return;
+      }
+      locationBtn.textContent = '取得中...';
+      locationBtn.disabled = true;
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          locationBtn.textContent = '現在地から探す';
+          locationBtn.disabled = false;
+          showMarkerAt(position.coords.latitude, position.coords.longitude);
+        },
+        function(error) {
+          locationBtn.textContent = '現在地から探す';
+          locationBtn.disabled = false;
+          alert("現在地を取得できませんでした: " + error.message);
+        }
+      );
+    });
+  }
+
+  // Places Autocomplete で検索
+  var input = document.getElementById('home-search-input');
+  if (input && google.maps.places) {
+    var hokkaidoBounds = new google.maps.LatLngBounds(
+      new google.maps.LatLng(41.3, 139.3),
+      new google.maps.LatLng(45.6, 145.8)
+    );
+    var autocomplete = new google.maps.places.Autocomplete(input, {
+      bounds: hokkaidoBounds,
+      strictBounds: true,
+      componentRestrictions: { country: 'jp' },
+      fields: ['geometry', 'name', 'formatted_address'],
+    });
+
+    autocomplete.addListener('place_changed', function() {
+      var place = autocomplete.getPlace();
+      if (!place.geometry) return;
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+      showMarkerAt(lat, lng);
+      // 名前欄にも反映
+      var nameInput = document.getElementById('home-name-input');
+      if (nameInput && !nameInput.dataset.userEdited) {
+        nameInput.value = place.name || place.formatted_address;
+      }
+      input.value = '';
+    });
+  }
+
+  // 名前欄を手動編集したらフラグを立てる
+  var nameInput = document.getElementById('home-name-input');
+  if (nameInput) {
+    nameInput.addEventListener('input', function() {
+      nameInput.dataset.userEdited = 'true';
+    });
+  }
+
+  // 保存
+  var saveBtn = document.getElementById('save-home-btn');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', function() {
+      if (!homeMarker.getVisible()) {
+        alert("地図上にピンを配置してください。\n「現在地から探す」か検索を使ってください。");
+        return;
+      }
+
+      var pos = homeMarker.getPosition();
+      var homeName = document.getElementById('home-name-input').value || '自宅';
+
+      fetch('/users/update_home', {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        },
+        body: JSON.stringify({
+          user: {
+            home_address: homeName,
+            home_latitude: pos.lat(),
+            home_longitude: pos.lng(),
+          }
+        }),
+      })
+      .then(function(response) {
+        if (!response.ok) throw new Error("保存に失敗しました");
+        return response.json();
+      })
+      .then(function() {
+        alert("自宅を登録しました！");
+        location.reload();
+      })
+      .catch(function(error) {
+        console.error("エラー:", error);
+        alert("自宅の登録に失敗しました。");
+      });
+    });
+  }
+});
+</script>

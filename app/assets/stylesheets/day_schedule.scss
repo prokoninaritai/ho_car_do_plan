@@ -20,7 +20,6 @@
   border: 1px solid #ccc;
   border-radius: 5px;
   margin-bottom: 20px;
-  height: 10vh;
   display: flex;
 }
 
@@ -65,6 +64,39 @@ input[type="time"], input[type="text"] {
   width: 10vh; /* 幅を適切な値に調整 */
   padding: 5px; /* 余白を適宜設定 */
   font-size: 14px; /* 必要に応じてフォントサイズを調整 */
+}
+
+.time-select-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.time-select {
+  padding: 5px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 55px;
+  cursor: pointer;
+}
+
+.time-colon {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 0 2px;
+}
+
+.time-display {
+  font-size: 16px;
+  font-weight: bold;
+  padding: 5px 8px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  min-width: 60px;
+  text-align: center;
+  display: inline-block;
 }
 
 .destination-block {
@@ -135,6 +167,42 @@ input[type="time"], input[type="text"] {
 .no-bullet li {
   margin-bottom: 10px; /* 各項目の間に適度な余白を追加 */
   line-height: 1; /* 行間を広げて見やすく */
+}
+
+/* 休館日警告 */
+.warning-closed {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid #d32f2f;
+}
+
+/* 営業時間外警告 */
+.warning-outside-hours {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid #d32f2f;
+}
+
+/* スタンプ押印可能（営業時間外・休館日だけどスタンプは押せる） */
+.stamp-available {
+  color: #1565c0;
+  background-color: #e3f2fd;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid #1565c0;
+}
+
+/* スタンプ押印不可（営業時間外・休館日でスタンプも押せない） */
+.stamp-unavailable {
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 4px 8px;
+  border-radius: 4px;
+  border-left: 3px solid #d32f2f;
 }
 
 .red-block, .yellow-block {

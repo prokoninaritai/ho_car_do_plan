@@ -22,6 +22,11 @@ class DestinationsController < ApplicationController
       .where(visit_date: current_date)
       .order(:arrival_order)
 
+    # 自宅情報をビューに渡す
+    @home_address = current_user&.home_address
+    @home_latitude = current_user&.home_latitude
+    @home_longitude = current_user&.home_longitude
+
     # 2日目以降の場合、前日の最後の目的地を取得
     if @current_day >= 2
       previous_date = @itinerary.start_date + (@current_day - 2).days

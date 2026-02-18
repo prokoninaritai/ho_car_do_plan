@@ -49,6 +49,7 @@ function selectRouteMarker(marker) {
   }
 
   drawAllRoutes(); // 残りの経路を再描画
+  updateRouteList(); // 行先一覧を更新
 
   console.log("Route renderers after redraw:", routeRenderers);
 }
@@ -161,7 +162,189 @@ function resetMarkers() {
   clearRoutes(); // 経路をリセット
 }
 
-// 経路を保存　
+// --- 行先一覧の表示 ---
+let routeInfoCache = {}; // 区間ごとの距離・時間キャッシュ
+
+function updateRouteList() {
+  const listContainer = document.getElementById('route-list');
+  if (!listContainer) return;
+
+  if (routeMarkers.length === 0) {
+    listContainer.innerHTML = '';
+    routeInfoCache = {};
+    return;
+  }
+
+  let html = '<div class="route-list-actions">';
+  html += '<button type="button" id="reverse-route-btn" class="reverse-route-btn">逆順</button>';
+  html += '<button type="button" id="save-route-btn-list" class="save-route-btn-sm">しおり作成</button>';
+  html += '</div>';
+  routeMarkers.forEach(function(marker, index) {
+    html += '<div class="route-item" draggable="true" data-index="' + index + '">';
+    html += '  <span class="drag-handle">≡</span>';
+    html += '  <div class="route-item-content">';
+    html += '    <span class="route-item-number">' + (index + 1) + '</span>';
+    html += '    <span class="route-item-name">' + marker.getTitle() + '</span>';
+    html += '    <span class="route-item-info" id="route-info-' + index + '"></span>';
+    html += '  </div>';
+    html += '  <button type="button" class="route-item-delete" data-index="' + index + '">×</button>';
+    html += '</div>';
+  });
+
+  listContainer.innerHTML = html;
+
+  // 逆順ボタンのイベント
+  var reverseBtn = document.getElementById('reverse-route-btn');
+  if (reverseBtn) {
+    reverseBtn.addEventListener('click', function() {
+      routeMarkers.reverse();
+      updateMarkerLabels();
+      drawAllRoutes();
+      routeInfoCache = {};
+      updateRouteList();
+    });
+  }
+
+  // しおり作成ボタンのイベント
+  var saveBtn = document.getElementById('save-route-btn-list');
+  if (saveBtn) {
+    saveBtn.addEventListener('click', saveRoute);
+  }
+
+  // 削除ボタンのイベント
+  listContainer.querySelectorAll('.route-item-delete').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var idx = parseInt(this.dataset.index);
+      var marker = routeMarkers[idx];
+      if (marker) {
+        selectRouteMarker(marker); // 既存の削除ロジックを再利用
+      }
+    });
+  });
+
+  // ドラッグ&ドロップのイベント
+  setupDragAndDrop(listContainer);
+
+  // 距離・時間情報を取得
+  fetchRouteInfo();
+}
+
+function fetchRouteInfo() {
+  if (!window.directionsService || routeMarkers.length === 0) return;
+
+  var directionsService = window.directionsService;
+
+  // 出発地 → 1番目
+  if (window.startPoint && routeMarkers.length > 0) {
+    fetchSegmentInfo(
+      directionsService,
+      new google.maps.LatLng(window.startPoint.lat, window.startPoint.lng),
+      routeMarkers[0].getPosition(),
+      0
+    );
+  }
+
+  // i番目 → i+1番目
+  for (var i = 0; i < routeMarkers.length - 1; i++) {
+    fetchSegmentInfo(
+      directionsService,
+      routeMarkers[i].getPosition(),
+      routeMarkers[i + 1].getPosition(),
+      i + 1
+    );
+  }
+}
+
+function fetchSegmentInfo(directionsService, origin, destination, displayIndex) {
+  var cacheKey = origin.lat().toFixed(5) + ',' + origin.lng().toFixed(5) + '->' +
+                 destination.lat().toFixed(5) + ',' + destination.lng().toFixed(5);
+
+  if (routeInfoCache[cacheKey]) {
+    showRouteInfo(displayIndex, routeInfoCache[cacheKey]);
+    return;
+  }
+
+  var request = {
+    origin: origin,
+    destination: destination,
+    travelMode: 'DRIVING'
+  };
+
+  directionsService.route(request, function(result, status) {
+    if (status === 'OK') {
+      var leg = result.routes[0].legs[0];
+      var info = {
+        distance: leg.distance.text,
+        duration: leg.duration.text
+      };
+      routeInfoCache[cacheKey] = info;
+      showRouteInfo(displayIndex, info);
+    }
+  });
+}
+
+function showRouteInfo(index, info) {
+  var el = document.getElementById('route-info-' + index);
+  if (el) {
+    el.textContent = info.distance + ' / ' + info.duration;
+  }
+}
+
+// --- ドラッグ&ドロップ ---
+var dragSrcIndex = null;
+
+function setupDragAndDrop(container) {
+  var items = container.querySelectorAll('.route-item');
+
+  items.forEach(function(item) {
+    item.addEventListener('dragstart', function(e) {
+      dragSrcIndex = parseInt(this.dataset.index);
+      this.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', dragSrcIndex);
+    });
+
+    item.addEventListener('dragend', function() {
+      this.classList.remove('dragging');
+      container.querySelectorAll('.route-item').forEach(function(el) {
+        el.classList.remove('drag-over');
+      });
+    });
+
+    item.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      this.classList.add('drag-over');
+    });
+
+    item.addEventListener('dragleave', function() {
+      this.classList.remove('drag-over');
+    });
+
+    item.addEventListener('drop', function(e) {
+      e.preventDefault();
+      this.classList.remove('drag-over');
+      var dropIndex = parseInt(this.dataset.index);
+
+      if (dragSrcIndex === null || dragSrcIndex === dropIndex) return;
+
+      // routeMarkers 配列を並べ替え
+      var moved = routeMarkers.splice(dragSrcIndex, 1)[0];
+      routeMarkers.splice(dropIndex, 0, moved);
+
+      // ラベル・経路・リストを更新
+      updateMarkerLabels();
+      drawAllRoutes();
+      routeInfoCache = {}; // キャッシュクリア（順番が変わったので）
+      updateRouteList();
+
+      dragSrcIndex = null;
+    });
+  });
+}
+
+// 経路を保存
 function saveRoute() {
   if (!window.startPoint) {
     console.error('出発地点が設定されていません。');

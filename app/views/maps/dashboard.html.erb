@@ -45,7 +45,7 @@
   <div class="footer-container">
     <!-- モーダルを開くボタン -->
     <button id="open-itinerary-modal" class="footer-link">日程を<br>作成する</button>
-    <button href="#" class="footer-link">日程を<br>確認する</button>
-    <button href="#" class="footer-link">マイページ</button>
+    <%= link_to '日程を<br>確認する'.html_safe, itineraries_path, class: 'footer-link' %>
+    <%= link_to 'マイページ'.html_safe, edit_user_registration_path, class: 'footer-link' %>
   </div>
   </footer>

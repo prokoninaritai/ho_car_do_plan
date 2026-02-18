@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.2.0"
+ruby "3.4.8"
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.0.0"
@@ -83,3 +83,6 @@ gem 'importmap-rails', '~> 2.0'
 gem 'bootstrap', '~> 5.3.0'
 gem 'sassc-rails', '~> 2.1'
 gem 'jquery-rails'
+gem 'mutex_m'
+gem 'bigdecimal'
+gem 'drb'

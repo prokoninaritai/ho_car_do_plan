@@ -41,11 +41,23 @@
     </div>
 
     <!-- 出発地登録領域 -->
-    <div class="starting-point-form">
+    <div class="starting-point-form"
+      <% if @home_address.present? %>
+        data-home-address="<%= @home_address %>"
+        data-home-lat="<%= @home_latitude %>"
+        data-home-lng="<%= @home_longitude %>"
+      <% end %>
+    >
       <label for="starting-point" class="starting-point-heading">出発地点を選ぶ:</label>
-      <!--<input type="text" id="starting-point" placeholder="例: 苫小牧フェリー乗り場"> -->
       <button type="button" id="search-location">現在地を選ぶ</button>
+      <% if @home_address.present? %>
+        <button type="button" id="select-home">自宅を選ぶ</button>
+      <% end %>
+      <div class="place-search-container">
+        <input type="text" id="place-search-input" placeholder="住所・施設名で検索">
+      </div>
       <button type="button" id="register-starting-point">出発地を登録する</button>
+      <div id="route-list"></div>
     </div>
   </div>
 </div>
@@ -53,8 +65,5 @@
 
 <!-- フッター -->
 <footer class="footer">
-  <div class="footer-container">
-     <button id="save-route-btn" class="footer-link">しおりを<br>作成する</button>
-  </div>
-  </div>
+  <div class="footer-container footer-thin"></div>
 </footer>

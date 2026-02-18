@@ -70,14 +70,16 @@ function initMap() {
         map: window.map,
         title: dest.name,
         label: {
-          text: String(dest.arrival_order),
-          color: '#000000',
-          fontWeight: 'bold'
+          text: `${dest.day}-${dest.arrival_order}`,
+          color: '#ffffff',
+          fontWeight: 'bold',
+          fontSize: '10px'
         },
         icon: {
           url: iconUrl,
-          scaledSize: new google.maps.Size(40, 40),
+          scaledSize: new google.maps.Size(32, 32),
         },
+        opacity: 0.7,
       });
     });
   }
@@ -115,6 +117,9 @@ function initMap() {
 
   // 既存の出発地がある場合、経路選択モードを復元
   restoreExistingState();
+
+  // Places Autocomplete の初期化
+  initPlacesAutocomplete();
 }
 
 window.initMap = initMap;
@@ -124,14 +129,48 @@ function restoreExistingState() {
   const itineraryEl = document.getElementById('itinerary-data');
   if (!itineraryEl) return;
 
+  const currentDay = parseInt(itineraryEl.dataset.currentDay) || 1;
   const spName = itineraryEl.dataset.existingSpName;
   const spLat = parseFloat(itineraryEl.dataset.existingSpLat);
   const spLng = parseFloat(itineraryEl.dataset.existingSpLng);
 
   if (!spName || isNaN(spLat) || isNaN(spLng)) return;
 
-  // 出発地マーカーをセット
-  setStartingPoint(spLat, spLng, spName);
+  // 2日目以降: 前日ゴールを青Sピンに、1日目のスタートは過去ピンスタイルに
+  const prevName = itineraryEl.dataset.prevDestinationName;
+  const prevLat = parseFloat(itineraryEl.dataset.prevDestinationLat);
+  const prevLng = parseFloat(itineraryEl.dataset.prevDestinationLng);
+
+  if (currentDay >= 2 && prevName && !isNaN(prevLat) && !isNaN(prevLng)) {
+    // 1日目のスタートピンを過去日スタイルで表示
+    new google.maps.Marker({
+      position: { lat: spLat, lng: spLng },
+      map: window.map,
+      title: spName,
+      label: {
+        text: 'S',
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: '10px'
+      },
+      icon: {
+        url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+        scaledSize: new google.maps.Size(32, 32),
+      },
+      opacity: 0.7,
+    });
+
+    // 前日ゴール = 今日のスタートを青Sピンに
+    setStartingPoint(prevLat, prevLng, prevName);
+    // 2日目のスタート地点を中心にズーム
+    window.map.setCenter({ lat: prevLat, lng: prevLng });
+    window.map.setZoom(9);
+  } else {
+    // 1日目: 通常通り
+    setStartingPoint(spLat, spLng, spName);
+    window.map.setCenter({ lat: spLat, lng: spLng });
+    window.map.setZoom(9);
+  }
 
   // UIを経路選択モードに切り替え
   const heading = document.querySelector('.starting-point-heading');
@@ -174,6 +213,107 @@ if (searchLocationButton) {
     }
   });
 }
+
+// 自宅を選ぶ
+const selectHomeButton = document.getElementById('select-home');
+if (selectHomeButton) {
+  selectHomeButton.addEventListener('click', () => {
+    const formEl = document.querySelector('.starting-point-form');
+    const homeLat = parseFloat(formEl.dataset.homeLat);
+    const homeLng = parseFloat(formEl.dataset.homeLng);
+    const homeAddress = formEl.dataset.homeAddress;
+
+    if (isNaN(homeLat) || isNaN(homeLng)) {
+      alert("自宅の位置情報が登録されていません。");
+      return;
+    }
+
+    if (window.routeSelectionEnabled) {
+      // 経路選択モード: マーカーを作成して経路に追加
+      var marker = new google.maps.Marker({
+        position: { lat: homeLat, lng: homeLng },
+        map: window.map,
+        title: homeAddress,
+        icon: {
+          url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+          scaledSize: new google.maps.Size(50, 40),
+        },
+      });
+      window.markers.push(marker);
+      marker.addListener("click", function() {
+        if (window.routeSelectionEnabled) {
+          selectRouteMarker(marker);
+        }
+      });
+      selectRouteMarker(marker);
+    } else {
+      // 出発地モード
+      setStartingPoint(homeLat, homeLng, homeAddress);
+    }
+
+    window.map.setCenter({ lat: homeLat, lng: homeLng });
+    window.map.setZoom(10);
+  });
+}
+
+// Google Places Autocomplete の初期化
+function initPlacesAutocomplete() {
+  var input = document.getElementById('place-search-input');
+  if (!input) return;
+
+  // 北海道の範囲に制限
+  var hokkaidoBounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(41.3, 139.3),  // 南西
+    new google.maps.LatLng(45.6, 145.8)   // 北東
+  );
+
+  var autocomplete = new google.maps.places.Autocomplete(input, {
+    bounds: hokkaidoBounds,
+    strictBounds: true,
+    componentRestrictions: { country: 'jp' },
+    fields: ['geometry', 'name', 'formatted_address'],
+  });
+
+  autocomplete.addListener('place_changed', function() {
+    var place = autocomplete.getPlace();
+    if (!place.geometry) {
+      alert("場所が見つかりませんでした。");
+      return;
+    }
+
+    var lat = place.geometry.location.lat();
+    var lng = place.geometry.location.lng();
+    var name = place.name || place.formatted_address;
+
+    if (window.routeSelectionEnabled) {
+      // 経路選択モード: マーカーを作成して経路に追加
+      var marker = new google.maps.Marker({
+        position: { lat: lat, lng: lng },
+        map: window.map,
+        title: name,
+        icon: {
+          url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+          scaledSize: new google.maps.Size(50, 40),
+        },
+      });
+      window.markers.push(marker);
+      marker.addListener("click", function() {
+        if (window.routeSelectionEnabled) {
+          selectRouteMarker(marker);
+        }
+      });
+      selectRouteMarker(marker);
+    } else {
+      // 出発地モード
+      setStartingPoint(lat, lng, name);
+    }
+
+    window.map.setCenter({ lat: lat, lng: lng });
+    window.map.setZoom(12);
+    input.value = '';
+  });
+}
+
 
 // 出発地を設定する
 function setStartingPoint(lat, lng, title) {
