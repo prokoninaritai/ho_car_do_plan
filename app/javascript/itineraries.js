@@ -6,7 +6,8 @@ document.addEventListener("turbo:load", () => {
 
   // モーダルを開く
   if (openModalButton && modal) {
-    openModalButton.addEventListener("click", () => {
+    openModalButton.addEventListener("click", (e) => {
+      e.preventDefault();
       modal.style.display = "block";
     });
   }

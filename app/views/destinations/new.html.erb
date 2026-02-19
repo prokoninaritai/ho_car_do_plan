@@ -36,7 +36,7 @@
           data-existing-destinations="<%= @existing_destinations.map { |d| { name: d.destination } }.to_json %>"
         <% end %>
       ></div>
-      <div id="stations-data" data-stations="<%= @stations.to_json %>"></div>
+      <div id="stations-data" data-stations="<%= @stations.select(:name, :kana, :latitude, :longitude).to_json %>"></div>
       <div id="map2"></div>
     </div>
 
@@ -48,15 +48,16 @@
         data-home-lng="<%= @home_longitude %>"
       <% end %>
     >
-      <label for="starting-point" class="starting-point-heading">出発地点を選ぶ:</label>
-      <button type="button" id="search-location">現在地を選ぶ</button>
+      <% route_mode = @existing_starting_point.present? || @previous_last_destination.present? %>
+      <label for="starting-point" class="starting-point-heading"><%= route_mode ? '経路を選択する:' : '出発地点を選ぶ:' %></label>
+      <button type="button" id="search-location"<%= ' style="display:none"'.html_safe if route_mode %>>現在地を選ぶ</button>
       <% if @home_address.present? %>
-        <button type="button" id="select-home">自宅を選ぶ</button>
+        <button type="button" id="select-home"<%= ' style="display:none"'.html_safe if route_mode %>>🏠 自宅</button>
       <% end %>
       <div class="place-search-container">
         <input type="text" id="place-search-input" placeholder="住所・施設名で検索">
       </div>
-      <button type="button" id="register-starting-point">出発地を登録する</button>
+      <button type="button" id="register-starting-point"<%= ' style="display:none"'.html_safe if route_mode %>>出発地を登録する</button>
       <div id="route-list"></div>
     </div>
   </div>
@@ -65,5 +66,7 @@
 
 <!-- フッター -->
 <footer class="footer">
-  <div class="footer-container footer-thin"></div>
+  <div class="footer-container">
+    <a id="save-route-btn" href="#" class="footer-link">しおり<br>作成</a>
+  </div>
 </footer>

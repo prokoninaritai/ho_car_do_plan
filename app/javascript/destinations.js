@@ -1,9 +1,21 @@
 document.addEventListener('DOMContentLoaded', () => {
   const saveButton = document.getElementById('save-route-btn');
   if (saveButton) {
-    saveButton.addEventListener('click', saveRoute);
-  } 
+    saveButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      saveRoute();
+    });
+  }
 });
+
+// 逆順をグローバルに公開（starting_points.js から呼ぶ）
+window.reverseRoute = function() {
+  routeMarkers.reverse();
+  updateMarkerLabels();
+  drawAllRoutes();
+  routeInfoCache = {};
+  updateRouteList();
+};
 
 // --- 変数の宣言 ---
 let currentOrder = 1; // 現在の順番をトラッキング
@@ -175,10 +187,7 @@ function updateRouteList() {
     return;
   }
 
-  let html = '<div class="route-list-actions">';
-  html += '<button type="button" id="reverse-route-btn" class="reverse-route-btn">逆順</button>';
-  html += '<button type="button" id="save-route-btn-list" class="save-route-btn-sm">しおり作成</button>';
-  html += '</div>';
+  let html = '';
   routeMarkers.forEach(function(marker, index) {
     html += '<div class="route-item" draggable="true" data-index="' + index + '">';
     html += '  <span class="drag-handle">≡</span>';
@@ -192,24 +201,6 @@ function updateRouteList() {
   });
 
   listContainer.innerHTML = html;
-
-  // 逆順ボタンのイベント
-  var reverseBtn = document.getElementById('reverse-route-btn');
-  if (reverseBtn) {
-    reverseBtn.addEventListener('click', function() {
-      routeMarkers.reverse();
-      updateMarkerLabels();
-      drawAllRoutes();
-      routeInfoCache = {};
-      updateRouteList();
-    });
-  }
-
-  // しおり作成ボタンのイベント
-  var saveBtn = document.getElementById('save-route-btn-list');
-  if (saveBtn) {
-    saveBtn.addEventListener('click', saveRoute);
-  }
 
   // 削除ボタンのイベント
   listContainer.querySelectorAll('.route-item-delete').forEach(function(btn) {
@@ -347,7 +338,11 @@ function setupDragAndDrop(container) {
 // 経路を保存
 function saveRoute() {
   if (!window.startPoint) {
-    console.error('出発地点が設定されていません。');
+    alert('出発地点が設定されていません。');
+    return;
+  }
+  if (routeMarkers.length === 0) {
+    alert('目的地を選択してください。');
     return;
   }
 

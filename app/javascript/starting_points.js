@@ -33,6 +33,7 @@ document.addEventListener("turbo:load", () => {
 // --- 変数の宣言 ---
 window.startMarker = null;
 window.markers = []; // グローバル変数として定義
+window.startInfoWindow = null; // 出発地の吹き出し
 
 // マップを初期化
 function initMap() {
@@ -120,9 +121,59 @@ function initMap() {
 
   // Places Autocomplete の初期化
   initPlacesAutocomplete();
+
+  // 地図上のPOI（施設ピン）クリック時の処理
+  var poiPlacesService = new google.maps.places.PlacesService(window.map);
+  window.map.addListener('click', function(event) {
+    if (!event.placeId) return; // 施設ピン以外のクリックは無視
+    event.stop(); // デフォルトのInfoWindowを抑制
+
+    poiPlacesService.getDetails(
+      { placeId: event.placeId, fields: ['geometry', 'name'] },
+      function(place, status) {
+        if (status !== 'OK' || !place.geometry) return;
+        var lat = place.geometry.location.lat();
+        var lng = place.geometry.location.lng();
+        var name = place.name;
+        handlePlaceSelection(lat, lng, name);
+      }
+    );
+  });
 }
 
 window.initMap = initMap;
+
+// 経路選択モード用の見出し行（自宅ボタン + 逆順ボタン）をセットアップ
+function setupHeadingRow() {
+  var heading = document.querySelector('.starting-point-heading');
+  var homeBtn = document.getElementById('select-home');
+  if (!heading) return;
+  if (heading.closest('.heading-row')) return; // 既にセットアップ済み
+
+  var headingRow = document.createElement('div');
+  headingRow.className = 'heading-row';
+  heading.parentNode.insertBefore(headingRow, heading);
+  headingRow.appendChild(heading);
+
+  var btnGroup = document.createElement('div');
+  btnGroup.className = 'heading-btn-group';
+  headingRow.appendChild(btnGroup);
+
+  if (homeBtn) {
+    homeBtn.classList.add('select-home-small');
+    btnGroup.appendChild(homeBtn);
+    homeBtn.style.display = '';
+  }
+
+  var revBtn = document.createElement('button');
+  revBtn.type = 'button';
+  revBtn.textContent = '逆順';
+  revBtn.className = 'reverse-route-heading-btn';
+  revBtn.addEventListener('click', function() {
+    if (window.reverseRoute) window.reverseRoute();
+  });
+  btnGroup.appendChild(revBtn);
+}
 
 // 既存の出発地・目的地がある場合に経路選択モードを復元
 function restoreExistingState() {
@@ -179,7 +230,7 @@ function restoreExistingState() {
   if (searchBtn) searchBtn.style.display = 'none';
   const registerBtn = document.getElementById('register-starting-point');
   if (registerBtn) registerBtn.style.display = 'none';
-
+  setupHeadingRow();
   enableRouteSelection();
 
   // 既存の目的地があればマーカーを選択状態にする
@@ -205,6 +256,8 @@ if (searchLocationButton) {
           const latitude = position.coords.latitude;
           const longitude = position.coords.longitude;
           setStartingPoint(latitude, longitude, "現在地");
+          window.map.setCenter({ lat: latitude, lng: longitude });
+          window.map.setZoom(14);
         },
         (error) => alert("現在地を取得できませんでした: " + error.message)
       );
@@ -246,6 +299,7 @@ if (selectHomeButton) {
         }
       });
       selectRouteMarker(marker);
+      showInfoWindow(marker, homeAddress);
     } else {
       // 出発地モード
       setStartingPoint(homeLat, homeLng, homeAddress);
@@ -256,74 +310,233 @@ if (selectHomeButton) {
   });
 }
 
-// Google Places Autocomplete の初期化
+// 場所を選択した時の共通処理
+function handlePlaceSelection(lat, lng, name) {
+  if (window.routeSelectionEnabled) {
+    var marker = new google.maps.Marker({
+      position: { lat: lat, lng: lng },
+      map: window.map,
+      title: name,
+      icon: {
+        url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+        scaledSize: new google.maps.Size(50, 40),
+      },
+    });
+    window.markers.push(marker);
+    marker.addListener("click", function() {
+      if (window.routeSelectionEnabled) {
+        selectRouteMarker(marker);
+      }
+    });
+    selectRouteMarker(marker);
+    showInfoWindow(marker, name);
+  } else {
+    setStartingPoint(lat, lng, name);
+  }
+  window.map.setCenter({ lat: lat, lng: lng });
+  window.map.setZoom(12);
+}
+
+// カスタム検索ドロップダウンの初期化（道の駅優先 + Places API）
 function initPlacesAutocomplete() {
   var input = document.getElementById('place-search-input');
   if (!input) return;
 
-  // 北海道の範囲に制限
-  var hokkaidoBounds = new google.maps.LatLngBounds(
-    new google.maps.LatLng(41.3, 139.3),  // 南西
-    new google.maps.LatLng(45.6, 145.8)   // 北東
-  );
+  // カスタムドロップダウン要素をbodyに追加（overflow clippingを回避）
+  var dropdown = document.createElement('div');
+  dropdown.id = 'place-search-dropdown';
+  document.body.appendChild(dropdown);
 
-  var autocomplete = new google.maps.places.Autocomplete(input, {
-    bounds: hokkaidoBounds,
-    strictBounds: true,
-    componentRestrictions: { country: 'jp' },
-    fields: ['geometry', 'name', 'formatted_address'],
+  // 入力欄の右側に位置を合わせる
+  function positionDropdown() {
+    var rect = input.getBoundingClientRect();
+    dropdown.style.top = (rect.top + window.scrollY) + 'px';
+    dropdown.style.left = (rect.right + window.scrollX + 8) + 'px';
+  }
+
+  // 道の駅データを取得
+  var stationsEl = document.getElementById('stations-data');
+  var stations = stationsEl ? JSON.parse(stationsEl.dataset.stations) : [];
+
+  var hokkaidoBounds = new google.maps.LatLngBounds(
+    new google.maps.LatLng(41.3, 139.3),
+    new google.maps.LatLng(45.6, 145.8)
+  );
+  var autocompleteService = new google.maps.places.AutocompleteService();
+  var placesService = new google.maps.places.PlacesService(window.map);
+
+  // 履歴の管理（localStorage）
+  var HISTORY_KEY = 'place_search_history';
+  var MAX_HISTORY = 5;
+
+  function loadHistory() {
+    try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+    catch(e) { return []; }
+  }
+
+  function saveToHistory(item) {
+    var history = loadHistory().filter(function(h) { return h.name !== item.name; });
+    history.unshift(item);
+    if (history.length > MAX_HISTORY) history = history.slice(0, MAX_HISTORY);
+    localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  }
+
+  var debounceTimer = null;
+  var isComposing = false;
+  input.addEventListener('compositionstart', function() { isComposing = true; });
+  input.addEventListener('compositionend', function() {
+    isComposing = false;
+    input.dispatchEvent(new Event('input'));
   });
 
-  autocomplete.addListener('place_changed', function() {
-    var place = autocomplete.getPlace();
-    if (!place.geometry) {
-      alert("場所が見つかりませんでした。");
+  // フォーカス時に履歴を表示
+  input.addEventListener('focus', function() {
+    if (input.value.trim()) return;
+    var history = loadHistory();
+    if (history.length > 0) renderDropdown([], [], history);
+  });
+
+  input.addEventListener('input', function() {
+    if (isComposing) return;
+    var query = input.value.trim();
+    if (!query) {
+      var history = loadHistory();
+      if (history.length > 0) renderDropdown([], [], history);
+      else dropdown.style.display = 'none';
       return;
     }
 
-    var lat = place.geometry.location.lat();
-    var lng = place.geometry.location.lng();
-    var name = place.name || place.formatted_address;
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(function() {
+      // 道の駅をまず検索（名前・読み仮名の部分一致）
+      var stationMatches = stations.filter(function(s) {
+        return s.name.includes(query) || (s.kana && s.kana.includes(query));
+      });
 
-    if (window.routeSelectionEnabled) {
-      // 経路選択モード: マーカーを作成して経路に追加
-      var marker = new google.maps.Marker({
-        position: { lat: lat, lng: lng },
-        map: window.map,
-        title: name,
-        icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-          scaledSize: new google.maps.Size(50, 40),
-        },
+      // Places API：現在のマップビューポートを優先、なければ北海道全体
+      var searchBounds = (window.map && window.map.getBounds()) ? window.map.getBounds() : hokkaidoBounds;
+      autocompleteService.getPlacePredictions({
+        input: query,
+        bounds: searchBounds,
+        strictBounds: false,
+        componentRestrictions: { country: 'jp' },
+        types: ['establishment'],
+      }, function(predictions, status) {
+        renderDropdown(stationMatches, status === 'OK' ? predictions : [], []);
       });
-      window.markers.push(marker);
-      marker.addListener("click", function() {
-        if (window.routeSelectionEnabled) {
-          selectRouteMarker(marker);
-        }
+    }, 300);
+  });
+
+  function renderDropdown(stationMatches, predictions, history) {
+    var html = '';
+
+    // 履歴（未入力時のみ）
+    if (history && history.length > 0 && input.value.trim() === '') {
+      html += '<div class="place-search-section-label">最近使った場所</div>';
+      history.forEach(function(h) {
+        html += '<div class="place-search-item place-search-history"' +
+          ' data-type="history"' +
+          ' data-name="' + h.name + '"' +
+          ' data-lat="' + h.lat + '"' +
+          ' data-lng="' + h.lng + '">' +
+          '🕐 ' + h.name +
+          '</div>';
       });
-      selectRouteMarker(marker);
-    } else {
-      // 出発地モード
-      setStartingPoint(lat, lng, name);
     }
 
-    window.map.setCenter({ lat: lat, lng: lng });
-    window.map.setZoom(12);
-    input.value = '';
+    // 道の駅を先頭に表示
+    stationMatches.forEach(function(s) {
+      html += '<div class="place-search-item place-search-station"' +
+        ' data-type="station"' +
+        ' data-name="' + s.name + '"' +
+        ' data-lat="' + s.latitude + '"' +
+        ' data-lng="' + s.longitude + '">' +
+        '🚏 ' + s.name +
+        '</div>';
+    });
+
+    // 道の駅と重複しないPlaces候補を追加
+    var stationNames = stationMatches.map(function(s) { return s.name; });
+    predictions.forEach(function(p) {
+      if (stationNames.some(function(n) { return p.description.includes(n); })) return;
+      // 都道府県名だけの結果は除外
+      var mainText = p.structured_formatting ? p.structured_formatting.main_text : p.description;
+      html += '<div class="place-search-item"' +
+        ' data-type="place"' +
+        ' data-place-id="' + p.place_id + '">' +
+        '📍 ' + mainText +
+        '</div>';
+    });
+
+    dropdown.innerHTML = html;
+    if (html) {
+      positionDropdown();
+      dropdown.style.display = 'block';
+    } else {
+      dropdown.style.display = 'none';
+    }
+
+    dropdown.querySelectorAll('.place-search-item').forEach(function(item) {
+      item.addEventListener('click', function() {
+        dropdown.style.display = 'none';
+        input.value = '';
+        if (item.dataset.type === 'station' || item.dataset.type === 'history') {
+          var lat = parseFloat(item.dataset.lat);
+          var lng = parseFloat(item.dataset.lng);
+          var name = item.dataset.name;
+          saveToHistory({ name: name, lat: lat, lng: lng });
+          handlePlaceSelection(lat, lng, name);
+        } else {
+          placesService.getDetails(
+            { placeId: item.dataset.placeId, fields: ['geometry', 'name', 'formatted_address'] },
+            function(place, status) {
+              if (status === 'OK') {
+                var lat = place.geometry.location.lat();
+                var lng = place.geometry.location.lng();
+                var name = place.name || place.formatted_address;
+                saveToHistory({ name: name, lat: lat, lng: lng });
+                handlePlaceSelection(lat, lng, name);
+              }
+            }
+          );
+        }
+      });
+    });
+  }
+
+  // 外側クリックでドロップダウンを閉じる
+  document.addEventListener('click', function(e) {
+    if (!input.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.style.display = 'none';
+    }
   });
 }
 
 
+// 吹き出しを表示（共通）
+window.currentInfoWindow = null;
+function showInfoWindow(marker, title) {
+  if (window.currentInfoWindow) window.currentInfoWindow.close();
+  window.currentInfoWindow = new google.maps.InfoWindow({ content: title });
+  window.currentInfoWindow.open(window.map, marker);
+}
+
+// 出発地の吹き出しを表示
+function showStartInfoWindow(marker, title) {
+  showInfoWindow(marker, title);
+}
+
 // 出発地を設定する
 function setStartingPoint(lat, lng, title) {
-  if (window.startMarker) window.startMarker.setMap(null); 
+  if (window.startMarker) window.startMarker.setMap(null);
   window.startMarker = new google.maps.Marker({
     position: { lat: lat, lng: lng },
     map: window.map,
     label: 'S',
     title: title,
   });
+
+  showStartInfoWindow(window.startMarker, title);
 
   // グローバル変数に出発地点を保存
   window.startPoint = { lat: lat, lng: lng, title: title };
@@ -378,7 +591,7 @@ function saveStartingPoint(lat, lng, title, customMessage) {
     //document.getElementById('starting-point').style.display = 'none';
     document.getElementById('search-location').style.display = 'none';
     document.getElementById('register-starting-point').style.display = 'none';
-
+    setupHeadingRow();
     enableRouteSelection(); // 経路選択を有効化
   })
   .catch(error => {

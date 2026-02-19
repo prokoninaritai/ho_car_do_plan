@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_02_18_122836) do
+ActiveRecord::Schema[7.0].define(version: 2026_02_19_122555) do
   create_table "business_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
@@ -89,6 +89,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_18_122836) do
     t.decimal "longitude", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "kana"
   end
 
   create_table "time_managements", force: :cascade do |t|

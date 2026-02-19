@@ -13,6 +13,7 @@ CSV.foreach(Rails.root.join('db/csv/stations.csv'), headers: true) do |row|
 
   station.region = data['region']
   station.name = data['name']
+  station.kana = data['kana']
   station.address = data['address']
   station.phone = data['phone']
   station.latitude = data['latitude']&.to_f
