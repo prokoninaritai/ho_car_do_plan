@@ -30,4 +30,7 @@ Rails.application.routes.draw do
   # Stations data endpoint for JSON
   get 'maps/stations_data', to: 'maps#stations_data'
 
+  # スタンプ機能 (マイページ)
+  resources :stamps, only: [:index, :create, :destroy]
+
 end

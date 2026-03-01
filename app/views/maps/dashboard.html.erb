@@ -26,6 +26,10 @@
         <ul id="businessHours"></ul>
         <p><strong>スタンプ押印時間:</strong></p>
         <p id="stampHours">開館時間に同じ ※休館日は押せません</p>
+        <div id="stamp-date-section" style="margin: 10px 0;">
+          <label for="stamp-visited-at" style="font-size:14px; font-weight:bold;">押印日:</label>
+          <input type="date" id="stamp-visited-at" style="margin-left:8px; font-size:14px; padding:4px 8px; border:1px solid #ccc; border-radius:4px;">
+        </div>
         <button id="stampButton" class="stamp-btn">スタンプを押す</button>
       </div>
     </div>
@@ -48,6 +52,6 @@
     <!-- モーダルを開くボタン -->
     <a id="open-itinerary-modal" href="#" class="footer-link">日程を<br>作成する</a>
     <%= link_to '日程を<br>確認する'.html_safe, itineraries_path, class: 'footer-link' %>
-    <%= link_to 'マイページ'.html_safe, edit_user_registration_path, class: 'footer-link' %>
+    <%= link_to 'マイページ'.html_safe, stamps_path, class: 'footer-link' %>
   </div>
   </footer>

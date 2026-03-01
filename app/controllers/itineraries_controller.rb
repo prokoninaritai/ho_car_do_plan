@@ -3,6 +3,10 @@ class ItinerariesController < ApplicationController
 
   def index
     @itineraries = current_user.itineraries.includes(:destinations, :starting_point).order(created_at: :desc)
+    stamped_numbers = current_user.stamps.pluck(:station_number)
+    @stamped_station_names = Station.where(station_number: stamped_numbers).pluck(:name).to_set
+    @station_number_by_name = Station.where(name: @itineraries.flat_map { |i| i.destinations.map(&:destination) }.uniq)
+                                     .pluck(:name, :station_number).to_h
   end
 
   def create

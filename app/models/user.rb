@@ -5,6 +5,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   has_many :itineraries, dependent: :destroy
+  has_many :stamps, dependent: :destroy
 
   validates :nickname, presence: true
 end

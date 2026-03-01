@@ -148,25 +148,59 @@ document.addEventListener("turbo:load", () => {
           }
         });
 
-        const stampedStations = new Set();
+        // station_number → { marker, stamped } のマップ
+        const stationMarkerMap = {};
         let currentModalMarker = null;
-        let currentModalStationName = null;
+        let currentModalStationNumber = null;
+
+        // 今日の日付をデフォルトにセット
+        const todayStr = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD
+        const stampDateInput = document.getElementById('stamp-visited-at');
+        if (stampDateInput) stampDateInput.value = todayStr;
 
         const stampButton = document.getElementById('stampButton');
         if (stampButton) {
           stampButton.addEventListener('click', () => {
-            if (!currentModalMarker || !currentModalStationName) return;
+            if (!currentModalStationNumber) return;
+            const info = stationMarkerMap[currentModalStationNumber];
+            if (!info) return;
 
-            if (stampedStations.has(currentModalStationName)) {
-              stampedStations.delete(currentModalStationName);
-              currentModalMarker.setIcon(window.mapPins.stationPin(false));
-              stampButton.textContent = 'スタンプを押す';
-              stampButton.classList.remove('stamped');
+            const visitedAt = stampDateInput ? stampDateInput.value : todayStr;
+            if (!visitedAt) { alert('押印日を入力してください'); return; }
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            if (info.stamped) {
+              // スタンプ解除
+              fetch(`/stamps/${currentModalStationNumber}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  info.stamped = false;
+                  info.marker.setIcon(window.mapPins.stationPin(false));
+                  stampButton.textContent = 'スタンプを押す';
+                  stampButton.classList.remove('stamped');
+                }
+              });
             } else {
-              stampedStations.add(currentModalStationName);
-              currentModalMarker.setIcon(window.mapPins.stationPin(true));
-              stampButton.textContent = 'スタンプ済み ✓';
-              stampButton.classList.add('stamped');
+              // スタンプ登録
+              fetch('/stamps', {
+                method: 'POST',
+                headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stamp: { station_number: currentModalStationNumber, visited_at: visitedAt } }),
+              })
+              .then(r => r.json())
+              .then(data => {
+                if (data.success) {
+                  info.stamped = true;
+                  info.marker.setIcon(window.mapPins.stationPin(true));
+                  stampButton.textContent = 'スタンプ済み ✓';
+                  stampButton.classList.add('stamped');
+                }
+              });
             }
           });
         }
@@ -175,8 +209,9 @@ document.addEventListener("turbo:load", () => {
           const marker = new google.maps.Marker({
             position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
             map: map,
-            icon: window.mapPins.stationPin(false),
+            icon: window.mapPins.stationPin(station.stamped || false),
           });
+          stationMarkerMap[station.station_number] = { marker, stamped: station.stamped || false };
 
           const labelDiv = document.createElement("div");
           labelDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // 背景を白く半透明に設定
@@ -205,16 +240,21 @@ document.addEventListener("turbo:load", () => {
 
           marker.addListener("click", () => {
             currentModalMarker = marker;
-            currentModalStationName = station.name;
+            currentModalStationNumber = station.station_number;
 
+            const info = stationMarkerMap[station.station_number];
             if (stampButton) {
-              if (stampedStations.has(station.name)) {
+              if (info && info.stamped) {
                 stampButton.textContent = 'スタンプ済み ✓';
                 stampButton.classList.add('stamped');
               } else {
                 stampButton.textContent = 'スタンプを押す';
                 stampButton.classList.remove('stamped');
               }
+            }
+            // 押印日欄: 既存スタンプがあればその日付をセット
+            if (stampDateInput) {
+              stampDateInput.value = station.visited_at || todayStr;
             }
 
             document.getElementById("stationName").innerText = station.name;

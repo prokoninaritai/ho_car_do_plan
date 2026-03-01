@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_02_19_122555) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_01_013322) do
   create_table "business_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
@@ -69,6 +69,16 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_19_122555) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "stamps", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.integer "station_number", null: false
+    t.date "visited_at", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id", "station_number"], name: "index_stamps_on_user_id_and_station_number", unique: true
+    t.index ["user_id"], name: "index_stamps_on_user_id"
+  end
+
   create_table "starting_points", force: :cascade do |t|
     t.integer "itinerary_id", null: false
     t.string "starting_point", null: false
@@ -121,6 +131,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_02_19_122555) do
 
   add_foreign_key "destinations", "itineraries"
   add_foreign_key "itineraries", "users"
+  add_foreign_key "stamps", "users"
   add_foreign_key "starting_points", "itineraries"
   add_foreign_key "time_managements", "destinations"
 end

@@ -10,17 +10,25 @@
     <% if @itineraries.any? %>
       <div class="itinerary-list">
         <% @itineraries.each do |itinerary| %>
-          <%= link_to itinerary_path(itinerary), class: 'itinerary-card' do %>
+          <%
+            destinations = itinerary.destinations.order(:visit_date, :arrival_order)
+            sp = itinerary.starting_point
+            markers = []
+            markers << "color:blue|label:S|#{sp.starting_point_latitude},#{sp.starting_point_longitude}" if sp && sp.starting_point_latitude.present?
+            destinations.each_with_index { |d, i| markers << "color:red|label:#{i + 1}|#{d.destination_latitude},#{d.destination_longitude}" }
+            station_dests = destinations.select { |d| @station_number_by_name[d.destination] }
+            stamp_data = station_dests.group_by(&:visit_date).map do |date, dests|
+              {
+                date: date.strftime('%Y/%m/%d'),
+                visit_date: date.strftime('%Y-%m-%d'),
+                dests: dests.map { |d|
+                  { name: d.destination, station_number: @station_number_by_name[d.destination], stamped: @stamped_station_names.include?(d.destination) }
+                }
+              }
+            end
+          %>
+          <div class="itinerary-card-wrapper" data-href="<%= itinerary_path(itinerary) %>">
             <div class="card-map">
-              <% destinations = itinerary.destinations.order(:visit_date, :arrival_order) %>
-              <% sp = itinerary.starting_point %>
-              <% markers = [] %>
-              <% if sp && sp.starting_point_latitude.present? %>
-                <% markers << "color:blue|label:S|#{sp.starting_point_latitude},#{sp.starting_point_longitude}" %>
-              <% end %>
-              <% destinations.each_with_index do |d, i| %>
-                <% markers << "color:red|label:#{i + 1}|#{d.destination_latitude},#{d.destination_longitude}" %>
-              <% end %>
               <% if markers.any? %>
                 <% marker_params = markers.map { |m| "markers=#{ERB::Util.url_encode(m)}" }.join("&") %>
                 <img src="https://maps.googleapis.com/maps/api/staticmap?size=240x240&<%= marker_params.html_safe %>&key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>"
@@ -32,16 +40,23 @@
               <% end %>
             </div>
             <div class="card-body">
-              <div class="card-title"><%= itinerary.title %></div>
+              <div class="card-title-row">
+                <div class="card-title"><%= itinerary.title %></div>
+                <% if station_dests.any? %>
+                  <button class="stamp-register-btn"
+                          data-itinerary-id="<%= itinerary.id %>"
+                          data-stamp-data="<%= stamp_data.to_json %>">
+                    スタンプ登録
+                  </button>
+                <% end %>
+              </div>
               <div class="card-dates">
                 <%= itinerary.start_date.strftime('%Y/%m/%d') %> 〜 <%= itinerary.end_date.strftime('%Y/%m/%d') %>
                 （<%= (itinerary.end_date - itinerary.start_date).to_i + 1 %>日間）
               </div>
-              <div class="card-created">
-                作成日: <%= itinerary.created_at.strftime('%Y/%m/%d') %>
-              </div>
+              <div class="card-created">作成日: <%= itinerary.created_at.strftime('%Y/%m/%d') %></div>
             </div>
-          <% end %>
+          </div>
         <% end %>
       </div>
     <% else %>
@@ -53,9 +68,186 @@
   </div>
 </main>
 
+<!-- スタンプ登録モーダル -->
+<div id="stamp-register-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:2000; overflow-y:auto;">
+  <div style="background:#fff; margin:56px 16px 80px; border-radius:10px; padding:16px;">
+    <h3 style="margin:0 0 12px; font-size:16px; color:#333;">スタンプを登録する</h3>
+    <div id="stamp-register-list"></div>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button id="stamp-register-save" style="flex:1; padding:12px 0; background:#4CAF50; color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">登録する</button>
+      <button id="stamp-register-cancel" style="flex:1; padding:12px 0; background:#fff; color:#555; border:1px solid #ccc; border-radius:6px; font-size:14px; cursor:pointer;">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <!-- フッター -->
 <footer class="footer">
   <div class="footer-container">
+    <%= link_to 'マイページ'.html_safe, stamps_path, class: 'footer-link' %>
     <%= link_to 'トップに<br>戻る'.html_safe, authenticated_root_path, class: 'footer-link' %>
   </div>
 </footer>
+
+<style>
+  .itinerary-card-wrapper {
+    display: flex;
+    margin-bottom: 16px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    cursor: pointer;
+  }
+  .itinerary-card-wrapper:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+  .card-title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .card-title-row .card-title {
+    flex: 1;
+    margin-bottom: 0;
+  }
+  .stamp-register-btn {
+    flex-shrink: 0;
+    padding: 4px 8px;
+    background: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .stamp-register-btn:hover {
+    background: #388E3C;
+  }
+</style>
+
+<script>
+document.addEventListener("turbo:load", function() {
+  // カードクリックでしおりに遷移（スタンプボタンは除く）
+  document.querySelectorAll('.itinerary-card-wrapper[data-href]').forEach(function(card) {
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.stamp-register-btn')) return;
+      window.location.href = card.dataset.href;
+    });
+  });
+
+  var modal = document.getElementById('stamp-register-modal');
+  var listEl = document.getElementById('stamp-register-list');
+  var currentStampData = [];
+
+  // スタンプ登録ボタンのクリック
+  document.querySelectorAll('.stamp-register-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      currentStampData = JSON.parse(this.dataset.stampData || '[]');
+      renderStampList(currentStampData);
+      modal.style.display = 'block';
+    });
+  });
+
+  function renderStampList(data) {
+    listEl.innerHTML = '';
+    data.forEach(function(group) {
+      var groupEl = document.createElement('div');
+      groupEl.style.cssText = 'margin-bottom:14px;';
+
+      // 日付ヘッダー行（日付 + すべてチェック/はずすボタン）
+      var headerRow = document.createElement('div');
+      headerRow.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:4px 0; border-bottom:1px solid #eee; margin-bottom:6px;';
+
+      var dateLabel = document.createElement('span');
+      dateLabel.style.cssText = 'font-size:13px; font-weight:bold; color:#888;';
+      dateLabel.textContent = group.date;
+
+      var toggleBtn = document.createElement('button');
+      toggleBtn.type = 'button';
+      toggleBtn.style.cssText = 'font-size:11px; padding:2px 8px; border:1px solid #aaa; border-radius:4px; background:#f5f5f5; color:#555; cursor:pointer;';
+      toggleBtn.textContent = 'すべてはずす';
+
+      headerRow.appendChild(dateLabel);
+      headerRow.appendChild(toggleBtn);
+      groupEl.appendChild(headerRow);
+
+      var checkboxes = [];
+
+      group.dests.forEach(function(dest) {
+        var label = document.createElement('label');
+        label.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid #f5f5f5; cursor:pointer;';
+
+        var cb = document.createElement('input');
+        cb.type = 'checkbox';
+        cb.checked = true; // デフォルトはすべてチェック
+        cb.dataset.stationNumber = dest.station_number;
+        cb.dataset.visitDate = group.visit_date;
+        cb.style.cssText = 'width:20px; height:20px; flex-shrink:0; accent-color:#4CAF50; cursor:pointer;';
+        checkboxes.push(cb);
+
+        var span = document.createElement('span');
+        span.style.cssText = 'font-size:14px; color:#333;';
+        span.textContent = dest.name + (dest.stamped ? ' ✓' : '');
+
+        label.appendChild(cb);
+        label.appendChild(span);
+        groupEl.appendChild(label);
+      });
+
+      // すべてチェック/はずすトグル
+      toggleBtn.addEventListener('click', function() {
+        var allChecked = checkboxes.every(function(cb) { return cb.checked; });
+        checkboxes.forEach(function(cb) { cb.checked = !allChecked; });
+        toggleBtn.textContent = allChecked ? 'すべてチェック' : 'すべてはずす';
+      });
+
+      listEl.appendChild(groupEl);
+    });
+  }
+
+  document.getElementById('stamp-register-save').addEventListener('click', function() {
+    var checkboxes = listEl.querySelectorAll('input[type="checkbox"]');
+    var csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+    var promises = [];
+
+    checkboxes.forEach(function(cb) {
+      var stationNumber = parseInt(cb.dataset.stationNumber);
+      var visitDate = cb.dataset.visitDate;
+
+      if (cb.checked) {
+        promises.push(
+          fetch('/stamps', {
+            method: 'POST',
+            headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ stamp: { station_number: stationNumber, visited_at: visitDate } }),
+          }).then(function(r) { return r.json(); })
+        );
+      } else {
+        promises.push(
+          fetch('/stamps/' + stationNumber, {
+            method: 'DELETE',
+            headers: { 'X-CSRF-Token': csrfToken, 'Content-Type': 'application/json' },
+          }).then(function(r) { return r.json(); })
+        );
+      }
+    });
+
+    Promise.all(promises).then(function() {
+      modal.style.display = 'none';
+      window.location.reload();
+    });
+  });
+
+  document.getElementById('stamp-register-cancel').addEventListener('click', function() {
+    modal.style.display = 'none';
+  });
+
+  modal.addEventListener('click', function(e) {
+    if (e.target === modal) modal.style.display = 'none';
+  });
+});
+</script>
