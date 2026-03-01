@@ -47,6 +47,23 @@ html, body {
   background-color: #ff6666;
 }
 
+.header-logo {
+  color: #fff;
+  font-weight: bold;
+  font-size: 13px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 4px;
+  line-height: 1.2;
+}
+
+.header-logo:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 /* メインコンテンツエリア */
 .main-contents {
   margin-top: 60px; /* ヘッダーの高さ分マージンを取る */
@@ -88,11 +105,11 @@ body {
 .map-container {
   position: relative;
   width: 100%;
-  height: 82vh;
+  height: 78vh;
 }
 
 #map2 {
-  min-height: 80vh; 
+  min-height: 76vh;
   width: 100%;
   z-index: 9;
 }
@@ -185,6 +202,41 @@ body {
   &:hover {
     background: #45a049;
   }
+}
+
+/* 出発時間入力 */
+.departure-time-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4px;
+}
+
+.departure-time-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+}
+
+.departure-time-input {
+  flex: 1;
+  padding: 4px 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: auto !important;
+}
+
+/* 到着時刻表示 */
+.route-arrival-time {
+  font-size: 11px;
+  color: #2196F3;
+  font-weight: bold;
+  margin-top: 2px;
 }
 
 /* 行先一覧リスト */
@@ -546,6 +598,21 @@ body {
   }
 }
 
+.mypage-home-link {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 16px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+  font-size: 14px;
+
+  &:hover {
+    background-color: #45a049;
+  }
+}
+
 .mypage-back-link {
   display: block;
   text-align: center;
@@ -553,6 +620,33 @@ body {
   font-size: 14px;
   margin-top: 10px;
   margin-bottom: 20px;
+}
+
+/* スタンプボタン */
+.stamp-btn {
+  display: block;
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #45a049;
+  }
+
+  &.stamped {
+    background-color: #9E9E9E;
+
+    &:hover {
+      background-color: #757575;
+    }
+  }
 }
 
 /* モーダル */

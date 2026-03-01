@@ -148,13 +148,36 @@ document.addEventListener("turbo:load", () => {
           }
         });
 
+        const stampedStations = new Set();
+        let currentModalMarker = null;
+        let currentModalStationName = null;
+
+        const stampButton = document.getElementById('stampButton');
+        if (stampButton) {
+          stampButton.addEventListener('click', () => {
+            if (!currentModalMarker || !currentModalStationName) return;
+
+            if (stampedStations.has(currentModalStationName)) {
+              stampedStations.delete(currentModalStationName);
+              currentModalMarker.setIcon(window.mapPins.stationPin(false));
+              stampButton.textContent = 'スタンプを押す';
+              stampButton.classList.remove('stamped');
+            } else {
+              stampedStations.add(currentModalStationName);
+              currentModalMarker.setIcon(window.mapPins.stationPin(true));
+              stampButton.textContent = 'スタンプ済み ✓';
+              stampButton.classList.add('stamped');
+            }
+          });
+        }
+
         stations.forEach((station) => {
           const marker = new google.maps.Marker({
             position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
             map: map,
-            
+            icon: window.mapPins.stationPin(false),
           });
-        
+
           const labelDiv = document.createElement("div");
           labelDiv.style.backgroundColor = "rgba(255, 255, 255, 0.8)"; // 背景を白く半透明に設定
           labelDiv.style.border = "1px solid #ccc"; // 枠線を追加
@@ -181,6 +204,19 @@ document.addEventListener("turbo:load", () => {
           overlay.setMap(map);
 
           marker.addListener("click", () => {
+            currentModalMarker = marker;
+            currentModalStationName = station.name;
+
+            if (stampButton) {
+              if (stampedStations.has(station.name)) {
+                stampButton.textContent = 'スタンプ済み ✓';
+                stampButton.classList.add('stamped');
+              } else {
+                stampButton.textContent = 'スタンプを押す';
+                stampButton.classList.remove('stamped');
+              }
+            }
+
             document.getElementById("stationName").innerText = station.name;
 
             // 休館日データを表示

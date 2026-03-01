@@ -1,5 +1,6 @@
 <!-- ヘッダー -->
   <header class="header">
+    <%= link_to 'HoCarDoPlan', authenticated_root_path, class: 'header-logo' %>
     <div class="welcome">
       <%= @itinerary.title %> <br> <%= @display_date %>（<%= @day_label %>)
     </div>
@@ -33,7 +34,7 @@
           data-existing-sp-lng="<%= @existing_starting_point.starting_point_longitude %>"
         <% end %>
         <% if @existing_destinations.present? %>
-          data-existing-destinations="<%= @existing_destinations.map { |d| { name: d.destination } }.to_json %>"
+          data-existing-destinations="<%= @existing_destinations.map { |d| { name: d.destination, lat: d.destination_latitude, lng: d.destination_longitude } }.to_json %>"
         <% end %>
       ></div>
       <div id="stations-data" data-stations="<%= @stations.select(:name, :kana, :latitude, :longitude).to_json %>"></div>
@@ -58,6 +59,10 @@
         <input type="text" id="place-search-input" placeholder="住所・施設名で検索">
       </div>
       <button type="button" id="register-starting-point"<%= ' style="display:none"'.html_safe if route_mode %>>出発地を登録する</button>
+      <div id="departure-time-section" class="departure-time-section"<%= ' style="display:none"'.html_safe unless route_mode %>>
+        <label class="departure-time-label">出発時間</label>
+        <input type="time" id="departure-time" class="departure-time-input" value="<%= @departure_time || '09:00' %>">
+      </div>
       <div id="route-list"></div>
     </div>
   </div>

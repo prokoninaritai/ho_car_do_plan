@@ -1,10 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('turbo:load', () => {
   const saveButton = document.getElementById('save-route-btn');
   if (saveButton) {
     saveButton.addEventListener('click', function(e) {
       e.preventDefault();
       saveRoute();
     });
+  }
+
+  const departureInput = document.getElementById('departure-time');
+  if (departureInput) {
+    departureInput.addEventListener('change', updateArrivalTimes);
+    departureInput.addEventListener('input', updateArrivalTimes);
   }
 });
 
@@ -20,9 +26,11 @@ window.reverseRoute = function() {
 // --- 変数の宣言 ---
 let currentOrder = 1; // 現在の順番をトラッキング
 let routeMarkers = []; // 経路に含まれるマーカー
+window.hasUnsavedRoute = false; // 未保存の経路があるか
 let routeRenderers = []; // 各経路を描画する DirectionsRenderer を保存
 const markers = []; // すべてのマーカーを格納
 const labeledMarkers = new Map(); // ラベルを設定したマーカーを追跡
+let segmentDurations = []; // 区間ごとの所要時間（秒）
 const itineraryElement = document.getElementById('itinerary-data');
 if (itineraryElement) {
   const itineraryId = itineraryElement.dataset.itineraryId;
@@ -37,7 +45,9 @@ function selectRouteMarker(marker) {
   if (clickedIndex > -1) {
     routeMarkers.splice(clickedIndex, 1); // マーカーをリストから削除
     marker.setLabel(null); // ラベルをクリア
+    marker.setIcon(window.mapPins.stationPin(false)); // アイコンをリセット
     updateMarkerLabels(); // 順番を更新
+    window.hasUnsavedRoute = routeMarkers.length > 0;
 
     console.log("Before deletion:", routeRenderers);
 
@@ -58,6 +68,7 @@ function selectRouteMarker(marker) {
   } else {
     routeMarkers.push(marker);
     updateMarkerLabels();
+    window.hasUnsavedRoute = true;
   }
 
   drawAllRoutes(); // 残りの経路を再描画
@@ -107,8 +118,11 @@ window.handleMarkerClick = handleMarkerClick; // グローバルスコープに�
 
 // --- マーカーの再ラベル付け ---
 function updateMarkerLabels() {
+  const itineraryEl = document.getElementById('itinerary-data');
+  const currentDay = itineraryEl ? parseInt(itineraryEl.dataset.currentDay) || 1 : 1;
   routeMarkers.forEach((marker, index) => {
-    marker.setLabel((index + 1).toString()); // 順番にラベルを付け直す
+    marker.setLabel(null);
+    marker.setIcon(window.mapPins.destinationPin(currentDay, index + 1));
   });
 }
 
@@ -142,7 +156,8 @@ function drawRoute(startPosition, endPosition) {
   const request = {
     origin: startPosition,
     destination: endPosition,
-    travelMode: 'DRIVING', // 車での移動
+    travelMode: 'DRIVING',
+    avoidHighways: true,
   };
 
   window.directionsService.route(request, (result, status) => {
@@ -184,6 +199,7 @@ function updateRouteList() {
   if (routeMarkers.length === 0) {
     listContainer.innerHTML = '';
     routeInfoCache = {};
+    segmentDurations = [];
     return;
   }
 
@@ -195,6 +211,7 @@ function updateRouteList() {
     html += '    <span class="route-item-number">' + (index + 1) + '</span>';
     html += '    <span class="route-item-name">' + marker.getTitle() + '</span>';
     html += '    <span class="route-item-info" id="route-info-' + index + '"></span>';
+    html += '    <span class="route-arrival-time" id="route-arrival-' + index + '"></span>';
     html += '  </div>';
     html += '  <button type="button" class="route-item-delete" data-index="' + index + '">×</button>';
     html += '</div>';
@@ -224,6 +241,7 @@ function updateRouteList() {
 function fetchRouteInfo() {
   if (!window.directionsService || routeMarkers.length === 0) return;
 
+  segmentDurations = [];
   var directionsService = window.directionsService;
 
   // 出発地 → 1番目
@@ -259,7 +277,8 @@ function fetchSegmentInfo(directionsService, origin, destination, displayIndex) 
   var request = {
     origin: origin,
     destination: destination,
-    travelMode: 'DRIVING'
+    travelMode: 'DRIVING',
+    avoidHighways: true,
   };
 
   directionsService.route(request, function(result, status) {
@@ -267,7 +286,8 @@ function fetchSegmentInfo(directionsService, origin, destination, displayIndex) 
       var leg = result.routes[0].legs[0];
       var info = {
         distance: leg.distance.text,
-        duration: leg.duration.text
+        duration: leg.duration.text,
+        durationSeconds: leg.duration.value
       };
       routeInfoCache[cacheKey] = info;
       showRouteInfo(displayIndex, info);
@@ -279,6 +299,35 @@ function showRouteInfo(index, info) {
   var el = document.getElementById('route-info-' + index);
   if (el) {
     el.textContent = info.distance + ' / ' + info.duration;
+  }
+  if (info.durationSeconds !== undefined) {
+    segmentDurations[index] = info.durationSeconds;
+    updateArrivalTimes();
+  }
+}
+
+function updateArrivalTimes() {
+  const departureInput = document.getElementById('departure-time');
+  if (!departureInput || !departureInput.value) return;
+
+  const [h, m] = departureInput.value.split(':').map(Number);
+  let totalMinutes = h * 60 + m;
+  let valid = true;
+
+  for (var i = 0; i < routeMarkers.length; i++) {
+    const el = document.getElementById('route-arrival-' + i);
+    const dur = segmentDurations[i];
+
+    if (dur === undefined || !valid) {
+      if (el) el.textContent = '';
+      valid = false;
+      continue;
+    }
+
+    totalMinutes += Math.round(dur / 60);
+    const ah = Math.floor(totalMinutes / 60) % 24;
+    const am = totalMinutes % 60;
+    if (el) el.textContent = '到着 ' + String(ah).padStart(2, '0') + ':' + String(am).padStart(2, '0');
   }
 }
 
@@ -346,6 +395,13 @@ function saveRoute() {
     return;
   }
 
+  const saveBtn = document.getElementById('save-route-btn');
+  if (saveBtn) {
+    saveBtn.innerHTML = '保存中…';
+    saveBtn.style.pointerEvents = 'none';
+    saveBtn.style.opacity = '0.6';
+  }
+
   const itineraryElement = document.getElementById('itinerary-data');
   const startDateString = itineraryElement.dataset.startDate; // データ属性から取得
   const startDate = new Date(startDateString); // 開始日を Date オブジェクトに変換
@@ -374,6 +430,7 @@ function saveRoute() {
       origin: { lat: window.startPoint.lat, lng: window.startPoint.lng },
       destination: firstMarker.getPosition(),
       travelMode: 'DRIVING',
+      avoidHighways: true,
     };
 
     promises.push(new Promise((resolve, reject) => {
@@ -408,6 +465,7 @@ function saveRoute() {
         origin: marker.getPosition(),
         destination: nextMarker.getPosition(),
         travelMode: 'DRIVING',
+        avoidHighways: true,
       };
 
       promises.push(new Promise((resolve, reject) => {
@@ -444,6 +502,12 @@ function saveRoute() {
     })
     .catch(error => {
       console.error(error);
+      const saveBtn = document.getElementById('save-route-btn');
+      if (saveBtn) {
+        saveBtn.innerHTML = 'しおり<br>作成';
+        saveBtn.style.pointerEvents = '';
+        saveBtn.style.opacity = '';
+      }
     });
 }
 
@@ -456,6 +520,7 @@ function addRemainingRoutes(routeData, visitDate, directionsService) {
         origin: marker.getPosition(),
         destination: nextMarker.getPosition(),
         travelMode: 'DRIVING',
+        avoidHighways: true,
       };
 
       directionsService.route(request, (result, status) => {
@@ -487,6 +552,24 @@ function addRemainingRoutes(routeData, visitDate, directionsService) {
   });
 }
 
+// --- 未保存警告 ---
+window.addEventListener('beforeunload', function(e) {
+  if (window.hasUnsavedRoute) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+document.addEventListener('turbo:before-visit', function(e) {
+  if (window.hasUnsavedRoute) {
+    if (!confirm('経路がまだ保存されていません。\nページを移動すると変更が失われます。\n移動しますか？')) {
+      e.preventDefault();
+    } else {
+      window.hasUnsavedRoute = false;
+    }
+  }
+});
+
 // サーバーにデータを送信
 function postRouteData(data) {
   fetch(`/itineraries/${itineraryId}/destinations`, {
@@ -506,8 +589,11 @@ function postRouteData(data) {
   })
   .then(data => {
     console.log('保存成功:', data);
+    window.hasUnsavedRoute = false;
     const currentDay = parseInt(document.getElementById('itinerary-data').dataset.currentDay) || 1;
-    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=${currentDay}`;
+    const departureTime = document.getElementById('departure-time')?.value || '';
+    const nextUrl = `/itineraries/${itineraryId}/day_schedule?current_day=${currentDay}` +
+      (departureTime ? `&departure_time=${encodeURIComponent(departureTime)}` : '');
     window.location.href = nextUrl;
   })
   .catch(error => {

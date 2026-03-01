@@ -25,17 +25,23 @@ body.top-page {
 .home_overlay {
   text-align: center;
   color: #ffffff;
-  background-color: rgba(0, 0, 0, 0.5);
-
-  /* 半透明の黒背景を追加 */
   padding: 20px;
   height: 100vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 /* ヘッダー */
+
+.content-card {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: 12px;
+  padding: 30px 40px;
+  max-width: 320px;
+  width: 90%;
+}
 
 .home_title {
   margin-bottom: 20px;

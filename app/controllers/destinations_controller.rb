@@ -27,6 +27,19 @@ class DestinationsController < ApplicationController
     @home_latitude = current_user&.home_latitude
     @home_longitude = current_user&.home_longitude
 
+    # 出発時間: URLパラメータ優先、なければtime_managementから計算
+    @departure_time = params[:departure_time].presence
+    unless @departure_time
+      first_tm = @existing_destinations.first&.time_management
+      if first_tm && first_tm.arrival_time.present? && first_tm.custom_travel_time.present?
+        arr = first_tm.arrival_time.split(':').map(&:to_i)
+        trv = first_tm.custom_travel_time.split(':').map(&:to_i)
+        total_min = (arr[0] * 60 + arr[1]) - (trv[0] * 60 + trv[1])
+        total_min += 24 * 60 if total_min < 0
+        @departure_time = format('%02d:%02d', total_min / 60, total_min % 60)
+      end
+    end
+
     # 2日目以降の場合、前日の最後の目的地を取得
     if @current_day >= 2
       previous_date = @itinerary.start_date + (@current_day - 2).days

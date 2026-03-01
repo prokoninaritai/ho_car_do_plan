@@ -1,6 +1,9 @@
 class UsersController < ApplicationController
   before_action :authenticate_user!
 
+  def home
+  end
+
   def update_home
     if current_user.update(home_params)
       render json: { message: '自宅が保存されました' }, status: :ok

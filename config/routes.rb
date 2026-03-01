@@ -23,7 +23,8 @@ Rails.application.routes.draw do
   # Time managements bulk create
   resources :time_managements, only: [:create]
 
-  # 自宅住所の保存
+  # 自宅登録ページ・保存
+  get  'users/home', to: 'users#home', as: :users_home
   patch 'users/update_home', to: 'users#update_home'
 
   # Stations data endpoint for JSON

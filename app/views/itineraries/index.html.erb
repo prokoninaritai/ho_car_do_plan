@@ -1,5 +1,6 @@
 <!-- ヘッダー -->
 <header class="header">
+  <%= link_to 'HoCarDoPlan', authenticated_root_path, class: 'header-logo' %>
   <div class="welcome">しおり一覧</div>
   <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
 </header>

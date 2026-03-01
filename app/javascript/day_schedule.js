@@ -1,10 +1,31 @@
 // ページの読み込み時に実行
 document.addEventListener("turbo:load", () => {
+  // このページでの未保存フラグをリセット
+  window.hasUnsavedSchedule = false;
+
   // 出発時間や到着時間を計算する関数を設定
   setupTimeCalculations();
 
   // しおりの登録ボタンを設定
   setupSaveButton();
+});
+
+// --- 未保存警告 ---
+window.addEventListener('beforeunload', function(e) {
+  if (window.hasUnsavedSchedule) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+});
+
+document.addEventListener('turbo:before-visit', function(e) {
+  if (window.hasUnsavedSchedule) {
+    if (!confirm('時間設定がまだ保存されていません。\nページを移動すると変更が失われます。\n移動しますか？')) {
+      e.preventDefault();
+    } else {
+      window.hasUnsavedSchedule = false;
+    }
+  }
 });
 
 // === セレクトボックスから時間を取得 ===
@@ -25,16 +46,31 @@ function setupTimeCalculations() {
   const stayGroups = document.querySelectorAll(".time-select-group.stay-time");
   const nextDepartureDisplays = document.querySelectorAll(".next-departure-time.time-display");
 
+  // 「経路選択に戻る」リンクの出発時間パラメータを更新
+  function updateBackToRouteLink() {
+    var backBtn = document.getElementById('back-to-route-btn');
+    if (!backBtn || !departureGroup) return;
+    var deptTime = getTimeFromGroup(departureGroup);
+    try {
+      var url = new URL(backBtn.href);
+      url.searchParams.set('departure_time', deptTime);
+      backBtn.href = url.toString();
+    } catch(e) {}
+  }
+
   // セレクトボックスの変更イベントを監視
   const allSelects = document.querySelectorAll(".time-select");
   allSelects.forEach((select) => {
     select.addEventListener("change", () => {
+      window.hasUnsavedSchedule = true;
       calculateTimes();
+      updateBackToRouteLink();
     });
   });
 
   // 初回計算
   calculateTimes();
+  updateBackToRouteLink();
 
   // 時間を計算する関数
   function calculateTimes() {
@@ -303,7 +339,8 @@ function setupSaveButton() {
     return;
   }
 
-  saveButton.addEventListener("click", () => {
+  saveButton.addEventListener("click", (e) => {
+    e.preventDefault();
     console.log("Saving time managements...");
 
     const timeManagements = [];
@@ -355,6 +392,7 @@ function setupSaveButton() {
       .then(response => response.ok ? response.json() : Promise.reject("Failed to save"))
       .then(data => {
         console.log("Server response:", data.message);
+        window.hasUnsavedSchedule = false;
         const scheduleData = document.getElementById("day-schedule-data");
         const itineraryId = scheduleData.dataset.itineraryId;
 

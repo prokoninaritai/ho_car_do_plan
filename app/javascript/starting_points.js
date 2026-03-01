@@ -1,6 +1,15 @@
+// Turboナビゲーション前にinitMap済みフラグをリセット
+document.addEventListener("turbo:before-visit", function() {
+  window._mapInitDone = false;
+});
+
 document.addEventListener("turbo:load", () => {
-  if (typeof initMap === "function") {
-    initMap();
+  // google.mapsが未ロードの場合はGoogle MapsのcallbackでinitMapが呼ばれるためスキップ
+  // （両方から呼ばれると二重初期化になり目的地が消える）
+  if (typeof google !== 'undefined' && typeof google.maps !== 'undefined') {
+    if (typeof initMap === "function") {
+      initMap();
+    }
   }
   const itineraryElement = document.getElementById('itinerary-data');
   if (itineraryElement) {
@@ -21,7 +30,7 @@ document.addEventListener("turbo:load", () => {
       const waitForMap = setInterval(() => {
         if (window.map) {
           clearInterval(waitForMap);
-          setStartingPoint(prevLat, prevLng, prevName);
+          setStartingPoint(prevLat, prevLng, prevName, false);
           const msg = `${currentDay - 1}日目の日程を登録しました。${currentDay}日目の経路を登録してください`;
           saveStartingPoint(prevLat, prevLng, prevName, msg);
         }
@@ -37,6 +46,16 @@ window.startInfoWindow = null; // 出発地の吹き出し
 
 // マップを初期化
 function initMap() {
+  // 同一ページ内での二重初期化を防ぐ（turbo:loadとGoogle Maps callbackの両方が発火するケース対策）
+  if (window._mapInitDone) return;
+  window._mapInitDone = true;
+
+  // 前回のマーカーを地図から除去してリセット（Turboナビゲーション後の古い参照を除去）
+  if (window.markers && window.markers.length > 0) {
+    window.markers.forEach(function(m) { try { m.setMap(null); } catch(e) {} });
+  }
+  window.markers = [];
+
   window.map = new google.maps.Map(document.getElementById('map2'), {
     center: { lat: 41.92591, lng: 140.65724 },
     zoom: 7,
@@ -53,33 +72,13 @@ function initMap() {
   // 過去日の目的地を色分けピンで表示
   const itineraryEl = document.getElementById('itinerary-data');
   if (itineraryEl && itineraryEl.dataset.prevDestinations) {
-    const dayColors = {
-      1: 'red',
-      2: 'orange',
-      3: 'yellow',
-      4: 'green',
-      5: 'ltblue',
-      6: 'blue',
-      7: 'purple'
-    };
     const prevDestinations = JSON.parse(itineraryEl.dataset.prevDestinations);
     prevDestinations.forEach((dest) => {
-      const colorName = dayColors[dest.day] || 'red';
-      const iconUrl = `http://maps.google.com/mapfiles/ms/icons/${colorName}-dot.png`;
       new google.maps.Marker({
         position: { lat: parseFloat(dest.lat), lng: parseFloat(dest.lng) },
         map: window.map,
         title: dest.name,
-        label: {
-          text: `${dest.day}-${dest.arrival_order}`,
-          color: '#ffffff',
-          fontWeight: 'bold',
-          fontSize: '10px'
-        },
-        icon: {
-          url: iconUrl,
-          scaledSize: new google.maps.Size(32, 32),
-        },
+        icon: window.mapPins.destinationPin(dest.day, dest.arrival_order),
         opacity: 0.7,
       });
     });
@@ -95,10 +94,7 @@ function initMap() {
       position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
       map: window.map,
       title: station.name,
-      icon: {
-        url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png",
-        scaledSize: new google.maps.Size(50, 40),
-      },
+      icon: window.mapPins.stationPin(false),
     });
 
     createStationLabel(window.map, marker, station.name);
@@ -111,7 +107,7 @@ function initMap() {
         selectRouteMarker(marker); // 経路選択用の処理
       } else {
         // 出発地点登録モード
-        setStartingPoint(marker.getPosition().lat(), marker.getPosition().lng(), marker.getTitle());
+        setStartingPoint(marker.getPosition().lat(), marker.getPosition().lng(), marker.getTitle(), false);
       }
     });
   });
@@ -198,27 +194,18 @@ function restoreExistingState() {
       position: { lat: spLat, lng: spLng },
       map: window.map,
       title: spName,
-      label: {
-        text: 'S',
-        color: '#ffffff',
-        fontWeight: 'bold',
-        fontSize: '10px'
-      },
-      icon: {
-        url: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-        scaledSize: new google.maps.Size(32, 32),
-      },
+      icon: window.mapPins.startPin(),
       opacity: 0.7,
     });
 
     // 前日ゴール = 今日のスタートを青Sピンに
-    setStartingPoint(prevLat, prevLng, prevName);
+    setStartingPoint(prevLat, prevLng, prevName, false);
     // 2日目のスタート地点を中心にズーム
     window.map.setCenter({ lat: prevLat, lng: prevLng });
     window.map.setZoom(9);
   } else {
     // 1日目: 通常通り
-    setStartingPoint(spLat, spLng, spName);
+    setStartingPoint(spLat, spLng, spName, false);
     window.map.setCenter({ lat: spLat, lng: spLng });
     window.map.setZoom(9);
   }
@@ -238,7 +225,20 @@ function restoreExistingState() {
   if (existingDestsJson) {
     const existingDests = JSON.parse(existingDestsJson);
     existingDests.forEach((dest) => {
-      const marker = window.markers.find(m => m.getTitle() === dest.name);
+      let marker = window.markers.find(m => m.getTitle() === dest.name);
+      // 道の駅以外の目的地（Places APIで追加した場所など）はmarkers配列にないので動的に作成
+      if (!marker && dest.lat && dest.lng) {
+        marker = new google.maps.Marker({
+          position: { lat: parseFloat(dest.lat), lng: parseFloat(dest.lng) },
+          map: window.map,
+          title: dest.name,
+          icon: window.mapPins.stationPin(false),
+        });
+        window.markers.push(marker);
+        marker.addListener('click', function() {
+          if (window.routeSelectionEnabled) selectRouteMarker(marker);
+        });
+      }
       if (marker) {
         selectRouteMarker(marker);
       }
@@ -527,16 +527,16 @@ function showStartInfoWindow(marker, title) {
 }
 
 // 出発地を設定する
-function setStartingPoint(lat, lng, title) {
+function setStartingPoint(lat, lng, title, showWindow = true) {
   if (window.startMarker) window.startMarker.setMap(null);
   window.startMarker = new google.maps.Marker({
     position: { lat: lat, lng: lng },
     map: window.map,
-    label: 'S',
     title: title,
+    icon: window.mapPins.startPin(),
   });
 
-  showStartInfoWindow(window.startMarker, title);
+  if (showWindow) showStartInfoWindow(window.startMarker, title);
 
   // グローバル変数に出発地点を保存
   window.startPoint = { lat: lat, lng: lng, title: title };
@@ -605,14 +605,14 @@ function saveStartingPoint(lat, lng, title, customMessage) {
 function enableRouteSelection() {
   window.routeSelectionEnabled = true;
 
+  const dtSection = document.getElementById('departure-time-section');
+  if (dtSection) dtSection.style.display = '';
+
   // 出発地マーカー（startMarker）を固定
   if (startMarker) {
     startMarker.setDraggable(false); // マーカーをドラッグ不可にする
-    startMarker.setLabel('S'); // ラベルを 'S' に固定
-    startMarker.setIcon({
-      url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png", // 青色のアイコンに変更（任意）
-      scaledSize: new google.maps.Size(50, 50), // サイズ調整（任意）
-    });
+    startMarker.setLabel(null);
+    startMarker.setIcon(window.mapPins.startPin());
   } else {
     console.error("出発地のマーカーが見つかりません");
   }

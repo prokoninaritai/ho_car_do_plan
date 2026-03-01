@@ -38,6 +38,7 @@ class ItinerariesController < ApplicationController
 
   def day_schedule
     @current_day = params[:current_day].to_i
+    @departure_time = params[:departure_time].presence
     @visit_date = @itinerary.start_date + (@current_day - 1).days
     @total_days = (@itinerary.end_date - @itinerary.start_date).to_i + 1
     # 当日の目的地を取得（time_management含む）

@@ -1,5 +1,6 @@
 <!-- ヘッダー -->
 <header class="header">
+  <%= link_to 'HoCarDoPlan', authenticated_root_path, class: 'header-logo' %>
   <div class="welcome">
     <%= @itinerary.title %>
   </div>
@@ -45,8 +46,40 @@
   <% (1..@total_days).each do |d| %>
     <% date = @itinerary.start_date + (d - 1).days %>
     <% destinations = @destinations_by_date[date] || [] %>
-    <div class="show-tab-content <%= 'active' if d == 1 %>" data-day="<%= d %>">
-      <h3><%= date.strftime('%Y年%-m月%-d日') %>（<%= d %>日目）</h3>
+    <%# フッターボタン用にgmaps URLを事前計算 %>
+    <%
+      gmaps_urls_for_day = []
+      if destinations.any?
+        day_points = [[destinations.first.departure_latitude.to_f, destinations.first.departure_longitude.to_f]]
+        destinations.each { |dest| day_points << [dest.destination_latitude.to_f, dest.destination_longitude.to_f] }
+        chunks = []; i = 0
+        loop do
+          chunks << day_points[i, 10]
+          i += 9
+          break if i >= day_points.length - 1
+        end
+        gmaps_urls_for_day = chunks.map do |chunk|
+          origin = chunk.first; dest_pt = chunk.last; wps = chunk[1..-2]
+          url = "https://www.google.com/maps/dir/?api=1&origin=#{origin[0]},#{origin[1]}&destination=#{dest_pt[0]},#{dest_pt[1]}"
+          url += "&waypoints=#{wps.map { |p| "#{p[0]},#{p[1]}" }.join('%7C')}" if wps.any?
+          url + "&travelmode=driving"
+        end
+      end
+    %>
+    <%
+      gmaps_waypoints_for_day = []
+      if destinations.any?
+        gmaps_waypoints_for_day << { name: destinations.first.departure, lat: destinations.first.departure_latitude, lng: destinations.first.departure_longitude }
+        destinations.each { |dest| gmaps_waypoints_for_day << { name: dest.destination, lat: dest.destination_latitude, lng: dest.destination_longitude } }
+      end
+    %>
+    <div class="show-tab-content <%= 'active' if d == 1 %>" data-day="<%= d %>"
+         data-has-destinations="<%= destinations.any? %>"
+         data-time-url="<%= destinations.any? ? day_schedule_itinerary_path(@itinerary, current_day: d) : '' %>"
+         data-dest-url="<%= new_itinerary_destination_path(@itinerary, current_day: d) %>"
+         data-gmaps-urls="<%= gmaps_urls_for_day.to_json %>"
+         data-gmaps-waypoints="<%= gmaps_waypoints_for_day.to_json %>">
+      <h3><%= date.strftime('%Y年%-m月%-d日') %>（<%= %w[日 月 火 水 木 金 土][date.wday] %>）<%= d %>日目</h3>
 
       <% if destinations.any? %>
         <%# 出発地の出発時間を計算: 1番目の到着時間 - 移動時間 %>
@@ -100,25 +133,32 @@
         <p class="show-empty">この日の日程はまだ登録されていません。</p>
       <% end %>
 
-      <!-- 変更ボタン -->
-      <div class="show-actions">
-        <% if destinations.any? %>
-          <%= link_to '時間を変更する',
-            day_schedule_itinerary_path(@itinerary, current_day: d),
-            class: 'show-action-btn' %>
-        <% end %>
-        <%= link_to '目的地を変更する',
-          new_itinerary_destination_path(@itinerary, current_day: d),
-          class: 'show-action-btn show-action-btn-outline' %>
-      </div>
     </div>
   <% end %>
 </div>
 </main>
 
+<!-- 目的地選択モーダル -->
+<div id="gmaps-picker-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.55); z-index:2000; overflow-y:auto;">
+  <div style="background:#fff; margin:56px 16px 80px; border-radius:10px; padding:16px;">
+    <h3 style="margin:0 0 4px; font-size:16px; color:#333;">地点を選択してGoogleマップで開く</h3>
+    <p style="margin:0 0 12px; font-size:12px; color:#888;">すでに訪れた地点のチェックを外してください</p>
+    <div id="gmaps-picker-list"></div>
+    <p id="gmaps-picker-warn" style="display:none; color:#e53935; font-size:12px; margin:8px 0 0;">2か所以上選択してください</p>
+    <div style="display:flex; gap:8px; margin-top:14px;">
+      <button id="gmaps-picker-open" style="flex:1; padding:12px 0; background:#1a73e8; color:#fff; border:none; border-radius:6px; font-size:14px; font-weight:bold; cursor:pointer;">Googleマップで開く</button>
+      <button id="gmaps-picker-cancel" style="flex:1; padding:12px 0; background:#fff; color:#555; border:1px solid #ccc; border-radius:6px; font-size:14px; cursor:pointer;">キャンセル</button>
+    </div>
+  </div>
+</div>
+
 <!-- フッター -->
 <footer class="footer">
   <div class="footer-container">
+    <a id="footer-time" href="#" class="footer-link">時間を<br>変更</a>
+    <a id="footer-dest" href="#" class="footer-link">目的地<br>変更</a>
+    <a id="footer-gmaps" href="#" class="footer-link">Google<br>マップ</a>
+    <%= link_to 'しおり<br>一覧'.html_safe, itineraries_path, class: 'footer-link' %>
     <%= link_to 'トップに<br>戻る'.html_safe, authenticated_root_path, class: 'footer-link' %>
   </div>
 </footer>
@@ -256,6 +296,27 @@
     color: #999;
     padding: 24px 0;
   }
+  .gmaps-links {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0 8px;
+  }
+  .gmaps-link {
+    display: block;
+    text-align: center;
+    padding: 12px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    text-decoration: none;
+    background: #1a73e8;
+    color: #fff;
+  }
+  .gmaps-link:hover {
+    background: #1558b0;
+  }
+
   .show-actions {
     display: flex;
     gap: 10px;
@@ -290,6 +351,176 @@ document.addEventListener("turbo:load", function() {
     document.body.classList.remove('show-page');
   }
 
+  // --- フッターボタン同期 ---
+  function syncFooterButtons(day) {
+    var content = document.querySelector('.show-tab-content[data-day="' + day + '"]');
+    if (!content) return;
+    var hasDests = content.dataset.hasDestinations === 'true';
+    var gmapsUrls = JSON.parse(content.dataset.gmapsUrls || '[]');
+    var timeUrl = content.dataset.timeUrl || '#';
+    var destUrl = content.dataset.destUrl || '#';
+    var footerGmaps = document.getElementById('footer-gmaps');
+    var footerTime = document.getElementById('footer-time');
+    var footerDest = document.getElementById('footer-dest');
+    if (footerGmaps) {
+      footerGmaps._gmapsUrls = gmapsUrls;
+      footerGmaps.style.opacity = gmapsUrls.length > 0 ? '1' : '0.4';
+      footerGmaps.style.pointerEvents = gmapsUrls.length > 0 ? 'auto' : 'none';
+    }
+    if (footerTime) {
+      footerTime.href = hasDests ? timeUrl : '#';
+      footerTime.style.opacity = hasDests ? '1' : '0.4';
+      footerTime.style.pointerEvents = hasDests ? 'auto' : 'none';
+    }
+    if (footerDest) {
+      footerDest.href = destUrl;
+    }
+  }
+
+  // --- Googleマップ URL生成（チャンク対応） ---
+  // useCurrentLocation=true のとき origin を省略（Googleマップが現在地を使う）
+  function buildGmapsUrls(points, useCurrentLocation) {
+    if (useCurrentLocation) {
+      // 現在地出発: origin なし、points はすべて目的地扱い
+      if (points.length < 1) return [];
+      var dest = points[points.length - 1];
+      var wps = points.slice(0, -1);
+      var url = 'https://www.google.com/maps/dir/?api=1' +
+        '&destination=' + dest.lat + ',' + dest.lng;
+      if (wps.length > 0) {
+        url += '&waypoints=' + wps.map(function(p) { return p.lat + ',' + p.lng; }).join('%7C');
+      }
+      url += '&travelmode=driving';
+      return [url];
+    }
+    // 通常: 出発地あり、チャンク分割
+    if (points.length < 2) return [];
+    var urls = [];
+    var i = 0;
+    while (true) {
+      var chunk = points.slice(i, i + 10);
+      var origin = chunk[0];
+      var dest = chunk[chunk.length - 1];
+      var wps = chunk.slice(1, -1);
+      var url = 'https://www.google.com/maps/dir/?api=1' +
+        '&origin=' + origin.lat + ',' + origin.lng +
+        '&destination=' + dest.lat + ',' + dest.lng;
+      if (wps.length > 0) {
+        url += '&waypoints=' + wps.map(function(p) { return p.lat + ',' + p.lng; }).join('%7C');
+      }
+      url += '&travelmode=driving';
+      urls.push(url);
+      i += 9;
+      if (i >= points.length - 1) break;
+    }
+    return urls;
+  }
+
+  // --- 目的地選択モーダル ---
+  function showGmapsPicker() {
+    var activeTab = document.querySelector('.show-tab.active');
+    if (!activeTab) return;
+    var content = document.querySelector('.show-tab-content[data-day="' + activeTab.dataset.day + '"]');
+    if (!content) return;
+    var waypoints = JSON.parse(content.dataset.gmapsWaypoints || '[]');
+    if (waypoints.length === 0) return;
+
+    var list = document.getElementById('gmaps-picker-list');
+    list.innerHTML = '';
+    document.getElementById('gmaps-picker-warn').style.display = 'none';
+
+    // 「現在地を出発地にする」トグル
+    var toggleWrap = document.createElement('div');
+    toggleWrap.style.cssText = 'padding:10px 4px 12px; margin-bottom:4px; border-bottom:2px solid #e8e8e8;';
+    var toggleLabel = document.createElement('label');
+    toggleLabel.style.cssText = 'display:flex; align-items:center; gap:12px; cursor:pointer;';
+    var toggleCb = document.createElement('input');
+    toggleCb.type = 'checkbox';
+    toggleCb.id = 'gmaps-use-current-location';
+    toggleCb.style.cssText = 'width:20px; height:20px; flex-shrink:0; cursor:pointer; accent-color:#1a73e8;';
+    var toggleSpan = document.createElement('span');
+    toggleSpan.style.cssText = 'font-size:14px; font-weight:bold; color:#1a73e8;';
+    toggleSpan.textContent = '現在地を出発地にする';
+    toggleLabel.appendChild(toggleCb);
+    toggleLabel.appendChild(toggleSpan);
+    toggleWrap.appendChild(toggleLabel);
+    list.appendChild(toggleWrap);
+
+    // 各地点のチェックボックス
+    waypoints.forEach(function(point, idx) {
+      var label = document.createElement('label');
+      label.style.cssText = 'display:flex; align-items:center; gap:12px; padding:10px 4px; border-bottom:1px solid #f0f0f0; cursor:pointer; transition:opacity 0.2s;';
+      label.dataset.waypointIdx = idx;
+
+      var cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = true;
+      cb.dataset.lat = point.lat;
+      cb.dataset.lng = point.lng;
+      cb.dataset.isDeparture = idx === 0 ? 'true' : 'false';
+      cb.style.cssText = 'width:20px; height:20px; flex-shrink:0; cursor:pointer; accent-color:#1a73e8;';
+
+      var span = document.createElement('span');
+      span.style.cssText = 'font-size:14px; color:#333;';
+      span.textContent = (idx === 0 ? '出発: ' : idx + '. ') + point.name;
+
+      label.appendChild(cb);
+      label.appendChild(span);
+      list.appendChild(label);
+    });
+
+    // 現在地トグルで出発地行を制御
+    toggleCb.addEventListener('change', function() {
+      var depRow = list.querySelector('label[data-waypoint-idx="0"]');
+      if (!depRow) return;
+      var depCb = depRow.querySelector('input');
+      if (this.checked) {
+        depRow.style.opacity = '0.35';
+        depCb.checked = false;
+        depCb.disabled = true;
+      } else {
+        depRow.style.opacity = '1';
+        depCb.checked = true;
+        depCb.disabled = false;
+      }
+    });
+
+    document.getElementById('gmaps-picker-modal').style.display = 'block';
+  }
+
+  var footerGmapsBtn = document.getElementById('footer-gmaps');
+  if (footerGmapsBtn) {
+    footerGmapsBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      showGmapsPicker();
+    });
+  }
+
+  document.getElementById('gmaps-picker-open').addEventListener('click', function() {
+    var useCurrentLoc = !!(document.getElementById('gmaps-use-current-location') &&
+                           document.getElementById('gmaps-use-current-location').checked);
+    var checked = document.querySelectorAll('#gmaps-picker-list label[data-waypoint-idx] input[type="checkbox"]:checked');
+    var points = Array.from(checked).map(function(cb) {
+      return { lat: parseFloat(cb.dataset.lat), lng: parseFloat(cb.dataset.lng) };
+    });
+    var minPoints = useCurrentLoc ? 1 : 2;
+    if (points.length < minPoints) {
+      var warn = document.getElementById('gmaps-picker-warn');
+      warn.textContent = useCurrentLoc ? '目的地を1か所以上選択してください' : '2か所以上選択してください';
+      warn.style.display = 'block';
+      return;
+    }
+    document.getElementById('gmaps-picker-modal').style.display = 'none';
+    var urls = buildGmapsUrls(points, useCurrentLoc);
+    urls.forEach(function(url) {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    });
+  });
+
+  document.getElementById('gmaps-picker-cancel').addEventListener('click', function() {
+    document.getElementById('gmaps-picker-modal').style.display = 'none';
+  });
+
   // --- タブ切り替え ---
   var tabs = document.querySelectorAll('.show-tab');
   var contents = document.querySelectorAll('.show-tab-content');
@@ -300,8 +531,13 @@ document.addEventListener("turbo:load", function() {
       contents.forEach(function(c) { c.classList.remove('active'); });
       this.classList.add('active');
       document.querySelector('.show-tab-content[data-day="' + day + '"]').classList.add('active');
+      syncFooterButtons(day);
     });
   });
+
+  // 初期状態でフッターボタンを同期（実際にアクティブなタブに基づく）
+  var initialActiveTab = document.querySelector('.show-tab.active');
+  if (initialActiveTab) syncFooterButtons(initialActiveTab.dataset.day);
 
   // --- 地図 ---
   var dataEl = document.getElementById('all-destinations-data');
