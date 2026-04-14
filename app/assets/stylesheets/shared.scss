@@ -233,10 +233,9 @@ body {
 
 /* 到着時刻表示 */
 .route-arrival-time {
-  font-size: 11px;
+  font-size: 10px;
   color: #2196F3;
   font-weight: bold;
-  margin-top: 2px;
 }
 
 /* 行先一覧リスト */
@@ -248,12 +247,13 @@ body {
 }
 
 .route-item {
+  position: relative;
   display: flex;
   align-items: center;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
-  padding: 8px;
+  padding: 6px 6px 6px 8px;
   cursor: grab;
   transition: opacity 0.2s, box-shadow 0.2s;
 
@@ -279,34 +279,54 @@ body {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  gap: 1px;
+}
+
+.route-item-main-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  min-width: 0;
+  padding-right: 16px; /* 削除ボタンと重ならないように */
+}
+
+.route-item-sub-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
 }
 
 .route-item-number {
   font-weight: bold;
   color: #4CAF50;
-  font-size: 13px;
+  font-size: 12px;
+  flex-shrink: 0;
 }
 
 .route-item-name {
-  font-size: 13px;
+  font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .route-item-info {
-  font-size: 11px;
+  font-size: 10px;
   color: #888;
-  margin-top: 2px;
 }
 
+
 .route-item-delete {
+  position: absolute;
+  top: 2px;
+  right: 4px;
   background: none;
   border: none;
   color: #ff4d4d;
-  font-size: 18px;
+  font-size: 13px;
   cursor: pointer;
-  padding: 0 4px;
+  padding: 0;
   line-height: 1;
   width: auto !important;
   min-width: 0;
@@ -369,6 +389,24 @@ body {
   }
 }
 
+.change-sp-btn {
+  width: auto !important;
+  padding: 4px 8px !important;
+  font-size: 11px !important;
+  background: #fff;
+  border: 1px solid #ff9800;
+  color: #ff9800;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  white-space: nowrap;
+
+  &:hover {
+    background: #ff9800;
+    color: #fff;
+  }
+}
+
 #select-home.select-home-small {
   width: auto !important;
   padding: 4px 8px !important;
@@ -427,6 +465,35 @@ body {
 
   &:hover {
     background-color: #e0f2e0;
+  }
+}
+
+/* 経路一覧トグル（モバイル用） */
+#route-list-toggle {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  #route-list-toggle {
+    display: block;
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: #f0f8f0;
+    border: 1px solid #4CAF50;
+    border-radius: 5px;
+    color: #2e7d32;
+    font-weight: bold;
+    cursor: pointer;
+    text-align: left;
+  }
+
+  #route-list {
+    display: none !important;
+
+    &.open {
+      display: flex !important;
+    }
   }
 }
 

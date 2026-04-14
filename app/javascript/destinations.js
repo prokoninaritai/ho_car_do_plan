@@ -1,4 +1,11 @@
 document.addEventListener('turbo:load', () => {
+  // ページ遷移のたびに経路選択状態をリセット
+  routeMarkers = [];
+  routeRenderers = [];
+  routeInfoCache = {};
+  segmentDurations = [];
+  window.hasUnsavedRoute = false;
+
   const saveButton = document.getElementById('save-route-btn');
   if (saveButton) {
     saveButton.addEventListener('click', function(e) {
@@ -12,11 +19,57 @@ document.addEventListener('turbo:load', () => {
     departureInput.addEventListener('change', updateArrivalTimes);
     departureInput.addEventListener('input', updateArrivalTimes);
   }
+
+  const routeListToggle = document.getElementById('route-list-toggle');
+  if (routeListToggle) {
+    routeListToggle.addEventListener('click', function() {
+      const list = document.getElementById('route-list');
+      if (!list) return;
+      list.classList.toggle('open');
+      const isOpen = list.classList.contains('open');
+      this.textContent = isOpen
+        ? '経路一覧を隠す ▲'
+        : '経路一覧を表示 ▼ (' + routeMarkers.length + '件)';
+    });
+  }
 });
 
+// 経路選択状態をリセット（starting_points.js から呼ぶ）
+window.resetRouteSelection = function() {
+  routeMarkers.forEach(function(marker) {
+    marker.setLabel(null);
+    marker.setIcon(window.mapPins.stationPin(false));
+  });
+  routeMarkers = [];
+  routeRenderers.forEach(function(r) { r.setMap(null); });
+  routeRenderers = [];
+  routeInfoCache = {};
+  segmentDurations = [];
+  window.hasUnsavedRoute = false;
+  updateRouteList();
+};
+
+// 描画済みの経路線だけ消す（目的地マーカーは残す）
+window.clearRouteLines = function() {
+  routeRenderers.forEach(function(r) { r.setMap(null); });
+  routeRenderers = [];
+  routeInfoCache = {};
+  segmentDurations = [];
+};
+
+// 経路の再描画・リスト更新をグローバル公開（出発地変更後に呼ぶ）
+window.redrawRoutes = function() {
+  drawAllRoutes();
+  updateRouteList();
+};
+
 // 逆順をグローバルに公開（starting_points.js から呼ぶ）
+// ゴール（最後の目的地）は末尾に固定して残りを逆順にする
 window.reverseRoute = function() {
+  if (routeMarkers.length < 2) return;
+  var goal = routeMarkers.pop();
   routeMarkers.reverse();
+  routeMarkers.push(goal);
   updateMarkerLabels();
   drawAllRoutes();
   routeInfoCache = {};
@@ -206,18 +259,31 @@ function updateRouteList() {
   let html = '';
   routeMarkers.forEach(function(marker, index) {
     html += '<div class="route-item" draggable="true" data-index="' + index + '">';
+    html += '  <button type="button" class="route-item-delete" data-index="' + index + '">×</button>';
     html += '  <span class="drag-handle">≡</span>';
     html += '  <div class="route-item-content">';
-    html += '    <span class="route-item-number">' + (index + 1) + '</span>';
-    html += '    <span class="route-item-name">' + marker.getTitle() + '</span>';
-    html += '    <span class="route-item-info" id="route-info-' + index + '"></span>';
-    html += '    <span class="route-arrival-time" id="route-arrival-' + index + '"></span>';
+    html += '    <div class="route-item-main-row">';
+    html += '      <span class="route-item-number">' + (index + 1) + '</span>';
+    html += '      <span class="route-item-name">' + marker.getTitle() + '</span>';
+    html += '    </div>';
+    html += '    <div class="route-item-sub-row">';
+    html += '      <span class="route-item-info" id="route-info-' + index + '"></span>';
+    html += '      <span class="route-arrival-time" id="route-arrival-' + index + '"></span>';
+    html += '    </div>';
     html += '  </div>';
-    html += '  <button type="button" class="route-item-delete" data-index="' + index + '">×</button>';
     html += '</div>';
   });
 
   listContainer.innerHTML = html;
+
+  // モバイル用トグルボタンのカウント更新
+  const toggle = document.getElementById('route-list-toggle');
+  if (toggle) {
+    const isOpen = listContainer.classList.contains('open');
+    toggle.textContent = isOpen
+      ? '経路一覧を隠す ▲'
+      : '経路一覧を表示 ▼ (' + routeMarkers.length + '件)';
+  }
 
   // 削除ボタンのイベント
   listContainer.querySelectorAll('.route-item-delete').forEach(function(btn) {
@@ -447,7 +513,10 @@ function saveRoute() {
             destination_latitude: firstMarker.getPosition().lat(),
             destination_longitude: firstMarker.getPosition().lng(),
             distance: leg.distance.value,
-            api_travel_time: formatTravelTime(leg.duration.value), // 秒数を「時間:分」に変換
+            api_travel_time: formatTravelTime(leg.duration.value),
+            place_hours: window.placeHoursMap && window.placeHoursMap[firstMarker.getTitle()]
+              ? JSON.stringify(window.placeHoursMap[firstMarker.getTitle()])
+              : null,
           });
           resolve();
         } else {
@@ -482,7 +551,10 @@ function saveRoute() {
               destination_latitude: nextMarker.getPosition().lat(),
               destination_longitude: nextMarker.getPosition().lng(),
               distance: leg.distance.value,
-              api_travel_time: formatTravelTime(leg.duration.value), // 秒数を「時間:分」に変換
+              api_travel_time: formatTravelTime(leg.duration.value),
+              place_hours: window.placeHoursMap && window.placeHoursMap[nextMarker.getTitle()]
+                ? JSON.stringify(window.placeHoursMap[nextMarker.getTitle()])
+                : null,
             });
             resolve();
           } else {
