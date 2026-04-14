@@ -41,6 +41,14 @@ document.addEventListener("turbo:load", () => {
 
 // --- 変数の宣言 ---
 window.startMarker = null;
+window.placeHoursMap = {}; // Places API の営業時間を名前をキーに保存
+
+// 営業時間を保存するヘルパー
+function savePlaceHours(name, openingHours) {
+  if (openingHours && openingHours.weekday_text && openingHours.weekday_text.length > 0) {
+    window.placeHoursMap[name] = openingHours.weekday_text;
+  }
+}
 window.markers = []; // グローバル変数として定義
 window.startInfoWindow = null; // 出発地の吹き出し
 
@@ -56,9 +64,13 @@ function initMap() {
   }
   window.markers = [];
 
+  const isMobile = window.innerWidth <= 600;
   window.map = new google.maps.Map(document.getElementById('map2'), {
     center: { lat: 41.92591, lng: 140.65724 },
     zoom: 7,
+    mapTypeControlOptions: isMobile ? {
+      position: google.maps.ControlPosition.BOTTOM_RIGHT,
+    } : {},
   });
 
   // DirectionsServiceとDirectionsRendererをグローバルスコープで初期化
@@ -125,12 +137,13 @@ function initMap() {
     event.stop(); // デフォルトのInfoWindowを抑制
 
     poiPlacesService.getDetails(
-      { placeId: event.placeId, fields: ['geometry', 'name'] },
+      { placeId: event.placeId, fields: ['geometry', 'name', 'opening_hours'] },
       function(place, status) {
         if (status !== 'OK' || !place.geometry) return;
         var lat = place.geometry.location.lat();
         var lng = place.geometry.location.lng();
         var name = place.name;
+        savePlaceHours(name, place.opening_hours);
         handlePlaceSelection(lat, lng, name);
       }
     );
@@ -169,6 +182,59 @@ function setupHeadingRow() {
     if (window.reverseRoute) window.reverseRoute();
   });
   btnGroup.appendChild(revBtn);
+
+  var itEl = document.getElementById('itinerary-data');
+  var currentDay = itEl ? parseInt(itEl.dataset.currentDay) || 1 : 1;
+  if (currentDay === 1) {
+    var changeBtn = document.createElement('button');
+    changeBtn.type = 'button';
+    changeBtn.textContent = '出発地変更';
+    changeBtn.className = 'change-sp-btn';
+    changeBtn.addEventListener('click', function() {
+      resetToStartingPointMode();
+    });
+    btnGroup.appendChild(changeBtn);
+  }
+}
+
+function resetToStartingPointMode() {
+  window.routeSelectionEnabled = false;
+
+  var form = document.querySelector('.starting-point-form');
+  var headingRow = form ? form.querySelector('.heading-row') : null;
+  var heading = document.querySelector('.starting-point-heading');
+  var homeBtn = document.getElementById('select-home');
+  var searchBtn = document.getElementById('search-location');
+  var registerBtn = document.getElementById('register-starting-point');
+  var dtSection = document.getElementById('departure-time-section');
+
+  // heading-row を解体して label を元の位置に戻す
+  if (headingRow && heading) {
+    headingRow.parentNode.insertBefore(heading, headingRow);
+    headingRow.remove();
+  }
+  if (heading) heading.textContent = '出発地点を選ぶ:';
+
+  // ホームボタンを search-location の直後に戻す
+  if (homeBtn && searchBtn && searchBtn.parentNode) {
+    searchBtn.parentNode.insertBefore(homeBtn, searchBtn.nextSibling);
+    homeBtn.classList.remove('select-home-small');
+    homeBtn.style.display = '';
+  }
+
+  if (searchBtn) searchBtn.style.display = '';
+  if (registerBtn) registerBtn.style.display = '';
+  if (dtSection) dtSection.style.display = 'none';
+
+  // 出発地マーカーを削除
+  if (window.startMarker) {
+    window.startMarker.setMap(null);
+    window.startMarker = null;
+  }
+  window.startPoint = null;
+
+  // 描画済みの経路線だけ消す（目的地マーカーは残す）
+  if (window.clearRouteLines) window.clearRouteLines();
 }
 
 // 既存の出発地・目的地がある場合に経路選択モードを復元
@@ -224,6 +290,12 @@ function restoreExistingState() {
   const existingDestsJson = itineraryEl.dataset.existingDestinations;
   if (existingDestsJson) {
     const existingDests = JSON.parse(existingDestsJson);
+    // place_hours を placeHoursMap に復元
+    existingDests.forEach((dest) => {
+      if (dest.place_hours) {
+        try { window.placeHoursMap[dest.name] = JSON.parse(dest.place_hours); } catch(e) {}
+      }
+    });
     existingDests.forEach((dest) => {
       let marker = window.markers.find(m => m.getTitle() === dest.name);
       // 道の駅以外の目的地（Places APIで追加した場所など）はmarkers配列にないので動的に作成
@@ -488,13 +560,14 @@ function initPlacesAutocomplete() {
           handlePlaceSelection(lat, lng, name);
         } else {
           placesService.getDetails(
-            { placeId: item.dataset.placeId, fields: ['geometry', 'name', 'formatted_address'] },
+            { placeId: item.dataset.placeId, fields: ['geometry', 'name', 'formatted_address', 'opening_hours'] },
             function(place, status) {
               if (status === 'OK') {
                 var lat = place.geometry.location.lat();
                 var lng = place.geometry.location.lng();
                 var name = place.name || place.formatted_address;
                 saveToHistory({ name: name, lat: lat, lng: lng });
+                savePlaceHours(name, place.opening_hours);
                 handlePlaceSelection(lat, lng, name);
               }
             }
@@ -593,6 +666,8 @@ function saveStartingPoint(lat, lng, title, customMessage) {
     document.getElementById('register-starting-point').style.display = 'none';
     setupHeadingRow();
     enableRouteSelection(); // 経路選択を有効化
+    // 既存の目的地がある場合は新しい出発地から経路を再描画
+    if (window.redrawRoutes) window.redrawRoutes();
   })
   .catch(error => {
     console.error("エラー:", error);

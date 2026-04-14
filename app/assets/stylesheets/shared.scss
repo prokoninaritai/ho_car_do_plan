@@ -468,17 +468,68 @@ body {
   }
 }
 
+/* フォームトグルボタン（モバイル用） */
+#form-toggle-btn {
+  display: none;
+}
+
 /* 経路一覧トグル（モバイル用） */
 #route-list-toggle {
   display: none;
 }
 
 @media (max-width: 600px) {
+  #form-toggle-btn {
+    display: block;
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    z-index: 11;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+  }
+
+  .starting-point-form {
+    display: none;
+    width: 200px;
+    padding: 10px;
+    gap: 6px;
+    max-height: calc(70vh - 60px);
+    margin: 40px 0 0 0;
+
+    &.open {
+      display: flex;
+    }
+  }
+
+  .starting-point-form input,
+  #place-search-input {
+    padding: 6px !important;
+    font-size: 13px !important;
+  }
+
+  .starting-point-form button {
+    padding: 6px !important;
+    font-size: 13px !important;
+  }
+
+  .starting-point-heading {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
   #route-list-toggle {
     display: block;
     width: 100%;
-    padding: 8px 10px;
-    font-size: 13px;
+    padding: 6px 8px;
+    font-size: 12px;
     background: #f0f8f0;
     border: 1px solid #4CAF50;
     border-radius: 5px;

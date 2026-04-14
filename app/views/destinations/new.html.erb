@@ -19,6 +19,7 @@
   <div class="map-container">
     <!-- 地図の表示領域 -->
     <div class="map-container">
+      <button type="button" id="form-toggle-btn">☰ 経路</button>
       <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>" data-start-date="<%= @start_date %>" data-current-day="<%= @current_day %>"
         <% if @previous_last_destination %>
           data-prev-destination-name="<%= @previous_last_destination.destination %>"
