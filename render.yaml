@@ -1,0 +1,34 @@
+databases:
+  - name: ho_car_do_plan_db
+    databaseName: ho_car_do_plan
+    user: ho_car_do_plan
+    plan: free
+
+services:
+  - type: web
+    name: ho-car-do-plan
+    env: ruby
+    plan: free
+    buildCommand: bundle install && bundle exec rails assets:precompile && bundle exec rails db:migrate
+    startCommand: bundle exec puma -C config/puma.rb
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ho_car_do_plan_db
+          property: connectionString
+      - key: RAILS_ENV
+        value: production
+      - key: RAILS_LOG_TO_STDOUT
+        value: "true"
+      - key: RAILS_SERVE_STATIC_FILES
+        value: "true"
+      - key: RAILS_MASTER_KEY
+        sync: false
+      - key: GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: BASIC_AUTH_USER
+        sync: false
+      - key: BASIC_AUTH_PASSWORD
+        sync: false
+      - key: SECRET_KEY_BASE
+        generateValue: true
