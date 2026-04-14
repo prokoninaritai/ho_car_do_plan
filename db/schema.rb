@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2026_03_01_013322) do
+ActiveRecord::Schema[7.0].define(version: 2026_03_07_043808) do
   create_table "business_hours", force: :cascade do |t|
     t.integer "station_number", null: false
     t.string "start_date"
@@ -48,6 +48,7 @@ ActiveRecord::Schema[7.0].define(version: 2026_03_01_013322) do
     t.decimal "destination_longitude", precision: 10, scale: 6
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.text "place_hours"
     t.index ["itinerary_id"], name: "index_destinations_on_itinerary_id"
   end
 

@@ -90,7 +90,8 @@ class DestinationsController < ApplicationController
                                           :destination_latitude,
                                           :destination_longitude,
                                           :distance,
-                                          :api_travel_time
+                                          :api_travel_time,
+                                          :place_hours
                                         ))
       end
     end

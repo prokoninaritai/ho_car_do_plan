@@ -181,7 +181,19 @@
           <% end %>
         </ul>
       <% else %>
-        <p class="non-station-note">※ 道の駅以外の目的地です</p>
+        <% if destination.place_hours.present? %>
+          <% hours = JSON.parse(destination.place_hours) rescue nil %>
+          <% if hours.present? %>
+            <p><strong>営業時間:</strong></p>
+            <ul class="no-bullet">
+              <% hours.each do |h| %>
+                <li><%= h %></li>
+              <% end %>
+            </ul>
+          <% end %>
+        <% else %>
+          <p class="non-station-note">※ 道の駅以外の目的地です</p>
+        <% end %>
       <% end %>
     </div>
   </div>

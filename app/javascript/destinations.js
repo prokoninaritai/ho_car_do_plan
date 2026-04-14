@@ -32,6 +32,17 @@ document.addEventListener('turbo:load', () => {
         : '経路一覧を表示 ▼ (' + routeMarkers.length + '件)';
     });
   }
+
+  const formToggleBtn = document.getElementById('form-toggle-btn');
+  if (formToggleBtn) {
+    formToggleBtn.addEventListener('click', function() {
+      const form = document.querySelector('.starting-point-form');
+      if (!form) return;
+      form.classList.toggle('open');
+      const isOpen = form.classList.contains('open');
+      this.textContent = isOpen ? '✕' : '☰ 経路';
+    });
+  }
 });
 
 // 経路選択状態をリセット（starting_points.js から呼ぶ）

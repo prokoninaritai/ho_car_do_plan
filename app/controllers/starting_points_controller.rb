@@ -1,6 +1,7 @@
 class StartingPointsController < ApplicationController
   def create
-    starting_point = StartingPoint.new(starting_point_params)
+    starting_point = StartingPoint.find_or_initialize_by(itinerary_id: starting_point_params[:itinerary_id])
+    starting_point.assign_attributes(starting_point_params)
     if starting_point.save
       head :ok # 成功した場合にHTTP 200を返す
     else
