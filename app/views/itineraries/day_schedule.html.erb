@@ -12,7 +12,7 @@
       <%= @itinerary.title %> <br>
       <%= @visit_date.strftime('%Y年%-m月%-d日') %>（<%= %w[日 月 火 水 木 金 土][@visit_date.wday] %>）<%= @current_day %>日目
     </div>
-    <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+    <button type="button" id="hamburger-btn" class="hamburger-btn">☰</button>
   </header>
 
 <main>

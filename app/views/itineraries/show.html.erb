@@ -4,7 +4,7 @@
   <div class="welcome">
     <%= @itinerary.title %>
   </div>
-  <%= link_to 'ログアウト', destroy_user_session_path, data: { turbo_method: :delete }, class: 'logout-button' %>
+  <button type="button" id="hamburger-btn" class="hamburger-btn">☰</button>
 </header>
 
 <main>
