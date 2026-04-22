@@ -318,69 +318,86 @@ function restoreExistingState() {
   }
 }
 
-// 現在地を選ぶ
-const searchLocationButton = document.getElementById('search-location');
-if (searchLocationButton) {
-  searchLocationButton.addEventListener('click', () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const latitude = position.coords.latitude;
-          const longitude = position.coords.longitude;
-          setStartingPoint(latitude, longitude, "現在地");
-          window.map.setCenter({ lat: latitude, lng: longitude });
-          window.map.setZoom(14);
-        },
-        (error) => alert("現在地を取得できませんでした: " + error.message)
-      );
-    } else {
-      alert("ブラウザが現在地取得をサポートしていません。");
-    }
-  });
-}
+// ボタンのイベントリスナーは turbo:load 内で登録（Turboナビゲーション対応）
+document.addEventListener('turbo:load', () => {
+  // 現在地を選ぶ
+  const searchLocationButton = document.getElementById('search-location');
+  if (searchLocationButton) {
+    searchLocationButton.addEventListener('click', () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            setStartingPoint(latitude, longitude, "現在地");
+            window.map.setCenter({ lat: latitude, lng: longitude });
+            window.map.setZoom(14);
+          },
+          (error) => alert("現在地を取得できませんでした: " + error.message)
+        );
+      } else {
+        alert("ブラウザが現在地取得をサポートしていません。");
+      }
+    });
+  }
 
-// 自宅を選ぶ
-const selectHomeButton = document.getElementById('select-home');
-if (selectHomeButton) {
-  selectHomeButton.addEventListener('click', () => {
-    const formEl = document.querySelector('.starting-point-form');
-    const homeLat = parseFloat(formEl.dataset.homeLat);
-    const homeLng = parseFloat(formEl.dataset.homeLng);
-    const homeAddress = formEl.dataset.homeAddress;
+  // 自宅を選ぶ
+  const selectHomeButton = document.getElementById('select-home');
+  if (selectHomeButton) {
+    selectHomeButton.addEventListener('click', () => {
+      const formEl = document.querySelector('.starting-point-form');
+      const homeLat = parseFloat(formEl.dataset.homeLat);
+      const homeLng = parseFloat(formEl.dataset.homeLng);
+      const homeAddress = formEl.dataset.homeAddress;
 
-    if (isNaN(homeLat) || isNaN(homeLng)) {
-      alert("自宅の位置情報が登録されていません。");
-      return;
-    }
+      if (isNaN(homeLat) || isNaN(homeLng)) {
+        alert("自宅の位置情報が登録されていません。");
+        return;
+      }
 
-    if (window.routeSelectionEnabled) {
-      // 経路選択モード: マーカーを作成して経路に追加
-      var marker = new google.maps.Marker({
-        position: { lat: homeLat, lng: homeLng },
-        map: window.map,
-        title: homeAddress,
-        icon: {
-          url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
-          scaledSize: new google.maps.Size(50, 40),
-        },
-      });
-      window.markers.push(marker);
-      marker.addListener("click", function() {
-        if (window.routeSelectionEnabled) {
-          selectRouteMarker(marker);
-        }
-      });
-      selectRouteMarker(marker);
-      showInfoWindow(marker, homeAddress);
-    } else {
-      // 出発地モード
-      setStartingPoint(homeLat, homeLng, homeAddress);
-    }
+      if (window.routeSelectionEnabled) {
+        // 経路選択モード: マーカーを作成して経路に追加
+        var marker = new google.maps.Marker({
+          position: { lat: homeLat, lng: homeLng },
+          map: window.map,
+          title: homeAddress,
+          icon: {
+            url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+            scaledSize: new google.maps.Size(50, 40),
+          },
+        });
+        window.markers.push(marker);
+        marker.addListener("click", function() {
+          if (window.routeSelectionEnabled) {
+            selectRouteMarker(marker);
+          }
+        });
+        selectRouteMarker(marker);
+        showInfoWindow(marker, homeAddress);
+      } else {
+        // 出発地モード
+        setStartingPoint(homeLat, homeLng, homeAddress);
+      }
 
-    window.map.setCenter({ lat: homeLat, lng: homeLng });
-    window.map.setZoom(10);
-  });
-}
+      window.map.setCenter({ lat: homeLat, lng: homeLng });
+      window.map.setZoom(10);
+    });
+  }
+
+  // 出発地を登録
+  const registerButton = document.getElementById('register-starting-point');
+  if (registerButton) {
+    registerButton.addEventListener('click', () => {
+      if (startMarker) {
+        const position = startMarker.getPosition();
+        const title = startMarker.getTitle();
+        saveStartingPoint(position.lat(), position.lng(), title);
+      } else {
+        alert("出発地点を選択してください。");
+      }
+    });
+  }
+});
 
 // 場所を選択した時の共通処理
 function handlePlaceSelection(lat, lng, name) {
@@ -617,20 +634,6 @@ function setStartingPoint(lat, lng, title, showWindow = true) {
   console.log("出発地点が設定されました:", window.startPoint); // デバッグ用
 }
 
-
-// 出発地を登録
-const registerButton = document.getElementById('register-starting-point');
-if (registerButton) {
-  registerButton.addEventListener('click', () => {
-    if (startMarker) {
-      const position = startMarker.getPosition();
-      const title = startMarker.getTitle(); // マーカーのタイトル（出発地名）
-      saveStartingPoint(position.lat(), position.lng(), title);
-    } else {
-      alert("出発地点を選択してください。");
-    }
-  });
-}
 
 // サーバーに送信する関数
 function saveStartingPoint(lat, lng, title, customMessage) {
