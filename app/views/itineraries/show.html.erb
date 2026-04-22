@@ -9,6 +9,9 @@
 
 <main>
 <div class="main-contents">
+  <!-- 印刷時のみ表示するタイトル -->
+  <div class="print-title"><%= @itinerary.title %></div>
+
   <!-- 地図 -->
   <div class="map-container">
     <div id="all-destinations-data"
@@ -43,6 +46,7 @@
   </div>
 
   <!-- タブコンテンツ -->
+  <div class="print-days-container">
   <% (1..@total_days).each do |d| %>
     <% date = @itinerary.start_date + (d - 1).days %>
     <% destinations = @destinations_by_date[date] || [] %>
@@ -135,6 +139,7 @@
 
     </div>
   <% end %>
+  </div><!-- /.print-days-container -->
 </div>
 </main>
 
@@ -158,6 +163,7 @@
     <a id="footer-time" href="#" class="footer-link">時間を<br>変更</a>
     <a id="footer-dest" href="#" class="footer-link">目的地<br>変更</a>
     <a id="footer-gmaps" href="#" class="footer-link">Google<br>マップ</a>
+    <a id="footer-print" href="#" class="footer-link">印刷</a>
     <%= link_to 'しおり<br>一覧'.html_safe, itineraries_path, class: 'footer-link' %>
     <%= link_to 'トップに<br>戻る'.html_safe, authenticated_root_path, class: 'footer-link' %>
   </div>
@@ -316,6 +322,115 @@
   .gmaps-link:hover {
     background: #1558b0;
   }
+
+  /* 印刷用スタイル */
+  @media print {
+    @page { size: A4 portrait; margin: 4mm 8mm; }
+
+    html, body {
+      overflow: hidden !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    /* ヘッダー・フッター分のマージン・パディングをリセット */
+    .main-contents {
+      margin: 0 !important;
+      padding: 0 !important;
+      height: auto !important;
+      overflow: visible !important;
+      background: none !important;
+    }
+
+    /* スクロールバーを完全に非表示 */
+    ::-webkit-scrollbar { display: none !important; }
+
+    /* 末尾の空白ページを防ぐ */
+    .show-tab-content:last-child {
+      break-after: avoid !important;
+      page-break-after: avoid !important;
+    }
+    .print-days-container {
+      break-after: avoid !important;
+      page-break-after: avoid !important;
+    }
+
+    /* 印刷タイトルは非表示 */
+    .print-title { display: none !important; }
+
+    /* 非表示にする要素 */
+    .header, .footer, .map-container, .map-legend,
+    .show-tabs, #gmaps-picker-modal { display: none !important; }
+
+    /* コンテナは普通のブロック */
+    .print-days-container {
+      display: block !important;
+    }
+
+    /* 各日を2列で表示・2日目以降は改ページ */
+    .show-tab-content {
+      display: block !important;
+      column-count: 2;
+      column-gap: 5mm;
+      column-fill: auto;
+      padding: 0;
+    }
+
+    /* 2日目以降は必ず改ページ */
+    .show-tab-content + .show-tab-content {
+      break-before: page;
+    }
+
+    /* 日付見出し: 2列幅全体に表示 */
+    .show-tab-content h3 {
+      font-size: 10pt;
+      font-weight: bold;
+      color: #fff;
+      background: #4CAF50;
+      padding: 2px 5px;
+      margin: 0 0 2mm;
+      column-span: all;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* 各ブロックは途中で切れないようにする */
+    .show-block {
+      break-inside: avoid;
+      padding: 3px 5px;
+      gap: 5px;
+      margin-bottom: 2px;
+    }
+    .show-block-label {
+      width: 22px;
+      height: 22px;
+      font-size: 8pt;
+      flex-shrink: 0;
+    }
+    .show-block-icon {
+      width: 22px;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    /* ブロック色を印刷向けに保持 */
+    .show-departure { background: #ffe4e1 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .show-destination { background: #e6ffe6 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .show-departure .show-block-label { background: #e57373 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .show-destination .show-block-label { background: #4CAF50 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+    /* フォントサイズ調整 */
+    .show-place-name { font-size: 9pt; }
+    .show-time { font-size: 8pt; color: #444; }
+    .show-detail { font-size: 7.5pt; color: #666; }
+    .show-empty { font-size: 8pt; padding: 4px 0; }
+  }
+
+  /* 印刷タイトルは通常時非表示 */
+  .print-title { display: none; }
+  /* 印刷コンテナは通常時タブ動作に影響しないようにする */
+  .print-days-container { display: contents; }
 
   .show-actions {
     display: flex;
@@ -538,6 +653,24 @@ document.addEventListener("turbo:load", function() {
   // 初期状態でフッターボタンを同期（実際にアクティブなタブに基づく）
   var initialActiveTab = document.querySelector('.show-tab.active');
   if (initialActiveTab) syncFooterButtons(initialActiveTab.dataset.day);
+
+  // --- 印刷ボタン ---
+  var footerPrint = document.getElementById('footer-print');
+  if (footerPrint) {
+    footerPrint.addEventListener('click', function(e) {
+      e.preventDefault();
+      var allContents = document.querySelectorAll('.show-tab-content');
+      // 全タブを表示・スクロールバーを消す
+      allContents.forEach(function(c) { c.style.display = 'block'; });
+      document.documentElement.style.overflow = 'hidden';
+      document.body.style.overflow = 'hidden';
+      window.print();
+      // 印刷後に元に戻す
+      allContents.forEach(function(c) { c.style.display = ''; });
+      document.documentElement.style.overflow = '';
+      document.body.style.overflow = '';
+    });
+  }
 
   // --- 地図 ---
   var dataEl = document.getElementById('all-destinations-data');
