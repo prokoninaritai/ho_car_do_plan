@@ -8,17 +8,17 @@
   </header>
 
 <main>
-<div class="main-contents">
+<div class="main-contents" style="padding: 0 20px; display: flex; flex-direction: column; margin-bottom: 40px; height: calc(100vh - 100px);">
   <!-- インストラクション -->
-  <div class="instructions">
+  <div class="instructions" style="display: flex; align-items: center; justify-content: center; min-height: 44px; margin: 0; flex-shrink: 0;">
     出発地を登録したら<br>
     経路を登録してしおりを作成しましょう
   </div>
- 
 
-  <div class="map-container">
+
+  <div class="map-container" style="flex: 1; min-height: 0; height: auto;">
     <!-- 地図の表示領域 -->
-    <div class="map-container">
+    <div class="map-container" style="height: 100%;">
       <button type="button" id="form-toggle-btn">☰ 経路</button>
       <div id="itinerary-data" data-itinerary-id="<%= @itinerary.id %>" data-start-date="<%= @start_date %>" data-current-day="<%= @current_day %>"
         <% if @previous_last_destination %>
@@ -39,7 +39,7 @@
         <% end %>
       ></div>
       <div id="stations-data" data-stations="<%= @stations.select(:name, :kana, :latitude, :longitude).to_json %>"></div>
-      <div id="map2"></div>
+      <div id="map2" style="height: 100%; min-height: 0;"></div>
     </div>
 
     <!-- 出発地登録領域 -->
