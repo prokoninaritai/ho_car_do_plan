@@ -156,6 +156,17 @@ input[type="time"], input[type="text"] {
     }
   }
 
+/* デフォルト以外の滞在時間 */
+.stay-custom label {
+  color: #2196F3;
+  font-weight: bold;
+}
+
+.stay-custom .time-select {
+  border-color: #2196F3;
+  background-color: #e3f2fd;
+}
+
 /*休館日*/
 .no-bullet {
   list-style-type: none; /* 黒点を削除 */

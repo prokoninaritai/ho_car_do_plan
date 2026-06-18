@@ -116,10 +116,12 @@
         <span class="arrival-time time-display">--:--</span>
       </div>
       <% unless index == @destinations.size - 1 %>
-        <div class="left-section">
+        <% saved_stay = destination.stay_duration&.rjust(5, '0') || destination.time_management&.stay_duration&.rjust(5, '0') || '00:20' %>
+        <% stay_is_custom = saved_stay.split(':').map(&:to_i) != [0, 20] %>
+        <div class="left-section <%= 'stay-custom' if stay_is_custom %>">
           <label>滞在予定時間:</label>
           <div class="time-select-group stay-time">
-            <%= time_select_fields('stay-time', '00:20') %>
+            <%= time_select_fields('stay-time', saved_stay) %>
           </div>
         </div>
         <div class="left-section">   

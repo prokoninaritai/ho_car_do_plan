@@ -4,6 +4,7 @@ class DestinationsController < ApplicationController
   def new
     @destination = Destination.new
     @stations = Station.all
+    @stamped_numbers = current_user.stamps.pluck(:station_number).to_set
     @itinerary = Itinerary.find(params[:itinerary_id])
     @start_date = @itinerary.start_date
 
@@ -71,8 +72,13 @@ class DestinationsController < ApplicationController
     ActiveRecord::Base.transaction do
       # 同じ日の既存データを削除（経路選択画面から戻って再保存した場合の重複防止）
       visit_date = params[:destinations]&.first&.dig(:visit_date)
+      stay_duration_map = {}
       if visit_date.present?
         existing = @itinerary.destinations.where(visit_date: visit_date)
+        existing.each do |d|
+          saved = d.stay_duration.presence || d.time_management&.stay_duration.presence
+          stay_duration_map[d.destination] = saved if saved.present?
+        end
         existing.each { |d| d.time_management&.destroy }
         existing.destroy_all
       end
@@ -80,7 +86,7 @@ class DestinationsController < ApplicationController
       params[:destinations].each_with_index do |destination_data, index|
         destination_data[:arrival_order] = index + 1
         Rails.logger.debug "Saving destination with arrival_order: #{destination_data[:arrival_order]}"
-        @itinerary.destinations.create!(destination_data.permit(
+        dest = @itinerary.destinations.create!(destination_data.permit(
                                           :visit_date,
                                           :arrival_order,
                                           :departure,
@@ -93,6 +99,8 @@ class DestinationsController < ApplicationController
                                           :api_travel_time,
                                           :place_hours
                                         ))
+        saved_stay = stay_duration_map[destination_data[:destination]]
+        Destination.where(id: dest.id).update_all(stay_duration: saved_stay) if saved_stay.present?
       end
     end
 

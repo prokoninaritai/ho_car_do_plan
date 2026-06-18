@@ -15,6 +15,7 @@ class TimeManagementsController < ApplicationController
       time_management.assign_attributes(permitted)
 
       if time_management.save
+        Destination.where(id: permitted[:destination_id]).update_all(stay_duration: permitted[:stay_duration])
         Rails.logger.info "TimeManagement saved: #{time_management.inspect}"
       else
         Rails.logger.error " TimeManagement save failed: #{time_management.errors.full_messages}"

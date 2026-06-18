@@ -49,7 +49,7 @@ document.addEventListener('turbo:load', () => {
 window.resetRouteSelection = function() {
   routeMarkers.forEach(function(marker) {
     marker.setLabel(null);
-    marker.setIcon(window.mapPins.stationPin(false));
+    marker.setIcon(marker._baseIcon || window.mapPins.stationPin(false));
   });
   routeMarkers = [];
   routeRenderers.forEach(function(r) { r.setMap(null); });
@@ -109,7 +109,7 @@ function selectRouteMarker(marker) {
   if (clickedIndex > -1) {
     routeMarkers.splice(clickedIndex, 1); // マーカーをリストから削除
     marker.setLabel(null); // ラベルをクリア
-    marker.setIcon(window.mapPins.stationPin(false)); // アイコンをリセット
+    marker.setIcon(marker._baseIcon || window.mapPins.stationPin(false)); // アイコンをリセット
     updateMarkerLabels(); // 順番を更新
     window.hasUnsavedRoute = routeMarkers.length > 0;
 
@@ -221,7 +221,7 @@ function drawRoute(startPosition, endPosition) {
     origin: startPosition,
     destination: endPosition,
     travelMode: 'DRIVING',
-    avoidHighways: true,
+    avoidTolls: true,
   };
 
   window.directionsService.route(request, (result, status) => {
@@ -355,7 +355,7 @@ function fetchSegmentInfo(directionsService, origin, destination, displayIndex) 
     origin: origin,
     destination: destination,
     travelMode: 'DRIVING',
-    avoidHighways: true,
+    avoidTolls: true,
   };
 
   directionsService.route(request, function(result, status) {
@@ -507,7 +507,7 @@ function saveRoute() {
       origin: { lat: window.startPoint.lat, lng: window.startPoint.lng },
       destination: firstMarker.getPosition(),
       travelMode: 'DRIVING',
-      avoidHighways: true,
+      avoidTolls: true,
     };
 
     promises.push(new Promise((resolve, reject) => {
@@ -545,7 +545,7 @@ function saveRoute() {
         origin: marker.getPosition(),
         destination: nextMarker.getPosition(),
         travelMode: 'DRIVING',
-        avoidHighways: true,
+        avoidTolls: true,
       };
 
       promises.push(new Promise((resolve, reject) => {
@@ -603,7 +603,7 @@ function addRemainingRoutes(routeData, visitDate, directionsService) {
         origin: marker.getPosition(),
         destination: nextMarker.getPosition(),
         travelMode: 'DRIVING',
-        avoidHighways: true,
+        avoidTolls: true,
       };
 
       directionsService.route(request, (result, status) => {

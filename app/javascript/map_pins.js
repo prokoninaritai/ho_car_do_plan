@@ -13,6 +13,19 @@ window.mapPins = {
     };
   },
 
+  // 登録済みピン: しおりに登録済みの道の駅
+  scheduledPin() {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">
+      <path d="M 16 40 C 8 32 1 26 1 16 A 15 15 0 1 1 31 16 C 31 26 24 32 16 40 Z" fill="#F57C00" stroke="white" stroke-width="1.5"/>
+      <text x="16" y="22" font-size="13" font-weight="bold" text-anchor="middle" fill="white" font-family="sans-serif">登</text>
+    </svg>`;
+    return {
+      url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg),
+      scaledSize: new google.maps.Size(32, 40),
+      anchor: new google.maps.Point(16, 40)
+    };
+  },
+
   // 出発地ピン: 家型・オレンジ
   startPin() {
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="32" height="40" viewBox="0 0 32 40">

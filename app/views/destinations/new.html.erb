@@ -38,7 +38,7 @@
           data-existing-destinations="<%= @existing_destinations.map { |d| { name: d.destination, lat: d.destination_latitude, lng: d.destination_longitude, place_hours: d.place_hours } }.to_json %>"
         <% end %>
       ></div>
-      <div id="stations-data" data-stations="<%= @stations.select(:name, :kana, :latitude, :longitude).to_json %>"></div>
+      <div id="stations-data" data-stations="<%= @stations.map { |s| { name: s.name, kana: s.kana, latitude: s.latitude, longitude: s.longitude, stamped: @stamped_numbers.include?(s.station_number) } }.to_json %>"></div>
       <div id="map2" style="height: 100%; min-height: 0;"></div>
     </div>
 

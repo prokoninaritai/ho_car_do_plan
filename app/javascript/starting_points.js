@@ -100,14 +100,26 @@ function initMap() {
   const stationsElement = document.getElementById("stations-data");
   const stations = JSON.parse(stationsElement.dataset.stations);
 
+  // しおりに登録済みの駅名セットを構築（前日以前のみ）
+  const scheduledNames = new Set();
+  if (itineraryEl && itineraryEl.dataset.prevDestinations) {
+    JSON.parse(itineraryEl.dataset.prevDestinations).forEach(function(d) { scheduledNames.add(d.name); });
+  }
+
   // マーカーを表示
   stations.forEach((station) => {
+    const isScheduled = scheduledNames.has(station.name);
+    const baseIcon = isScheduled
+      ? window.mapPins.scheduledPin()
+      : window.mapPins.stationPin(station.stamped || false);
+
     const marker = new google.maps.Marker({
       position: { lat: parseFloat(station.latitude), lng: parseFloat(station.longitude) },
       map: window.map,
       title: station.name,
-      icon: window.mapPins.stationPin(false),
+      icon: baseIcon,
     });
+    marker._baseIcon = baseIcon;
 
     createStationLabel(window.map, marker, station.name);
     window.markers.push(marker);
@@ -306,6 +318,7 @@ function restoreExistingState() {
           title: dest.name,
           icon: window.mapPins.stationPin(false),
         });
+        marker._baseIcon = window.mapPins.stationPin(false);
         window.markers.push(marker);
         marker.addListener('click', function() {
           if (window.routeSelectionEnabled) selectRouteMarker(marker);
